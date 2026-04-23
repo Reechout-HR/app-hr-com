@@ -19,4 +19,6 @@ export const AUTH_API_PATHS = {
    * @see api-hr-io `path("login/refresh/", ...)`
    */
   loginRefresh: "auth/login/refresh/",
+  /** `POST` body `{ token, device_id }`. */
+  registerFCMToken: "auth/fcm-token",
 } as const;

@@ -102,6 +102,17 @@ export const authApi = {
     );
     return data;
   },
+
+  /**
+   * `POST ${apiUrl}/auth/fcm-token` with `{ token, device_id }`.
+   */
+  registerFCMToken: async (token: string, deviceId: string): Promise<ApiEnvelope<unknown>> => {
+    const { data } = await apiClient.post<ApiEnvelope<unknown>>(AUTH_API_PATHS.registerFCMToken, {
+      token,
+      device_id: deviceId,
+    });
+    return data;
+  },
 };
 
 /**
