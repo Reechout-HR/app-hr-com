@@ -45,8 +45,8 @@ export function UpdateQuestionnaireModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && !isUpdating && onClose()}>
-      <DialogContent className="max-w-[520px] w-[95vw] p-0 overflow-hidden border-border bg-background shadow-lg sm:rounded-[20px]">
-        <DialogHeader className="border-b border-border bg-card px-6 py-4">
+      <DialogContent className="max-w-[520px] w-[95vw] p-0 overflow-hidden border-[var(--border-color-light)] bg-[var(--background-color)] shadow-[0_24px_48px_rgba(var(--shadow-rgb),0.12)] sm:rounded-[24px] dark:border-white/[0.09]">
+        <DialogHeader className="border-b border-[var(--border-color-light)] bg-[var(--surface-2)] dark:border-white/[0.09] px-6 py-4">
           <DialogTitle className="text-base font-semibold text-foreground">
             Update Questionnaire
           </DialogTitle>
@@ -67,7 +67,7 @@ export function UpdateQuestionnaireModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter questionnaire name"
-              className="h-10 w-full rounded-xl bg-background border-border focus-visible:ring-primary"
+              className="h-10 w-full rounded-xl bg-[var(--surface-2)] border-[var(--border-color-light)] hover:border-[rgba(var(--primary-color-rgb),0.28)] dark:border-white/[0.09] focus-visible:ring-primary"
             />
             {title.trim().length > 0 && title.trim().length < 3 && (
               <p className="text-xs text-destructive mt-1">
@@ -77,7 +77,7 @@ export function UpdateQuestionnaireModal({
           </div>
         </div>
 
-        <DialogFooter className="border-t border-border bg-card p-5 sm:justify-end gap-3">
+        <DialogFooter className="border-t border-[var(--border-color-light)] bg-[var(--surface-2)] dark:border-white/[0.09] p-5 sm:justify-end gap-3">
           <Button
             variant="outline"
             disabled={isUpdating}

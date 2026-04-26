@@ -98,7 +98,8 @@ function QuestionnairesDashboard() {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const targetClasses = 'border border-[var(--header-floating-border)] bg-[var(--header-floating-bg)] shadow-[0_4px_32px_rgba(var(--shadow-rgb),0.09),0_1px_4px_rgba(var(--shadow-rgb),0.05)]';
+  const targetClasses = 'rounded-[var(--radius-md)] border border-[var(--border-color-light)] bg-[var(--background-color)] shadow-[0_4px_24px_rgba(var(--shadow-rgb),0.04)] transition-[border-color,box-shadow,transform] duration-300 hover:border-[rgba(var(--primary-color-rgb),0.28)] hover:shadow-[0_20px_40px_rgba(var(--shadow-rgb),0.08)] dark:border-white/[0.09] dark:hover:border-[rgba(var(--accent-violet-rgb),0.35)]';
+  const pillClasses = "inline-flex items-center gap-2 rounded-xl border border-[rgba(var(--primary-color-rgb),0.15)] bg-gradient-to-br from-[rgba(var(--primary-color-rgb),0.08)] to-[rgba(var(--primary-color-rgb),0.04)] px-3.5 py-2 backdrop-blur-md transition-all duration-200 hover:-translate-y-[1px] hover:border-[rgba(var(--primary-color-rgb),0.25)] hover:from-[rgba(var(--primary-color-rgb),0.12)] hover:to-[rgba(var(--primary-color-rgb),0.06)] hover:shadow-[0_4px_12px_rgba(var(--primary-color-rgb),0.15)]";
 
   useEffect(() => {
     if (searchParams.get("create") === "true") {
@@ -178,16 +179,18 @@ function QuestionnairesDashboard() {
     return results;
   }, [data?.results, searchQuery]);
 
-  const getStatusColor = (status: Questionnaire["status"]) => {
+  const getStatusClasses = (status: Questionnaire["status"]) => {
+    const baseClasses = "inline-flex items-center justify-center gap-2 rounded-xl border px-3 py-1.5 text-[12px] font-bold capitalize tracking-wide backdrop-blur-md transition-all duration-200 hover:-translate-y-[1px] shadow-sm";
+    
     switch (status) {
       case "completed":
-        return "bg-[var(--success-color-rgb)]/10 text-[var(--success-color)]";
+        return cn(baseClasses, "border-[rgba(var(--success-color-rgb),0.15)] bg-gradient-to-br from-[rgba(var(--success-color-rgb),0.08)] to-[rgba(var(--success-color-rgb),0.04)] text-[var(--success-color)] hover:border-[rgba(var(--success-color-rgb),0.25)] hover:from-[rgba(var(--success-color-rgb),0.12)] hover:to-[rgba(var(--success-color-rgb),0.06)] hover:shadow-[0_4px_12px_rgba(var(--success-color-rgb),0.15)]");
       case "processing":
-        return "bg-[var(--brand-blue-modern-rgb)]/10 text-[var(--brand-blue-modern)]";
+        return cn(baseClasses, "border-[rgba(var(--brand-blue-modern-rgb),0.15)] bg-gradient-to-br from-[rgba(var(--brand-blue-modern-rgb),0.08)] to-[rgba(var(--brand-blue-modern-rgb),0.04)] text-[var(--brand-blue-modern)] hover:border-[rgba(var(--brand-blue-modern-rgb),0.25)] hover:from-[rgba(var(--brand-blue-modern-rgb),0.12)] hover:to-[rgba(var(--brand-blue-modern-rgb),0.06)] hover:shadow-[0_4px_12px_rgba(var(--brand-blue-modern-rgb),0.15)]");
       case "failed":
-        return "bg-[var(--error-color-rgb)]/10 text-[var(--error-color)]";
+        return cn(baseClasses, "border-[rgba(var(--error-color-rgb),0.15)] bg-gradient-to-br from-[rgba(var(--error-color-rgb),0.08)] to-[rgba(var(--error-color-rgb),0.04)] text-[var(--error-color)] hover:border-[rgba(var(--error-color-rgb),0.25)] hover:from-[rgba(var(--error-color-rgb),0.12)] hover:to-[rgba(var(--error-color-rgb),0.06)] hover:shadow-[0_4px_12px_rgba(var(--error-color-rgb),0.15)]");
       default: // pending
-        return "bg-[var(--warning-color-rgb)]/10 text-[var(--warning-color)]";
+        return cn(baseClasses, "border-[rgba(var(--warning-color-rgb),0.15)] bg-gradient-to-br from-[rgba(var(--warning-color-rgb),0.08)] to-[rgba(var(--warning-color-rgb),0.04)] text-[var(--warning-color)] hover:border-[rgba(var(--warning-color-rgb),0.25)] hover:from-[rgba(var(--warning-color-rgb),0.12)] hover:to-[rgba(var(--warning-color-rgb),0.06)] hover:shadow-[0_4px_12px_rgba(var(--warning-color-rgb),0.15)]");
     }
   };
 
@@ -202,7 +205,7 @@ function QuestionnairesDashboard() {
       <div className="fixed inset-0 -z-10 bg-[var(--background-color)] bg-[radial-gradient(ellipse_at_top_right,rgba(var(--primary-color-rgb),0.05),transparent_60%)]" />
 
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between relative z-20">
-        <div className={cn("flex w-full min-h-[52px] flex-col gap-4 rounded-[20px] py-3 px-[clamp(0.875rem,2.5vw,1.125rem)] sm:px-[clamp(1.125rem,3.5vw,1.5rem)] lg:px-[clamp(1.25rem,4vw,2rem)] md:flex-row md:items-center md:justify-between", targetClasses)}>
+        <div className={cn("flex w-full min-h-[52px] flex-col gap-4 rounded-[var(--radius-md)] py-3 px-[clamp(0.875rem,2.5vw,1.125rem)] sm:px-[clamp(1.125rem,3.5vw,1.5rem)] lg:px-[clamp(1.25rem,4vw,2rem)] md:flex-row md:items-center md:justify-between", targetClasses)}>
           
           {/* Filters */}
           <div className="flex flex-wrap items-center gap-3">
@@ -284,9 +287,9 @@ function QuestionnairesDashboard() {
           <>
             {/* List View */}
             {viewMode === "list" && (
-              <div className={cn("rounded-[20px] relative z-10", targetClasses)}>
+              <div className={cn("rounded-[var(--radius-md)] relative z-10", targetClasses)}>
                 {/* Desktop Header */}
-                <div className="hidden grid-cols-[2fr_1fr_1fr_1fr_1.2fr_80px] border-b border-[var(--border-color-light)] bg-black/5 px-6 py-4 text-[13px] font-semibold uppercase tracking-wider text-[var(--text-secondary)] md:grid dark:bg-white/5 rounded-t-[20px]">
+                <div className="hidden grid-cols-[2fr_1fr_1fr_1fr_1.2fr_80px] border-b border-[var(--border-color-light)] bg-[var(--surface-2)] px-6 py-4 text-[13px] font-semibold uppercase tracking-wider text-[var(--text-secondary)] md:grid dark:border-white/[0.09] dark:bg-[rgba(12,10,20,0.98)] rounded-t-[calc(var(--radius-md)-1px)]">
                   <div className="px-2">Questionnaire</div>
                   <div className="px-2">Created By</div>
                   <div className="px-2">Status</div>
@@ -300,9 +303,10 @@ function QuestionnairesDashboard() {
                   {(isLoading ? Array(5).fill(null) : filteredQuestionnaires).map((item: Questionnaire | null, i) => (
                     <div
                       key={item?.id || i}
+                      onClick={() => { if (!isLoading && item) router.push(`/questionnaires/${item.id}`); }}
                       className={cn(
-                        "group grid grid-cols-1 p-4 transition-colors hover:bg-black/5 md:grid-cols-[2fr_1fr_1fr_1fr_1.2fr_80px] md:px-6 md:py-4 dark:hover:bg-white/5 last:rounded-b-[20px]",
-                        isLoading && "animate-pulse"
+                        "group grid grid-cols-1 p-4 transition-colors hover:bg-black/5 md:grid-cols-[2fr_1fr_1fr_1fr_1.2fr_80px] md:px-6 md:py-4 dark:hover:bg-white/5 last:rounded-b-[calc(var(--radius-md)-1px)] cursor-pointer",
+                        isLoading && "animate-pulse cursor-default"
                       )}
                     >
                       {/* Title Cell */}
@@ -331,11 +335,9 @@ function QuestionnairesDashboard() {
                         {isLoading ? (
                           <div className="h-8 w-24 rounded-full bg-[var(--border-color-light)]" />
                         ) : (
-                          <div className="flex items-center gap-2">
-                            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary-light)] text-[var(--primary-color)]">
-                              <UserIcon className="h-3.5 w-3.5" />
-                            </div>
-                            <span className="max-w-[120px] truncate text-sm font-medium text-[var(--text-primary)]">
+                          <div className={pillClasses}>
+                            <UserIcon className="h-4 w-4 text-[var(--primary-color)]" />
+                            <span className="max-w-[120px] truncate text-[13px] font-semibold text-[var(--text-primary)]">
                               {item!.user || "Unknown"}
                             </span>
                           </div>
@@ -347,12 +349,7 @@ function QuestionnairesDashboard() {
                         {isLoading ? (
                           <div className="h-6 w-20 rounded-full bg-[var(--border-color-light)]" />
                         ) : (
-                          <span
-                            className={cn(
-                              "inline-flex items-center justify-center rounded-full px-3 py-1 text-[11px] font-bold tracking-wide uppercase",
-                              getStatusColor(item!.status)
-                            )}
-                          >
+                          <span className={getStatusClasses(item!.status)}>
                             {getStatusText(item!.status)}
                           </span>
                         )}
@@ -363,11 +360,16 @@ function QuestionnairesDashboard() {
                         {isLoading ? (
                           <div className="h-6 w-12 rounded-lg bg-[var(--border-color-light)]" />
                         ) : (
-                          <span className="inline-flex h-7 min-w-[28px] items-center justify-center rounded-lg bg-[var(--surface-2)] px-2.5 text-sm font-bold text-[var(--text-primary)] ring-1 ring-inset ring-[var(--border-color-light)]">
-                            {item!.status === "processing" || item!.status === "failed"
-                              ? "-"
-                              : item!.number_of_questions}
-                          </span>
+                          <div className={pillClasses}>
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                              Questions:
+                            </span>
+                            <span className="text-[15px] font-bold leading-none text-[var(--primary-color)]">
+                              {item!.status === "processing" || item!.status === "failed"
+                                ? "-"
+                                : item!.number_of_questions}
+                            </span>
+                          </div>
                         )}
                       </div>
 
@@ -376,9 +378,11 @@ function QuestionnairesDashboard() {
                         {isLoading ? (
                           <div className="h-6 w-24 rounded-lg bg-[var(--border-color-light)]" />
                         ) : (
-                          <div className="flex items-center gap-2 text-sm font-medium text-[var(--text-secondary)]">
-                            <Calendar className="h-4 w-4 opacity-70" />
-                            {format(new Date(item!.created_at), "MMM d, yyyy")}
+                          <div className={pillClasses}>
+                            <Calendar className="h-4 w-4 text-[var(--primary-color)]" />
+                            <span className="text-[13px] font-semibold text-[var(--text-primary)]">
+                              {format(new Date(item!.created_at), "MMM d, yyyy")}
+                            </span>
                           </div>
                         )}
                       </div>
@@ -391,16 +395,16 @@ function QuestionnairesDashboard() {
                           <>
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <button className="flex h-8 w-8 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                                <button onClick={(e) => e.stopPropagation()} className="flex h-8 w-8 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary outline-none focus-visible:ring-2 focus-visible:ring-primary">
                                   <MoreVertical className="h-5 w-5" />
                                 </button>
                               </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="w-32 rounded-xl">
-                                <DropdownMenuItem onClick={() => handleEditClick(item!)}>
+                              <DropdownMenuContent align="end" className="w-32 rounded-xl" onClick={(e) => e.stopPropagation()}>
+                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleEditClick(item!); }}>
                                   <Edit className="mr-2 h-4 w-4" />
                                   Edit
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleDeleteClick(item!)} className="text-destructive focus:text-destructive focus:bg-destructive/10 dark:focus:bg-destructive/20">
+                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleDeleteClick(item!); }} className="text-destructive focus:text-destructive focus:bg-destructive/10 dark:focus:bg-destructive/20">
                                   <Trash className="mr-2 h-4 w-4" />
                                   Delete
                                 </DropdownMenuItem>
@@ -417,12 +421,7 @@ function QuestionnairesDashboard() {
                         ) : (
                           <>
                             <div className="flex items-center gap-3">
-                              <span
-                                className={cn(
-                                  "inline-flex items-center justify-center rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase",
-                                  getStatusColor(item!.status)
-                                )}
-                              >
+                              <span className={getStatusClasses(item!.status)}>
                                 {getStatusText(item!.status)}
                               </span>
                               <div className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-secondary)]">
@@ -432,16 +431,16 @@ function QuestionnairesDashboard() {
                             </div>
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <button className="flex h-8 w-8 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                                <button onClick={(e) => e.stopPropagation()} className="flex h-8 w-8 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary outline-none focus-visible:ring-2 focus-visible:ring-primary">
                                   <MoreVertical className="h-4 w-4" />
                                 </button>
                               </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="w-32 rounded-xl">
-                                <DropdownMenuItem onClick={() => handleEditClick(item!)}>
+                              <DropdownMenuContent align="end" className="w-32 rounded-xl" onClick={(e) => e.stopPropagation()}>
+                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleEditClick(item!); }}>
                                   <Edit className="mr-2 h-4 w-4" />
                                   Edit
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleDeleteClick(item!)} className="text-destructive focus:text-destructive focus:bg-destructive/10 dark:focus:bg-destructive/20">
+                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleDeleteClick(item!); }} className="text-destructive focus:text-destructive focus:bg-destructive/10 dark:focus:bg-destructive/20">
                                   <Trash className="mr-2 h-4 w-4" />
                                   Delete
                                 </DropdownMenuItem>
@@ -462,9 +461,10 @@ function QuestionnairesDashboard() {
                 {(isLoading ? Array(8).fill(null) : filteredQuestionnaires).map((item: Questionnaire | null, i) => (
                   <div
                     key={item?.id || i}
+                    onClick={() => { if (!isLoading && item) router.push(`/questionnaires/${item.id}`); }}
                     className={cn(
-                      cn("group relative flex flex-col overflow-hidden rounded-[20px] p-5 transition-all hover:-translate-y-0.5 hover:border-[var(--primary-color-rgb)]/30", targetClasses),
-                      isLoading && "animate-pulse"
+                      cn("group relative flex flex-col overflow-hidden rounded-[var(--radius-md)] p-5 transition-all hover:-translate-y-0.5 hover:border-[var(--primary-color-rgb)]/30 cursor-pointer", targetClasses),
+                      isLoading && "animate-pulse cursor-default"
                     )}
                   >
                     {/* Accent border left */}
@@ -487,16 +487,16 @@ function QuestionnairesDashboard() {
                           </h3>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <button className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-primary/10 hover:text-primary outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                              <button onClick={(e) => e.stopPropagation()} className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-primary/10 hover:text-primary outline-none focus-visible:ring-2 focus-visible:ring-primary">
                                 <MoreVertical className="h-4 w-4" />
                               </button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-32 rounded-xl">
-                              <DropdownMenuItem onClick={() => handleEditClick(item!)}>
+                            <DropdownMenuContent align="end" className="w-32 rounded-xl" onClick={(e) => e.stopPropagation()}>
+                              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleEditClick(item!); }}>
                                 <Edit className="mr-2 h-4 w-4" />
                                 Edit
                               </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => handleDeleteClick(item!)} className="text-destructive focus:text-destructive focus:bg-destructive/10 dark:focus:bg-destructive/20">
+                              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleDeleteClick(item!); }} className="text-destructive focus:text-destructive focus:bg-destructive/10 dark:focus:bg-destructive/20">
                                 <Trash className="mr-2 h-4 w-4" />
                                 Delete
                               </DropdownMenuItem>
@@ -510,34 +510,31 @@ function QuestionnairesDashboard() {
                           </p>
                         )}
 
-                        <div className="mt-auto flex flex-col gap-2 border-t border-[var(--border-color-light)] pt-4">
+                        <div className="mt-auto flex flex-col gap-2.5 pt-4">
                           <div className="flex items-center justify-between">
-                            <span
-                              className={cn(
-                                "inline-flex items-center justify-center rounded-xl px-2.5 py-0.5 text-[11px] font-semibold shadow-sm",
-                                getStatusColor(item!.status)
-                              )}
-                            >
+                            <span className={getStatusClasses(item!.status)}>
                               {getStatusText(item!.status)}
                             </span>
-                            <div className="flex items-center gap-1 text-xs font-medium text-[var(--text-secondary)]">
+                            <div className={cn(pillClasses, "px-2 py-1")}>
                               <Calendar className="h-3 w-3 text-[var(--primary-color)]" />
-                              {format(new Date(item!.created_at), "MMM d, yyyy")}
+                              <span className="text-[11px] font-semibold text-[var(--text-primary)]">
+                                {format(new Date(item!.created_at), "MMM d, yyyy")}
+                              </span>
                             </div>
                           </div>
                           
-                          <div className="flex items-center justify-between rounded-xl border border-[var(--primary-color-rgb)]/10 bg-[var(--primary-color-rgb)]/5 px-3 py-2">
-                            <div className="flex items-center gap-2">
+                          <div className="flex items-center justify-between">
+                            <div className={cn(pillClasses, "px-2.5 py-1.5")}>
                               <UserIcon className="h-3.5 w-3.5 text-[var(--primary-color)]" />
                               <span className="max-w-[100px] truncate text-xs font-semibold text-[var(--text-primary)]">
                                 {item!.user || "Unknown"}
                               </span>
                             </div>
-                            <div className="flex items-center gap-1.5">
+                            <div className={cn(pillClasses, "px-2.5 py-1.5")}>
                               <span className="text-[9px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
                                 Qs:
                               </span>
-                              <span className="text-sm font-bold text-[var(--primary-color)]">
+                              <span className="text-[13px] font-bold leading-none text-[var(--primary-color)]">
                                 {item!.status === "processing" || item!.status === "failed"
                                   ? "-"
                                   : item!.number_of_questions}

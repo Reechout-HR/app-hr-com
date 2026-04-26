@@ -6,6 +6,7 @@
 :root {
   --primary-color: #611f69;
   --primary-color-rgb: 97, 31, 105;
+  --primary-color-hover: #4a154b;
   --primary-hover: #4a154b;
   --primary-hover-rgb: 74, 21, 75;
   --primary-light: #f5ecf9;
@@ -103,7 +104,7 @@
   --shadow-rgb: 0, 0, 0;
 
   /* Primary color for light mode */
-  --loader-spinner-color: #611f69;
+  --loader-spinner-color: var(--primary-color);
 
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -207,6 +208,7 @@
 
   --primary-color: #611f69;
   --primary-color-rgb: 97, 31, 105;
+  --primary-color-hover: #4a154b;
   --primary-hover: #4a154b;
   --primary-hover-rgb: 74, 21, 75;
   --primary-light: #2e2e2e;
@@ -249,7 +251,7 @@
   --shadow-purple: 0 4px 16px rgba(97, 31, 105, 0.15);
   --shadow-rgb: 0, 0, 0;
 
-  --loader-spinner-color: #611f69;
+  --loader-spinner-color: var(--primary-color);
 
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -370,8 +372,8 @@
   --radius-sm: var(--radius-sm);
   --radius-md: var(--radius-md);
   --radius-lg: var(--radius-lg);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-montserrat);
+  --font-mono: var(--font-roboto-mono);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
@@ -390,7 +392,7 @@
 body {
   background-color: var(--background-color);
   color: var(--text-color);
-  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Hero — animations & noise (rest is Tailwind in hero-section.tsx) */
@@ -644,15 +646,15 @@ body {
 
 .reech-pair-spatial-loader::before {
   animation: reech-pair-ball1 1.5s infinite;
-  background-color: var(--white);
-  box-shadow: 30px 0 0 var(--loader-spinner-color);
+  background-color: color-mix(in oklab, var(--primary-color) 25%, transparent);
+  box-shadow: 30px 0 0 var(--primary-color);
   margin-bottom: 10px;
 }
 
 .reech-pair-spatial-loader::after {
   animation: reech-pair-ball2 1.5s infinite;
-  background-color: var(--loader-spinner-color);
-  box-shadow: 30px 0 0 var(--white);
+  background-color: var(--primary-color);
+  box-shadow: 30px 0 0 color-mix(in oklab, var(--primary-color) 25%, transparent);
 }
 
 @keyframes reech-pair-rotate {
@@ -669,30 +671,30 @@ body {
 
 @keyframes reech-pair-ball1 {
   0% {
-    box-shadow: 30px 0 0 var(--loader-spinner-color);
+    box-shadow: 30px 0 0 var(--primary-color);
   }
   50% {
-    box-shadow: 0 0 0 var(--loader-spinner-color);
+    box-shadow: 0 0 0 var(--primary-color);
     margin-bottom: 0;
     transform: translate(15px, 15px);
   }
   100% {
-    box-shadow: 30px 0 0 var(--loader-spinner-color);
+    box-shadow: 30px 0 0 var(--primary-color);
     margin-bottom: 10px;
   }
 }
 
 @keyframes reech-pair-ball2 {
   0% {
-    box-shadow: 30px 0 0 var(--white);
+    box-shadow: 30px 0 0 color-mix(in oklab, var(--primary-color) 25%, transparent);
   }
   50% {
-    box-shadow: 0 0 0 var(--white);
+    box-shadow: 0 0 0 color-mix(in oklab, var(--primary-color) 25%, transparent);
     margin-top: -20px;
     transform: translate(15px, 15px);
   }
   100% {
-    box-shadow: 30px 0 0 var(--white);
+    box-shadow: 30px 0 0 color-mix(in oklab, var(--primary-color) 25%, transparent);
     margin-top: 0;
   }
 }

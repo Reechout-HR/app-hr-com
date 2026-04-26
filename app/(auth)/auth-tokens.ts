@@ -10,12 +10,12 @@ export function authInputClassName(opts?: {
   const { withLeadingIcon, withPasswordToggle, extra } = opts ?? {};
   return cn(
     "h-[46px] w-full rounded-[10px] px-3.5 text-[15px] text-[var(--text-heading)]",
-    "bg-[color-mix(in_srgb,var(--foreground)_4%,transparent)]",
-    "border border-[color-mix(in_srgb,var(--foreground)_10%,transparent)]",
-    "transition-[border-color,box-shadow,background-color] duration-150",
-    "placeholder:text-[var(--text-muted)] placeholder:opacity-[0.85]",
-    "hover:border-[color-mix(in_srgb,var(--primary-color)_25%,var(--foreground)_10%)]",
-    "focus:border-[var(--primary-color)] focus:bg-[var(--bg-card)] focus:outline-none focus:shadow-[0_0_0_3px_rgba(var(--primary-color-rgb),0.16)]",
+    "bg-[color-mix(in_srgb,var(--foreground)_3%,transparent)] backdrop-blur-sm",
+    "border border-[color-mix(in_srgb,var(--foreground)_8%,transparent)]",
+    "transition-all duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]",
+    "placeholder:text-[var(--text-muted)] placeholder:opacity-[0.75]",
+    "hover:border-[color-mix(in_srgb,var(--primary-color)_30%,var(--foreground)_12%)] hover:bg-[color-mix(in_srgb,var(--foreground)_4%,transparent)]",
+    "focus:border-[var(--primary-color)] focus:bg-[var(--bg-card)] focus:outline-none focus:shadow-[0_0_0_4px_color-mix(in_srgb,var(--primary-color)_12%,transparent),0_2px_8px_rgba(0,0,0,0.04)] focus:-translate-y-[1px]",
     withLeadingIcon && "pl-[42px]",
     withPasswordToggle && "pr-11",
     extra,
@@ -29,7 +29,7 @@ export const authPasswordToggleButtonClassName = cn(
 );
 
 export const authInputIconWrapClassName =
-  "pointer-events-none absolute left-3.5 top-1/2 z-[1] flex -translate-y-1/2 items-center justify-center text-[var(--text-muted)] transition-colors duration-200 group-focus-within:text-[var(--primary-color)]";
+  "pointer-events-none absolute left-3.5 top-1/2 z-[1] flex -translate-y-1/2 items-center justify-center text-[var(--text-muted)] transition-colors duration-300 group-focus-within:text-[var(--primary-color)]";
 
 export const authCardHeaderClassName = "mb-7 text-center max-md:mb-5";
 
@@ -69,48 +69,48 @@ export const authLinkPlainClassName =
   "cursor-pointer border-0 bg-transparent p-0 text-[13px] text-[var(--text-muted)]";
 
 export const authSubmitButtonClassName = cn(
-  "relative w-full cursor-pointer overflow-hidden rounded-xl border-0 font-bold tracking-wide text-white",
-  "h-[46px] shadow-[0_0_0_1px_rgba(var(--primary-color-rgb),0.4),0_4px_20px_rgba(var(--primary-color-rgb),0.35)]",
-  "bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-hover)]",
-  "transition-[transform,box-shadow] duration-150",
-  "before:pointer-events-none before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/[0.15] before:to-transparent",
-  "hover:-translate-y-0.5 hover:shadow-[0_0_0_1px_rgba(var(--primary-color-rgb),0.5),0_8px_28px_rgba(var(--primary-color-rgb),0.45)]",
-  "active:scale-[0.99] active:translate-y-0 active:shadow-[0_2px_8px_rgba(var(--primary-color-rgb),0.25)]",
-  "disabled:cursor-not-allowed disabled:opacity-65 disabled:hover:translate-y-0",
+  "relative w-full cursor-pointer overflow-hidden rounded-[10px] border border-white/10 font-bold tracking-wide text-white",
+  "h-[46px] shadow-[0_4px_14px_rgba(var(--primary-color-rgb),0.35),inset_0_1px_0_rgba(255,255,255,0.2)]",
+  "bg-gradient-to-b from-[var(--color-primary)] to-[var(--color-primary-hover)]",
+  "transition-all duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]",
+  "before:pointer-events-none before:absolute before:inset-0 before:bg-gradient-to-b before:from-white/[0.12] before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity",
+  "hover:-translate-y-[1px] hover:shadow-[0_6px_20px_rgba(var(--primary-color-rgb),0.45),inset_0_1px_0_rgba(255,255,255,0.3)] hover:from-[var(--color-primary-hover)] hover:to-[var(--color-primary-hover)]",
+  "active:scale-[0.98] active:translate-y-0 active:shadow-[0_2px_8px_rgba(var(--primary-color-rgb),0.25)]",
+  "disabled:cursor-not-allowed disabled:opacity-65 disabled:hover:translate-y-0 disabled:hover:scale-100",
 );
 
 export const authLabelClassName =
   "mb-2 block text-[13px] font-medium text-[var(--text-body)]";
 
 export const authCardClassName = cn(
-  "overflow-hidden rounded-[20px] max-sm:rounded-[18px] border-b border-[rgba(var(--color-primary-rgb),0.06)] border-l border-[rgba(var(--color-primary-rgb),0.08)] border-r border-[rgba(var(--color-primary-rgb),0.08)] border-t border-[rgba(var(--color-primary-rgb),0.35)]",
-  "bg-[linear-gradient(160deg,rgba(var(--color-primary-rgb),0.06)_0%,var(--bg-card)_42%)]",
-  "shadow-[0_32px_64px_-16px_rgba(0,0,0,0.18),0_0_0_1px_rgba(var(--color-primary-rgb),0.06),0_0_60px_rgba(var(--color-primary-rgb),0.05)]",
-  "backdrop-blur-[10px] dark:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.45),0_0_0_1px_rgba(var(--color-primary-rgb),0.08),0_0_60px_rgba(var(--color-primary-rgb),0.06)]",
+  "relative overflow-hidden rounded-[24px] max-sm:rounded-[20px] border border-[color-mix(in_srgb,var(--foreground)_6%,transparent)]",
+  "bg-[linear-gradient(160deg,color-mix(in_srgb,var(--bg-card)_90%,transparent)_0%,var(--bg-card)_100%)]",
+  "shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08),0_0_0_1px_rgba(var(--color-primary-rgb),0.03),0_8px_40px_rgba(var(--color-primary-rgb),0.04)]",
+  "backdrop-blur-[16px] dark:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.4),0_0_0_1px_rgba(var(--color-primary-rgb),0.05),0_8px_40px_rgba(var(--color-primary-rgb),0.08)]",
 );
 
-export const authCardInnerClassName = "px-9 py-9 max-md:px-5 max-md:py-5";
+export const authCardInnerClassName = "relative z-10 px-10 py-10 max-md:px-6 max-md:py-8";
 
 export const authCardTitleClassName =
-  "mb-1.5 text-center text-[1.35rem] font-extrabold tracking-[-0.02em] text-[var(--text-heading)]";
+  "mb-1.5 text-center text-[1.4rem] font-extrabold tracking-[-0.02em] text-[var(--text-heading)]";
 
 export const authCardSubtitleClassName =
-  "m-0 text-center text-sm leading-[1.45] text-[var(--text-muted)]";
+  "m-0 text-center text-[13px] leading-[1.5] text-[var(--text-muted)]";
 
 export const authSignInTextClassName =
-  "block text-center text-sm text-[var(--text-muted)]";
+  "block text-center text-[13px] text-[var(--text-muted)]";
 
 export const authSignInLinkClassName =
-  "ml-1 font-semibold text-[var(--color-primary)] no-underline hover:underline hover:text-[var(--color-primary-hover)]";
+  "ml-1 font-semibold text-[var(--color-primary)] no-underline transition-colors hover:text-[var(--color-primary-hover)]";
 
 export const authForgotLinkClassName =
-  "text-[13px] font-medium text-[var(--color-primary)] no-underline hover:underline hover:text-[var(--color-primary-hover)]";
+  "text-[13px] font-medium text-[var(--color-primary)] no-underline transition-colors hover:text-[var(--color-primary-hover)]";
 
 export const authBackLinkClassName =
-  "inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--color-primary)] no-underline hover:underline hover:text-[var(--color-primary-hover)]";
+  "inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-primary)] no-underline transition-colors hover:text-[var(--color-primary-hover)]";
 
 export const authFormErrorBoxClassName = cn(
-  "rounded-lg border px-3.5 py-2.5 text-sm text-[var(--destructive)]",
-  "border-[color-mix(in_srgb,var(--destructive)_22%,transparent)]",
-  "bg-[color-mix(in_srgb,var(--destructive)_10%,transparent)]",
+  "rounded-lg border px-3.5 py-2.5 text-[13px] font-medium text-[var(--destructive)]",
+  "border-[color-mix(in_srgb,var(--destructive)_20%,transparent)]",
+  "bg-[color-mix(in_srgb,var(--destructive)_8%,transparent)]",
 );

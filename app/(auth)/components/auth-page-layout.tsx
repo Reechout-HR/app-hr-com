@@ -1,4 +1,7 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { motion } from "framer-motion";
 
 /**
  * Root shell for auth routes: animated orbs + flex row for left marketing panel + right form.
@@ -40,9 +43,14 @@ export function AuthRightColumn({ children }: { children: ReactNode }) {
 
 export function AuthFormStack({ children }: { children: ReactNode }) {
   return (
-    <div className="relative z-[1] flex w-full max-w-[460px] flex-col gap-[22px] max-lg:w-[85%] max-lg:max-w-full max-md:w-[92%]">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+      className="relative z-[1] flex w-full max-w-[460px] flex-col gap-[22px] max-lg:w-[85%] max-lg:max-w-full max-md:w-[92%]"
+    >
       {children}
-    </div>
+    </motion.div>
   );
 }
 
@@ -56,9 +64,14 @@ export function AuthMobileLogoRow({ children }: { children: ReactNode }) {
 
 export function AuthFooterSlot({ children }: { children: ReactNode }) {
   return (
-    <div className="absolute bottom-6 left-0 right-0 z-[2] text-center max-md:relative max-md:mt-6 max-md:pb-4">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.8, delay: 0.5 }}
+      className="absolute bottom-6 left-0 right-0 z-[2] text-center max-md:relative max-md:mt-6 max-md:pb-4"
+    >
       {children}
-    </div>
+    </motion.div>
   );
 }
 

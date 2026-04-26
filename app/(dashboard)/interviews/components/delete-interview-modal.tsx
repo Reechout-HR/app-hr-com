@@ -1,8 +1,8 @@
 "use client";
 
-import { AlertCircle, FileText, Info } from "lucide-react";
+import { AlertCircle, Calendar, Info } from "lucide-react";
 import { format } from "date-fns";
-import type { Questionnaire } from "@/lib/api/questionnaires";
+import type { InterviewListItem } from "@/lib/api/interviews";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,22 +15,22 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 
-interface DeleteQuestionnaireModalProps {
+interface DeleteInterviewModalProps {
   isOpen: boolean;
   isDeleting: boolean;
-  questionnaire: Questionnaire | null;
+  interview: InterviewListItem | null;
   onClose: () => void;
   onConfirm: () => void;
 }
 
-export function DeleteQuestionnaireModal({
+export function DeleteInterviewModal({
   isOpen,
   isDeleting,
-  questionnaire,
+  interview,
   onClose,
   onConfirm,
-}: DeleteQuestionnaireModalProps) {
-  if (!questionnaire) return null;
+}: DeleteInterviewModalProps) {
+  if (!interview) return null;
 
   return (
     <AlertDialog open={isOpen} onOpenChange={(open) => !open && !isDeleting && onClose()}>
@@ -42,41 +42,41 @@ export function DeleteQuestionnaireModal({
           </div>
           <AlertDialogHeader className="text-left">
             <AlertDialogTitle className="text-[22px] font-semibold text-foreground">
-              Delete Questionnaire
+              Delete Interview
             </AlertDialogTitle>
           </AlertDialogHeader>
         </div>
 
         <div className="flex flex-col gap-6 bg-transparent p-6">
           <AlertDialogDescription className="text-[15px] leading-relaxed text-muted-foreground">
-            Are you sure you want to delete this questionnaire? This action cannot be undone.
+            Are you sure you want to delete this interview? This action cannot be undone.
           </AlertDialogDescription>
 
           <div className="overflow-hidden rounded-xl border border-[var(--border-color-light)] bg-[var(--surface-2)] dark:border-white/[0.09] shadow-sm">
             <div className="flex items-center gap-2.5 border-b border-[var(--border-color-light)] bg-[var(--surface-2)] dark:border-white/[0.09] px-5 py-4">
-              <FileText className="h-5 w-5 text-primary" />
+              <Calendar className="h-5 w-5 text-primary" />
               <span className="text-[15px] font-semibold text-foreground">
-                Questionnaire Details
+                Interview Details
               </span>
             </div>
             <div className="flex flex-col p-5">
               <div className="flex items-center justify-between border-b border-[var(--border-color-light)] dark:border-white/[0.09] py-3 first:pt-0 last:border-0 last:pb-0">
-                <span className="text-sm font-medium text-muted-foreground">Title:</span>
+                <span className="text-sm font-medium text-muted-foreground">Questionnaire:</span>
                 <span className="max-w-[200px] break-words text-right text-sm font-semibold text-foreground">
-                  {questionnaire.title}
+                  {interview.questionnaire_title}
                 </span>
               </div>
               <div className="flex items-center justify-between border-b border-[var(--border-color-light)] dark:border-white/[0.09] py-3 first:pt-0 last:border-0 last:pb-0">
-                <span className="text-sm font-medium text-muted-foreground">Questions:</span>
+                <span className="text-sm font-medium text-muted-foreground">Candidates:</span>
                 <span className="max-w-[200px] break-words text-right text-sm font-semibold text-foreground">
-                  {questionnaire.number_of_questions}
+                  {interview.candidate_number}
                 </span>
               </div>
-              {questionnaire.created_at && (
+              {interview.scheduled_date && (
                 <div className="flex items-center justify-between border-b border-[var(--border-color-light)] dark:border-white/[0.09] py-3 first:pt-0 last:border-0 last:pb-0">
-                  <span className="text-sm font-medium text-muted-foreground">Created:</span>
+                  <span className="text-sm font-medium text-muted-foreground">Scheduled:</span>
                   <span className="max-w-[200px] break-words text-right text-sm font-semibold text-foreground">
-                    {format(new Date(questionnaire.created_at), "MMM d, yyyy")}
+                    {format(new Date(interview.scheduled_date), "MMM d, yyyy")}
                   </span>
                 </div>
               )}
@@ -86,20 +86,20 @@ export function DeleteQuestionnaireModal({
           <div className="flex items-center gap-2.5 rounded-xl border border-destructive/30 bg-destructive/5 px-5 py-4">
             <Info className="h-5 w-5 shrink-0 text-destructive" />
             <span className="text-sm font-medium text-destructive">
-              All associated data will be permanently removed.
+              All associated candidate data and reports will be permanently removed.
             </span>
           </div>
         </div>
 
         <AlertDialogFooter className="border-t border-[var(--border-color-light)] bg-[var(--surface-2)] dark:border-white/[0.09] p-5 sm:justify-end gap-3">
           <AlertDialogCancel disabled={isDeleting} asChild>
-            <Button variant="outline" className="h-10 rounded-xl px-4 text-sm font-medium">
+            <Button variant="outline" className="h-10 rounded-xl px-4 text-sm font-medium" onClick={onClose}>
               Cancel
             </Button>
           </AlertDialogCancel>
           <AlertDialogAction disabled={isDeleting} onClick={(e) => { e.preventDefault(); onConfirm(); }} asChild>
             <Button variant="destructive" className="h-10 rounded-xl px-4 text-sm font-semibold">
-              {isDeleting ? "Deleting..." : "Delete Questionnaire"}
+              {isDeleting ? "Deleting..." : "Delete Interview"}
             </Button>
           </AlertDialogAction>
         </AlertDialogFooter>

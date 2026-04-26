@@ -1,0 +1,91 @@
+"use client";
+
+import { format } from "date-fns";
+import {
+  Calendar,
+  Clock,
+  Link as LinkIcon,
+  Users,
+} from "lucide-react";
+
+import type { Interview } from "@/lib/api/interviews";
+import { cn } from "@/lib/ui/cn";
+import { Button } from "@/components/ui/button";
+
+interface InterviewDetailHeaderProps {
+  interview: Interview;
+  onShareLink: () => void;
+}
+
+export function InterviewDetailHeader({
+  interview,
+  onShareLink,
+}: InterviewDetailHeaderProps) {
+  const getStatusColor = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case "completed":
+        return "border-[rgba(var(--success-color-rgb),0.15)] bg-gradient-to-br from-[rgba(var(--success-color-rgb),0.08)] to-[rgba(var(--success-color-rgb),0.04)] text-[var(--success-color)]";
+      case "processing":
+      case "scheduled":
+        return "border-[rgba(var(--brand-blue-modern-rgb),0.15)] bg-gradient-to-br from-[rgba(var(--brand-blue-modern-rgb),0.08)] to-[rgba(var(--brand-blue-modern-rgb),0.04)] text-[var(--brand-blue-modern)]";
+      case "failed":
+        return "border-[rgba(var(--error-color-rgb),0.15)] bg-gradient-to-br from-[rgba(var(--error-color-rgb),0.08)] to-[rgba(var(--error-color-rgb),0.04)] text-[var(--error-color)]";
+      default:
+        return "border-[rgba(var(--warning-color-rgb),0.15)] bg-gradient-to-br from-[rgba(var(--warning-color-rgb),0.08)] to-[rgba(var(--warning-color-rgb),0.04)] text-[var(--warning-color)]";
+    }
+  };
+
+  return (
+    <div className="mb-6 flex flex-col gap-6 rounded-[var(--radius-md)] border border-[var(--border-color-light)] bg-[var(--surface-1)] p-6 shadow-sm dark:border-white/[0.09] md:flex-row md:items-start md:justify-between">
+      <div className="flex flex-col gap-3">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">
+          {interview.questionnaire_title}
+        </h1>
+        <div className="flex flex-wrap items-center gap-3 text-sm">
+          <span
+            className={cn(
+              "inline-flex items-center justify-center rounded-xl border px-2.5 py-1 text-xs font-bold capitalize tracking-wide shadow-sm",
+              getStatusColor(interview.status || 'pending')
+            )}
+          >
+            {interview.status || 'Pending'}
+          </span>
+          <div className="flex items-center gap-1.5 text-muted-foreground">
+            <Calendar className="h-4 w-4" />
+            <span>
+              {interview.scheduled_date
+                ? format(new Date(interview.scheduled_date), "MMM d, yyyy h:mm a")
+                : "No date set"}
+            </span>
+          </div>
+          {interview.deadline && (
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <Clock className="h-4 w-4" />
+              <span>
+                Deadline: {format(new Date(interview.deadline), "MMM d, yyyy")}
+              </span>
+            </div>
+          )}
+          <div className="flex items-center gap-1.5 text-muted-foreground">
+            <Users className="h-4 w-4" />
+            <span>
+              {interview.candidates?.length || 0} Candidate
+              {interview.candidates?.length !== 1 ? "s" : ""}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex shrink-0 flex-wrap items-center gap-3">
+        <Button
+          variant="outline"
+          className="h-10 rounded-xl"
+          onClick={onShareLink}
+        >
+          <LinkIcon className="mr-2 h-4 w-4" />
+          Invite by Link
+        </Button>
+      </div>
+    </div>
+  );
+}

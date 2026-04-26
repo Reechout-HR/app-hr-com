@@ -29,7 +29,15 @@ Route paths match Angular (`app_hr_com/src/app/app.routes.ts`). Implementation l
 | `/contact` | `app/contact/page.tsx` |
 | `/privacy-policy` | `app/privacy-policy/page.tsx` |
 | `/terms-of-service` | `app/terms-of-service/page.tsx` |
-| `/security` | `app/security/page.tsx` |
+| `/questionnaires` | `app/(dashboard)/questionnaires/page.tsx` |
+| `/questionnaires/[id]` | `app/(dashboard)/questionnaires/[id]/page.tsx` |
+| `/interviews` | `app/(dashboard)/interviews/page.tsx` |
+| `/interviews/[id]` | `app/(dashboard)/interviews/[id]/page.tsx` |
+| `/interviews/agent/:id` | `app/interviews/agent/[id]/page.tsx` |
+| `/interview/create` | `app/(dashboard)/interview/create/page.tsx` |
+| `/interview/screening/:id` | `app/interview/screening/[id]/page.tsx` |
+| `/interview/share/:id/candidate/:candidateId` | `app/interview/share/[id]/candidate/[candidateId]/page.tsx` |
+| `/**` (wildcard) | `app/not-found.tsx` |
 
 ---
 
@@ -39,23 +47,14 @@ These routes exist in Angular but do **not** have a matching Next.js page yet (d
 
 | Angular route | Angular component area | Notes |
 |---------------|------------------------|--------|
-| `/interviews` | Dashboard: interviews list | `AuthGuard` |
-| `/interviews/:id` | Interview detail | `AuthGuard` |
-| `/interviews/agent/:id` | Web voice agent | Public/agent flow |
-| `/interview/create` | Create interview | `AuthGuard` |
-| `/interview/screening/:id` | Interview prefilter / screening | |
-| `/interview/share/:id/candidate/:candidateId` | Interview share (candidate) | |
 | `/interview/edit/:id` | Edit interview | `AuthGuard` |
-| `/questionnaires` | Dashboard: questionnaires list | `AuthGuard` |
-| `/questionnaires/:id` | Questions for a questionnaire | `AuthGuard` |
-| `/**` (wildcard) | Not found | Next.js can use `not-found.tsx`; Angular uses `NotFoundComponent` |
 
 ---
 
 ## Quick counts
 
-- **Ported:** 15 route groups (including auth and marketing; blog counts as list + `[slug]`).
-- **Remaining:** 10 Angular-specific routes (dashboard and interview management flows) plus an optional dedicated 404.
+- **Ported:** 23 route groups (including auth, marketing, questionnaires, dashboard, and public candidate flows).
+- **Remaining:** 1 Angular-specific route (interview edit flow).
 
 ---
 

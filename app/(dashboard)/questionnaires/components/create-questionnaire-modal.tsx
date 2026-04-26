@@ -111,8 +111,8 @@ export function CreateQuestionnaireModal({ isOpen, onClose, onSubmit }: CreateQu
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-[1200px] w-[95vw] p-0 overflow-hidden border-border bg-background shadow-lg sm:rounded-[20px] max-h-[90vh] flex flex-col">
-        <DialogHeader className="shrink-0 border-b border-border bg-card px-6 py-4 text-left">
+      <DialogContent className="max-w-[1200px] w-[95vw] p-0 overflow-hidden border-[var(--border-color-light)] bg-[var(--background-color)] shadow-[0_24px_48px_rgba(var(--shadow-rgb),0.12)] sm:rounded-[24px] max-h-[90vh] flex flex-col dark:border-white/[0.09]">
+        <DialogHeader className="shrink-0 border-b border-[var(--border-color-light)] bg-[var(--surface-2)] dark:border-white/[0.09] px-6 py-4 text-left">
           <DialogTitle className="text-lg font-semibold text-foreground">
             Create Questionnaire
           </DialogTitle>
@@ -124,7 +124,7 @@ export function CreateQuestionnaireModal({ isOpen, onClose, onSubmit }: CreateQu
         <div className="flex flex-1 min-h-0 w-full flex-col bg-[var(--gray-bg)] md:flex-row overflow-hidden">
           
           {/* Sidebar */}
-          <div className="flex w-full flex-none flex-col overflow-y-auto border-b border-[var(--glass-border-light)] bg-[var(--glass-bg-light)] p-6 backdrop-blur-xl md:w-[280px] md:border-b-0 md:border-r" data-lenis-prevent>
+          <div className="flex w-full flex-none flex-col overflow-y-auto border-b border-[var(--border-color-light)] bg-[var(--surface-2)] p-6 md:w-[280px] md:border-b-0 md:border-r md:border-[var(--border-color-light)] dark:border-white/[0.09] dark:md:border-white/[0.09]" data-lenis-prevent>
             <h4 className="mb-4 text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
               Steps
             </h4>
@@ -144,7 +144,7 @@ export function CreateQuestionnaireModal({ isOpen, onClose, onSubmit }: CreateQu
                       "group relative flex items-center gap-3 whitespace-nowrap rounded-xl border px-4 py-3 text-left text-sm transition-all md:whitespace-normal",
                       isActive
                         ? "border-[var(--primary-color)]/60 bg-gradient-to-br from-[var(--primary-color)]/10 to-[var(--primary-color)]/5 shadow-sm ring-1 ring-inset ring-[var(--primary-color)]/20"
-                        : "border-[var(--glass-border-medium)] bg-white/40 shadow-sm hover:border-[var(--glass-border-dark)] hover:bg-white/60 hover:shadow-md disabled:opacity-50 dark:bg-black/20 dark:hover:bg-black/40",
+                        : "border-[var(--border-color-light)] bg-[var(--background-color)] shadow-sm hover:border-[rgba(var(--primary-color-rgb),0.28)] hover:bg-[var(--surface-2)] disabled:opacity-50 dark:border-white/[0.09]",
                       completed && !isActive && "border-[var(--success-color)]/30"
                     )}
                   >
@@ -172,11 +172,11 @@ export function CreateQuestionnaireModal({ isOpen, onClose, onSubmit }: CreateQu
           </div>
 
           {/* Main Content Area */}
-          <div className="flex-1 w-full min-w-0 overflow-y-auto bg-[var(--surface-1)] p-6 md:p-10" data-lenis-prevent>
+          <div className="flex-1 w-full min-w-0 overflow-y-auto bg-[var(--background-color)] p-6 md:p-10" data-lenis-prevent>
             {/* Step 0: Role Info */}
             {currentStep === 0 && (
               <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-2">
-                <div className="border-b border-[var(--glass-border-light)] pb-5">
+                <div className="border-b border-[var(--border-color-light)] pb-5 dark:border-white/[0.09]">
                   <h2 className="mb-2 text-2xl font-extrabold tracking-tight text-[var(--text-primary)]">Role Information</h2>
                   <p className="text-[15px] text-[var(--text-secondary)]">Provide the basic details for the position you are hiring for.</p>
                 </div>
@@ -184,20 +184,20 @@ export function CreateQuestionnaireModal({ isOpen, onClose, onSubmit }: CreateQu
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div className="flex flex-col gap-2">
                     <Label className="text-sm font-semibold text-[var(--text-primary)]">Role Name <span className="text-[var(--error-color)]">*</span></Label>
-                    <Input type="text" value={roleInfo.roleName} onChange={e => setRoleInfo({...roleInfo, roleName: e.target.value})} placeholder="e.g., Customer Support Representative" className="h-10 rounded-xl bg-background border-border focus-visible:ring-primary shadow-sm" />
+                    <Input type="text" value={roleInfo.roleName} onChange={e => setRoleInfo({...roleInfo, roleName: e.target.value})} placeholder="e.g., Customer Support Representative" className="h-10 rounded-xl bg-[var(--surface-2)] border-[var(--border-color-light)] hover:border-[rgba(var(--primary-color-rgb),0.28)] dark:border-white/[0.09] focus-visible:ring-primary shadow-sm" />
                   </div>
                   <div className="flex flex-col gap-2">
                     <Label className="text-sm font-semibold text-[var(--text-primary)]">Company Name</Label>
-                    <Input type="text" value={roleInfo.companyName} onChange={e => setRoleInfo({...roleInfo, companyName: e.target.value})} placeholder="e.g., Acme Corp" className="h-10 rounded-xl bg-background border-border focus-visible:ring-primary shadow-sm" />
+                    <Input type="text" value={roleInfo.companyName} onChange={e => setRoleInfo({...roleInfo, companyName: e.target.value})} placeholder="e.g., Acme Corp" className="h-10 rounded-xl bg-[var(--surface-2)] border-[var(--border-color-light)] hover:border-[rgba(var(--primary-color-rgb),0.28)] dark:border-white/[0.09] focus-visible:ring-primary shadow-sm" />
                   </div>
                   <div className="flex flex-col gap-2">
                     <Label className="text-sm font-semibold text-[var(--text-primary)]">Department</Label>
-                    <Input type="text" value={roleInfo.department} onChange={e => setRoleInfo({...roleInfo, department: e.target.value})} placeholder="e.g., Engineering, Sales" className="h-10 rounded-xl bg-background border-border focus-visible:ring-primary shadow-sm" />
+                    <Input type="text" value={roleInfo.department} onChange={e => setRoleInfo({...roleInfo, department: e.target.value})} placeholder="e.g., Engineering, Sales" className="h-10 rounded-xl bg-[var(--surface-2)] border-[var(--border-color-light)] hover:border-[rgba(var(--primary-color-rgb),0.28)] dark:border-white/[0.09] focus-visible:ring-primary shadow-sm" />
                   </div>
                   <div className="flex flex-col gap-2">
                     <Label className="text-sm font-semibold text-[var(--text-primary)]">Seniority Level</Label>
                     <Select value={roleInfo.seniorityLevel} onValueChange={val => setRoleInfo({...roleInfo, seniorityLevel: val})}>
-                      <SelectTrigger className="h-10 rounded-xl bg-background border-border focus:ring-primary shadow-sm">
+                      <SelectTrigger className="h-10 rounded-xl bg-[var(--surface-2)] border-[var(--border-color-light)] hover:border-[rgba(var(--primary-color-rgb),0.28)] dark:border-white/[0.09] focus:ring-primary shadow-sm">
                         <SelectValue placeholder="Select level" />
                       </SelectTrigger>
                       <SelectContent>
@@ -213,29 +213,29 @@ export function CreateQuestionnaireModal({ isOpen, onClose, onSubmit }: CreateQu
                   </div>
                   <div className="flex flex-col gap-2">
                     <Label className="text-sm font-semibold text-[var(--text-primary)]">Location</Label>
-                    <Input type="text" value={roleInfo.location} onChange={e => setRoleInfo({...roleInfo, location: e.target.value})} placeholder="e.g., Remote, New York" className="h-10 rounded-xl bg-background border-border focus-visible:ring-primary shadow-sm" />
+                    <Input type="text" value={roleInfo.location} onChange={e => setRoleInfo({...roleInfo, location: e.target.value})} placeholder="e.g., Remote, New York" className="h-10 rounded-xl bg-[var(--surface-2)] border-[var(--border-color-light)] hover:border-[rgba(var(--primary-color-rgb),0.28)] dark:border-white/[0.09] focus-visible:ring-primary shadow-sm" />
                   </div>
                   <div className="flex flex-col gap-2">
                     <Label className="text-sm font-semibold text-[var(--text-primary)]">Years of Experience</Label>
-                    <Input type="number" value={roleInfo.yearsOfExperience} onChange={e => setRoleInfo({...roleInfo, yearsOfExperience: e.target.value})} placeholder="e.g., 3.5" className="h-10 rounded-xl bg-background border-border focus-visible:ring-primary shadow-sm" />
+                    <Input type="number" value={roleInfo.yearsOfExperience} onChange={e => setRoleInfo({...roleInfo, yearsOfExperience: e.target.value})} placeholder="e.g., 3.5" className="h-10 rounded-xl bg-[var(--surface-2)] border-[var(--border-color-light)] hover:border-[rgba(var(--primary-color-rgb),0.28)] dark:border-white/[0.09] focus-visible:ring-primary shadow-sm" />
                   </div>
                   <div className="flex flex-col gap-2">
                     <Label className="text-sm font-semibold text-[var(--text-primary)]">Minimum Salary (Annual)</Label>
-                    <Input type="number" step="1000" min="0" value={roleInfo.minSalary} onChange={e => setRoleInfo({...roleInfo, minSalary: e.target.value})} placeholder="e.g., 50000" className="h-10 rounded-xl bg-background border-border focus-visible:ring-primary shadow-sm" />
+                    <Input type="number" step="1000" min="0" value={roleInfo.minSalary} onChange={e => setRoleInfo({...roleInfo, minSalary: e.target.value})} placeholder="e.g., 50000" className="h-10 rounded-xl bg-[var(--surface-2)] border-[var(--border-color-light)] hover:border-[rgba(var(--primary-color-rgb),0.28)] dark:border-white/[0.09] focus-visible:ring-primary shadow-sm" />
                   </div>
                   <div className="flex flex-col gap-2">
                     <Label className="text-sm font-semibold text-[var(--text-primary)]">Maximum Salary (Annual)</Label>
-                    <Input type="number" step="1000" min="0" value={roleInfo.maxSalary} onChange={e => setRoleInfo({...roleInfo, maxSalary: e.target.value})} placeholder="e.g., 80000" className="h-10 rounded-xl bg-background border-border focus-visible:ring-primary shadow-sm" />
+                    <Input type="number" step="1000" min="0" value={roleInfo.maxSalary} onChange={e => setRoleInfo({...roleInfo, maxSalary: e.target.value})} placeholder="e.g., 80000" className="h-10 rounded-xl bg-[var(--surface-2)] border-[var(--border-color-light)] hover:border-[rgba(var(--primary-color-rgb),0.28)] dark:border-white/[0.09] focus-visible:ring-primary shadow-sm" />
                   </div>
                   <div className="flex flex-col gap-2">
                     <Label className="text-sm font-semibold text-[var(--text-primary)]">Number of Questions <span className="text-xs font-normal text-[var(--text-muted)]">(Min 2, Max 15)</span></Label>
-                    <Input type="number" min={2} max={15} value={roleInfo.numberOfQuestions} onChange={e => setRoleInfo({...roleInfo, numberOfQuestions: Number(e.target.value)})} className="h-10 rounded-xl bg-background border-border focus-visible:ring-primary shadow-sm" />
+                    <Input type="number" min={2} max={15} value={roleInfo.numberOfQuestions} onChange={e => setRoleInfo({...roleInfo, numberOfQuestions: Number(e.target.value)})} className="h-10 rounded-xl bg-[var(--surface-2)] border-[var(--border-color-light)] hover:border-[rgba(var(--primary-color-rgb),0.28)] dark:border-white/[0.09] focus-visible:ring-primary shadow-sm" />
                   </div>
                 </div>
                 
                 <div className="flex flex-col gap-2 mt-2">
                   <Label className="text-sm font-semibold text-[var(--text-primary)]">Job Description <span className="text-[var(--error-color)]">*</span></Label>
-                  <Textarea value={roleInfo.jobDescription} onChange={e => setRoleInfo({...roleInfo, jobDescription: e.target.value})} rows={5} placeholder="Describe the role, responsibilities, required skills, and technical stack..." className="rounded-xl bg-background border-border focus-visible:ring-primary shadow-sm" />
+                  <Textarea value={roleInfo.jobDescription} onChange={e => setRoleInfo({...roleInfo, jobDescription: e.target.value})} rows={5} placeholder="Describe the role, responsibilities, required skills, and technical stack..." className="rounded-xl bg-[var(--surface-2)] border-[var(--border-color-light)] hover:border-[rgba(var(--primary-color-rgb),0.28)] dark:border-white/[0.09] focus-visible:ring-primary shadow-sm" />
                 </div>
               </div>
             )}
@@ -243,7 +243,7 @@ export function CreateQuestionnaireModal({ isOpen, onClose, onSubmit }: CreateQu
             {/* Step 1: Work Demands */}
             {currentStep === 1 && (
               <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-2">
-                <div className="border-b border-[var(--glass-border-light)] pb-5">
+                <div className="border-b border-[var(--border-color-light)] pb-5 dark:border-white/[0.09]">
                   <h2 className="mb-2 text-2xl font-extrabold tracking-tight text-[var(--text-primary)]">Work Demands</h2>
                   <p className="text-[15px] text-[var(--text-secondary)]">Adjust the sliders to define the day-to-day context and pressures of this role.</p>
                 </div>
@@ -255,7 +255,7 @@ export function CreateQuestionnaireModal({ isOpen, onClose, onSubmit }: CreateQu
                     teamworkVsSolo: { title: "Teamwork vs Solo Work", desc: "How much teamwork versus individual work is expected?" },
                     ambiguityChange: { title: "Ambiguity & Change", desc: "How often do tools, processes, or priorities change?" },
                   }).map(([key, info]) => (
-                    <div key={key} className="flex flex-col gap-4 rounded-xl border border-[var(--border-color)] bg-[var(--bg-near-white)] p-4 shadow-sm transition-all hover:border-[var(--border-color-light)] hover:shadow-md">
+                    <div key={key} className="flex flex-col gap-4 rounded-xl border border-[var(--border-color-light)] bg-[var(--surface-2)] dark:border-white/[0.09] p-4 shadow-sm transition-all hover:border-[var(--border-color-light)] hover:shadow-md">
                       <div className="flex items-start justify-between">
                         <div>
                           <h4 className="font-semibold text-[var(--text-primary)]">{info.title}</h4>
@@ -283,7 +283,7 @@ export function CreateQuestionnaireModal({ isOpen, onClose, onSubmit }: CreateQu
             {/* Step 2: Competencies */}
             {currentStep === 2 && (
               <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-2">
-                <div className="border-b border-[var(--glass-border-light)] pb-5">
+                <div className="border-b border-[var(--border-color-light)] pb-5 dark:border-white/[0.09]">
                   <h2 className="mb-2 text-2xl font-extrabold tracking-tight text-[var(--text-primary)]">Competency Ratings</h2>
                   <p className="text-[15px] text-[var(--text-secondary)]">Rate the importance of each core competency for this specific role.</p>
                 </div>
@@ -297,7 +297,7 @@ export function CreateQuestionnaireModal({ isOpen, onClose, onSubmit }: CreateQu
                     resilienceStress: { title: "Resilience & Stress Tolerance", desc: "Maintaining performance under pressure or after setbacks." },
                     valuesCultureFit: { title: "Values & Culture Alignment", desc: "Aligning with the company's core mission and behavioral norms." },
                   }).map(([key, info]) => (
-                    <div key={key} className="flex flex-col gap-4 rounded-xl border border-[var(--border-color)] bg-[var(--bg-near-white)] p-4 shadow-sm transition-all hover:border-[var(--border-color-light)] hover:shadow-md">
+                    <div key={key} className="flex flex-col gap-4 rounded-xl border border-[var(--border-color-light)] bg-[var(--surface-2)] dark:border-white/[0.09] p-4 shadow-sm transition-all hover:border-[var(--border-color-light)] hover:shadow-md">
                       <div className="flex items-start justify-between">
                         <div>
                           <h4 className="font-semibold text-[var(--text-primary)]">{info.title}</h4>
@@ -325,7 +325,7 @@ export function CreateQuestionnaireModal({ isOpen, onClose, onSubmit }: CreateQu
             {/* Step 3: Culture & Values (Simplified placeholder for step 3) */}
             {currentStep === 3 && (
               <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-2">
-                <div className="border-b border-[var(--glass-border-light)] pb-5">
+                <div className="border-b border-[var(--border-color-light)] pb-5 dark:border-white/[0.09]">
                   <h2 className="mb-2 text-2xl font-extrabold tracking-tight text-[var(--text-primary)]">Culture Profile</h2>
                   <p className="text-[15px] text-[var(--text-secondary)]">Define the working style and cultural expectations.</p>
                 </div>
@@ -336,7 +336,7 @@ export function CreateQuestionnaireModal({ isOpen, onClose, onSubmit }: CreateQu
                     decisionMaking: { title: "Decision Making", desc: "Consensus driven vs. Top-down / Autocratic" },
                     collaboration: { title: "Collaboration", desc: "Highly independent vs. Deeply collaborative" },
                   }).map(([key, info]) => (
-                    <div key={key} className="flex flex-col gap-4 rounded-xl border border-[var(--border-color)] bg-[var(--bg-near-white)] p-4 shadow-sm transition-all hover:border-[var(--border-color-light)] hover:shadow-md">
+                    <div key={key} className="flex flex-col gap-4 rounded-xl border border-[var(--border-color-light)] bg-[var(--surface-2)] dark:border-white/[0.09] p-4 shadow-sm transition-all hover:border-[var(--border-color-light)] hover:shadow-md">
                       <div className="flex items-start justify-between">
                         <div>
                           <h4 className="font-semibold text-[var(--text-primary)]">{info.title}</h4>
@@ -358,18 +358,18 @@ export function CreateQuestionnaireModal({ isOpen, onClose, onSubmit }: CreateQu
             {/* Step 4: Success & Failure */}
             {currentStep === 4 && (
               <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-2">
-                <div className="border-b border-[var(--glass-border-light)] pb-5">
+                <div className="border-b border-[var(--border-color-light)] pb-5 dark:border-white/[0.09]">
                   <h2 className="mb-2 text-2xl font-extrabold tracking-tight text-[var(--text-primary)]">Success & Failure Profiles</h2>
                   <p className="text-[15px] text-[var(--text-secondary)]">Describe the behaviors that lead to success or failure in this role.</p>
                 </div>
                 
                 <div className="flex flex-col gap-2">
                   <Label className="text-sm font-semibold text-[var(--text-primary)]">Success Patterns <span className="text-[var(--error-color)]">*</span></Label>
-                  <Textarea value={performance.topPerformers} onChange={e => setPerformance({...performance, topPerformers: e.target.value})} rows={6} placeholder="Think of 3–5 top performers in this role. What do they do that weaker performers don't? Example: 'They always follow up with customers without being reminded.'" className="rounded-xl bg-background border-border focus-visible:ring-primary shadow-sm" />
+                  <Textarea value={performance.topPerformers} onChange={e => setPerformance({...performance, topPerformers: e.target.value})} rows={6} placeholder="Think of 3–5 top performers in this role. What do they do that weaker performers don't? Example: 'They always follow up with customers without being reminded.'" className="rounded-xl bg-[var(--surface-2)] border-[var(--border-color-light)] hover:border-[rgba(var(--primary-color-rgb),0.28)] dark:border-white/[0.09] focus-visible:ring-primary shadow-sm" />
                 </div>
                 <div className="flex flex-col gap-2">
                   <Label className="text-sm font-semibold text-[var(--text-primary)]">Failure Patterns <span className="text-[var(--error-color)]">*</span></Label>
-                  <Textarea value={performance.commonFailureModes} onChange={e => setPerformance({...performance, commonFailureModes: e.target.value})} rows={6} placeholder="When people fail in this role, what usually goes wrong? Example: 'They ghost shifts without notice. They get flustered with angry customers.'" className="rounded-xl bg-background border-border focus-visible:ring-primary shadow-sm" />
+                  <Textarea value={performance.commonFailureModes} onChange={e => setPerformance({...performance, commonFailureModes: e.target.value})} rows={6} placeholder="When people fail in this role, what usually goes wrong? Example: 'They ghost shifts without notice. They get flustered with angry customers.'" className="rounded-xl bg-[var(--surface-2)] border-[var(--border-color-light)] hover:border-[rgba(var(--primary-color-rgb),0.28)] dark:border-white/[0.09] focus-visible:ring-primary shadow-sm" />
                 </div>
               </div>
             )}
@@ -377,13 +377,13 @@ export function CreateQuestionnaireModal({ isOpen, onClose, onSubmit }: CreateQu
             {/* Step 5: Review */}
             {currentStep === 5 && (
               <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-2">
-                <div className="border-b border-[var(--glass-border-light)] pb-5">
+                <div className="border-b border-[var(--border-color-light)] pb-5 dark:border-white/[0.09]">
                   <h2 className="mb-2 text-2xl font-extrabold tracking-tight text-[var(--text-primary)]">Review & Finalize</h2>
                   <p className="text-[15px] text-[var(--text-secondary)]">Review your questionnaire configuration before creating it.</p>
                 </div>
                 
                 <div className="flex flex-col gap-4">
-                  <div className="rounded-xl border border-[var(--border-color)] bg-[var(--bg-near-white)] p-5">
+                  <div className="rounded-xl border border-[var(--border-color-light)] bg-[var(--surface-2)] dark:border-white/[0.09] p-5">
                     <div className="mb-3 flex items-center justify-between border-b border-[var(--border-color-light)] pb-3">
                       <h4 className="flex items-center gap-2 font-semibold text-[var(--text-primary)]"><FileText className="h-4 w-4 text-[var(--primary-color)]" /> Role Information</h4>
                       <button onClick={() => setCurrentStep(0)} className="text-xs font-semibold text-[var(--primary-color)] hover:underline">Edit</button>
@@ -398,7 +398,7 @@ export function CreateQuestionnaireModal({ isOpen, onClose, onSubmit }: CreateQu
                     </div>
                   </div>
                   
-                  <div className="rounded-xl border border-[var(--border-color)] bg-[var(--bg-near-white)] p-5">
+                  <div className="rounded-xl border border-[var(--border-color-light)] bg-[var(--surface-2)] dark:border-white/[0.09] p-5">
                     <div className="mb-3 flex items-center justify-between border-b border-[var(--border-color-light)] pb-3">
                       <h4 className="flex items-center gap-2 font-semibold text-[var(--text-primary)]"><Star className="h-4 w-4 text-[var(--primary-color)]" /> Performance Profiles</h4>
                       <button onClick={() => setCurrentStep(4)} className="text-xs font-semibold text-[var(--primary-color)] hover:underline">Edit</button>
@@ -422,7 +422,7 @@ export function CreateQuestionnaireModal({ isOpen, onClose, onSubmit }: CreateQu
         </div>
 
         {/* Footer Actions */}
-        <DialogFooter className="flex shrink-0 items-center justify-between border-t border-border bg-card px-6 py-4 sm:justify-between">
+        <DialogFooter className="flex shrink-0 items-center justify-between border-t border-[var(--border-color-light)] bg-[var(--surface-2)] dark:border-white/[0.09] px-6 py-4 sm:justify-between">
           <div>
             {currentStep > 0 && (
               <Button

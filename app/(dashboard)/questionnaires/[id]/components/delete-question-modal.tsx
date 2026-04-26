@@ -1,8 +1,7 @@
 "use client";
 
-import { AlertCircle, FileText, Info } from "lucide-react";
-import { format } from "date-fns";
-import type { Questionnaire } from "@/lib/api/questionnaires";
+import { AlertCircle, HelpCircle, Info } from "lucide-react";
+import type { Question } from "@/lib/api/questionnaires";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,26 +14,26 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 
-interface DeleteQuestionnaireModalProps {
+interface DeleteQuestionModalProps {
   isOpen: boolean;
   isDeleting: boolean;
-  questionnaire: Questionnaire | null;
+  question: Question | null;
   onClose: () => void;
   onConfirm: () => void;
 }
 
-export function DeleteQuestionnaireModal({
+export function DeleteQuestionModal({
   isOpen,
   isDeleting,
-  questionnaire,
+  question,
   onClose,
   onConfirm,
-}: DeleteQuestionnaireModalProps) {
-  if (!questionnaire) return null;
+}: DeleteQuestionModalProps) {
+  if (!question) return null;
 
   return (
     <AlertDialog open={isOpen} onOpenChange={(open) => !open && !isDeleting && onClose()}>
-      <AlertDialogContent className="max-w-[520px] w-[95vw] p-0 overflow-hidden border-[var(--border-color-light)] bg-[var(--background-color)] shadow-[0_24px_48px_rgba(var(--shadow-rgb),0.12)] sm:rounded-[24px] dark:border-white/[0.09]">
+      <AlertDialogContent className="max-w-[520px] w-[95vw] p-0 overflow-hidden border-[var(--border-color-light)] bg-[var(--background-color)] shadow-[0_24px_48px_rgba(var(--shadow-rgb),0.12)] sm:rounded-[var(--radius-md)] dark:border-white/[0.09]">
         
         <div className="flex items-center gap-4 border-b border-[var(--border-color-light)] bg-[var(--surface-2)] dark:border-white/[0.09] p-6">
           <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 border-destructive/30 bg-destructive/10 text-destructive shadow-sm">
@@ -42,51 +41,43 @@ export function DeleteQuestionnaireModal({
           </div>
           <AlertDialogHeader className="text-left">
             <AlertDialogTitle className="text-[22px] font-semibold text-foreground">
-              Delete Questionnaire
+              Delete Question
             </AlertDialogTitle>
           </AlertDialogHeader>
         </div>
 
         <div className="flex flex-col gap-6 bg-transparent p-6">
           <AlertDialogDescription className="text-[15px] leading-relaxed text-muted-foreground">
-            Are you sure you want to delete this questionnaire? This action cannot be undone.
+            Are you sure you want to delete this question? This action cannot be undone.
           </AlertDialogDescription>
 
           <div className="overflow-hidden rounded-xl border border-[var(--border-color-light)] bg-[var(--surface-2)] dark:border-white/[0.09] shadow-sm">
             <div className="flex items-center gap-2.5 border-b border-[var(--border-color-light)] bg-[var(--surface-2)] dark:border-white/[0.09] px-5 py-4">
-              <FileText className="h-5 w-5 text-primary" />
+              <HelpCircle className="h-5 w-5 text-primary" />
               <span className="text-[15px] font-semibold text-foreground">
-                Questionnaire Details
+                Question Details
               </span>
             </div>
             <div className="flex flex-col p-5">
               <div className="flex items-center justify-between border-b border-[var(--border-color-light)] dark:border-white/[0.09] py-3 first:pt-0 last:border-0 last:pb-0">
-                <span className="text-sm font-medium text-muted-foreground">Title:</span>
-                <span className="max-w-[200px] break-words text-right text-sm font-semibold text-foreground">
-                  {questionnaire.title}
+                <span className="text-sm font-medium text-muted-foreground shrink-0 w-20">Text:</span>
+                <span className="flex-1 line-clamp-3 break-words text-right text-sm font-semibold text-foreground ml-4">
+                  {question.question_text}
                 </span>
               </div>
               <div className="flex items-center justify-between border-b border-[var(--border-color-light)] dark:border-white/[0.09] py-3 first:pt-0 last:border-0 last:pb-0">
-                <span className="text-sm font-medium text-muted-foreground">Questions:</span>
+                <span className="text-sm font-medium text-muted-foreground">Order:</span>
                 <span className="max-w-[200px] break-words text-right text-sm font-semibold text-foreground">
-                  {questionnaire.number_of_questions}
+                  {question.order}
                 </span>
               </div>
-              {questionnaire.created_at && (
-                <div className="flex items-center justify-between border-b border-[var(--border-color-light)] dark:border-white/[0.09] py-3 first:pt-0 last:border-0 last:pb-0">
-                  <span className="text-sm font-medium text-muted-foreground">Created:</span>
-                  <span className="max-w-[200px] break-words text-right text-sm font-semibold text-foreground">
-                    {format(new Date(questionnaire.created_at), "MMM d, yyyy")}
-                  </span>
-                </div>
-              )}
             </div>
           </div>
 
           <div className="flex items-center gap-2.5 rounded-xl border border-destructive/30 bg-destructive/5 px-5 py-4">
             <Info className="h-5 w-5 shrink-0 text-destructive" />
             <span className="text-sm font-medium text-destructive">
-              All associated data will be permanently removed.
+              This question will be permanently removed from the questionnaire.
             </span>
           </div>
         </div>
@@ -99,7 +90,7 @@ export function DeleteQuestionnaireModal({
           </AlertDialogCancel>
           <AlertDialogAction disabled={isDeleting} onClick={(e) => { e.preventDefault(); onConfirm(); }} asChild>
             <Button variant="destructive" className="h-10 rounded-xl px-4 text-sm font-semibold">
-              {isDeleting ? "Deleting..." : "Delete Questionnaire"}
+              {isDeleting ? "Deleting..." : "Delete Question"}
             </Button>
           </AlertDialogAction>
         </AlertDialogFooter>

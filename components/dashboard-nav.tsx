@@ -78,7 +78,7 @@ export function DashboardNav({ onCreateNew }: DashboardNavProps) {
 
   return (
     <header className="sticky top-2 z-40 flex w-full flex-col items-stretch px-4 sm:top-4 sm:px-6 lg:px-8 mb-2 sm:mb-4">
-      <div className="mx-auto flex w-full max-w-[1400px] min-h-[52px] shrink-0 items-center justify-between gap-3 rounded-[20px] border border-[var(--header-floating-border)] bg-[var(--header-floating-bg)] py-3 px-[clamp(0.875rem,2.5vw,1.125rem)] shadow-[0_4px_32px_rgba(var(--shadow-rgb),0.09),0_1px_4px_rgba(var(--shadow-rgb),0.05)] sm:px-[clamp(1.125rem,3.5vw,1.5rem)] lg:px-[clamp(1.25rem,4vw,2rem)]">
+      <div className="mx-auto flex w-full max-w-[1400px] min-h-[52px] shrink-0 items-center justify-between gap-3 rounded-[var(--radius-md)] border border-[var(--header-floating-border)] bg-[var(--header-floating-bg)] py-3 px-[clamp(0.875rem,2.5vw,1.125rem)] shadow-[0_4px_32px_rgba(var(--shadow-rgb),0.09),0_1px_4px_rgba(var(--shadow-rgb),0.05)] sm:px-[clamp(1.125rem,3.5vw,1.5rem)] lg:px-[clamp(1.25rem,4vw,2rem)]">
         {/* Left: Logo & Product Name */}
         <Link href="/interviews" className="flex min-w-0 shrink-0 items-center gap-2 sm:gap-2.5 no-underline outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md">
           <Image
