@@ -5,10 +5,9 @@ export function HomeApplicationsSection() {
   return (
     <ApplicationStepsSection
       header={{
-        kicker: "How It Works",
-        title: "From Polished Resumes to Real Capability",
-        description:
-          "Set up automated interviews in minutes and start screening candidates at scale",
+        kicker: "How it works",
+        title: "From applicants to shortlist in minutes",
+        description: "Invite, interview, and shortlist on real signal",
       }}
       steps={HOME_APPLICATION_STEPS}
     />

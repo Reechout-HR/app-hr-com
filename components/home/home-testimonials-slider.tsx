@@ -60,10 +60,17 @@ function TestimonialCard({ t }: { t: HomeTestimonial }) {
           >
             {t.author}
           </p>
-          <p className="text-sm text-[var(--text-secondary)]" itemProp="jobTitle">
-            {t.position}
-          </p>
-          <p className="text-sm text-[var(--text-muted)]">{t.company}</p>
+          {t.position ? (
+            <p
+              className="text-sm text-[var(--text-secondary)]"
+              itemProp="jobTitle"
+            >
+              {t.position}
+            </p>
+          ) : null}
+          {t.company ? (
+            <p className="text-sm text-[var(--text-muted)]">{t.company}</p>
+          ) : null}
         </div>
       </div>
     </article>

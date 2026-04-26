@@ -182,7 +182,7 @@ export function AboutUsJourneySection() {
               <h3 className="mb-3 text-lg font-bold tracking-[-0.02em] text-[var(--text-heading)] md:text-xl">
                 {card.title}
               </h3>
-              <p className="text-[clamp(0.95rem,1.5vw,1.05rem)] leading-relaxed text-[var(--text-secondary)]">
+              <p className="whitespace-pre-line text-[clamp(0.95rem,1.5vw,1.05rem)] leading-relaxed text-[var(--text-secondary)]">
                 {card.body}
               </p>
             </article>
@@ -212,7 +212,6 @@ export function AboutUsFoundersSection() {
         <SectionHeader
           kicker={ABOUT_US_FOUNDERS_HEADER.kicker}
           title={ABOUT_US_FOUNDERS_HEADER.title}
-          description={ABOUT_US_FOUNDERS_HEADER.description}
         />
         <div className="mx-auto grid max-w-[1200px] grid-cols-1 gap-6 md:gap-8 lg:grid-cols-3">
           {ABOUT_US_FOUNDERS.map((founder) => (
@@ -251,9 +250,11 @@ export function AboutUsFoundersSection() {
                 <p className="mb-3 text-sm font-semibold text-[var(--primary-color)] dark:text-[var(--accent-violet)]">
                   {founder.bio}
                 </p>
-                <p className="mb-5 text-sm leading-relaxed text-[var(--text-secondary)]">
-                  {founder.description}
-                </p>
+                {founder.description.trim() ? (
+                  <p className="mb-5 text-sm leading-relaxed text-[var(--text-secondary)]">
+                    {founder.description}
+                  </p>
+                ) : null}
                 <div className="mb-5 flex items-start gap-2 text-sm text-[var(--text-secondary)]">
                   <Landmark
                     className="mt-0.5 h-4 w-4 shrink-0 text-[var(--primary-color)] dark:text-[var(--accent-violet)]"
@@ -269,7 +270,7 @@ export function AboutUsFoundersSection() {
                       aria-hidden
                       strokeWidth={2}
                     />
-                    Key Achievements
+                    Key contributions
                   </h4>
                   <ul className="space-y-2">
                     {founder.achievements.map((a) => (
@@ -313,16 +314,20 @@ export function AboutUsPrinciplesSection() {
           kicker={ABOUT_US_BELIEVE.kicker}
           title={ABOUT_US_BELIEVE.title}
           description={ABOUT_US_BELIEVE.description}
+          descriptionClassName="whitespace-pre-line"
         />
         <div className="mx-auto mt-16 max-w-[900px] border-t border-[var(--border-color-light)] pt-16 dark:border-white/[0.08]">
           <SectionHeader
             kicker={ABOUT_US_FUTURE.kicker}
             title={ABOUT_US_FUTURE.title}
             description={ABOUT_US_FUTURE.description}
+            descriptionClassName="whitespace-pre-line"
           />
-          <p className="mx-auto mt-6 max-w-2xl text-center text-[clamp(0.95rem,1.5vw,1.05rem)] font-semibold leading-relaxed text-[var(--text-primary)]">
-            {ABOUT_US_FUTURE.tagline}
-          </p>
+          {ABOUT_US_FUTURE.tagline ? (
+            <p className="mx-auto mt-6 max-w-2xl text-center text-[clamp(0.95rem,1.5vw,1.05rem)] font-semibold leading-relaxed text-[var(--text-primary)]">
+              {ABOUT_US_FUTURE.tagline}
+            </p>
+          ) : null}
         </div>
       </div>
     </section>

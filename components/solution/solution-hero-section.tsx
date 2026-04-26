@@ -75,10 +75,18 @@ export function SolutionHeroSection({
                   />
                 )}
                 <div>
-                  <div className="text-[clamp(1.375rem,2vw,1.75rem)] font-extrabold leading-none text-[var(--primary-color)]">
-                    {s.value}
-                  </div>
-                  <div className="mt-1 text-[11px] font-medium text-[var(--text-secondary)] md:text-[13px]">
+                  {s.value ? (
+                    <div className="text-[clamp(1.375rem,2vw,1.75rem)] font-extrabold leading-none text-[var(--primary-color)]">
+                      {s.value}
+                    </div>
+                  ) : null}
+                  <div
+                    className={
+                      s.value
+                        ? "mt-1 text-[11px] font-medium text-[var(--text-secondary)] md:text-[13px]"
+                        : "text-[clamp(0.8125rem,1.2vw,0.9375rem)] font-semibold leading-snug text-[var(--text-secondary)] md:text-[15px]"
+                    }
+                  >
                     {s.label}
                   </div>
                 </div>

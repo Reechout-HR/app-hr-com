@@ -5,11 +5,11 @@ import type { SolutionHeroModel } from "@/components/solution/solution-page-mode
 export const REPORTS_PAGE_PATH = "/reports";
 
 export const REPORTS_METADATA = {
-  title: "AI Candidate Reports - Comprehensive Interview Analytics | ReechOut",
+  title: "Candidate reports - Structured interview insights and decisions | ReechOut",
   description:
-    "Get comprehensive AI-powered candidate reports with transcripts, scores, summaries, and analytics. Make faster, data-driven hiring decisions with detailed candidate assessments.",
+    "Clear, structured insights after every interview. Know who to move forward with—full visibility, easy sharing, and confident hiring decisions without second-guessing.",
   keywords:
-    "candidate reports, interview reports, interview analytics, candidate assessment, interview transcripts, candidate scoring, recruitment analytics, hiring reports",
+    "candidate reports, interview insights, hiring decisions, interview transcripts, structured insights, team alignment, shortlist, recruitment",
   author: "ReechOut",
   robots: "index, follow",
   language: "English",
@@ -17,119 +17,115 @@ export const REPORTS_METADATA = {
 
 export const REPORTS_HERO = {
   badge: "AI Candidate Reports",
-  titleLine1: "Know Everything About Every Candidate",
-  titleHighlight: "Instantly",
+  titleLine1: "Know who to move forward with",
+  titleLine2Prefix: "",
+  titleHighlight: "instantly",
+  titleLine2Suffix: "",
   description:
-    "AI-powered reports that do the analysis for you. Full transcripts, competency scores, red flags, and hiring recommendations delivered seconds after the interview ends.",
+    "Clear, structured insights after every interview so you can decide quickly and confidently.",
   stats: [
-    { value: "100%", label: "Complete" },
-    { value: "AI", label: "Insights" },
-    { value: "Instant", label: "Delivery" },
+    { value: "", label: "Complete profiles" },
+    { value: "", label: "Structured insights" },
+    { value: "", label: "Instant delivery" },
   ] as const,
-  ctaLabel: "Book a Demo",
-  ctaHref: "/contact",
+  ctaLabel: "Start Free Trial",
+  ctaHref: "/signup",
 } as const satisfies SolutionHeroModel;
 
 export const REPORTS_FEATURES_HEADER = {
   kicker: "Why Candidate Reports?",
-  title: "Everything You Need for Comprehensive Candidate Assessment",
+  title: "Everything you need to decide",
   description:
-    "Get detailed insights into every candidate with AI-powered reports that include scores, transcripts, and analytics.",
+    "Most teams finish interviews and still aren't sure who to move forward with. ReechOut gives you clear, structured insights so you can make decisions without second-guessing.",
 } as const;
 
 export const REPORTS_FEATURES = [
   {
-    title: "Every Word, Every Pause, Every Insight",
+    title: "See what actually happened in the interview",
     description:
-      "Timestamped transcripts let you jump to any moment. Catch what matters, verify responses, and share exact quotes with your team. Export in any format you need.",
+      "Access full transcripts with timestamps. Review key responses, verify answers, and share exact moments with your team.",
     icon: "file-text" as const,
   },
   {
-    title: "Skip to the Bottom Line",
+    title: "Get straight to the point",
     description:
-      "Our AI reads between the lines so you don't have to. Get instant scores on technical ability, communication, culture fit, and more. Plus executive summaries that highlight what you actually need to know.",
+      "See strengths, gaps, and overall fit at a glance. No need to read through full interviews to understand a candidate.",
     icon: "robot" as const,
   },
   {
-    title: "Collaborate Without the Copy-Paste Nightmare",
+    title: "Share decisions easily",
     description:
-      "One-click export to PDF, CSV, or JSON. Share reports with hiring managers instantly. Integrate with your ATS. No more email chains with scattered feedback.",
+      "Share reports with your team in one click. Everyone sees the same structured information, no scattered notes or long discussions.",
     icon: "team" as const,
   },
 ] as const;
 
 export const REPORTS_APPLICATION_HEADER = {
   kicker: "How It Works",
-  title: "Three Simple Steps to Get Candidate Reports",
-  description:
-    "Receive comprehensive candidate reports automatically after each interview.",
+  title: "Three simple steps",
+  description: "From interview to a clear read on who to shortlist",
 } as const;
 
 export const REPORTS_APPLICATION_STEPS = [
   {
     number: "01",
-    title: "AI Candidate Completes Interview",
-    description:
-      "Candidates complete phone interviews using our AI-powered system. Interviews are automatically recorded and analyzed in real-time.",
+    title: "Candidate completes interview",
+    description: "Candidates complete structured interviews automatically.",
     icon: "phone" as const,
   },
   {
     number: "02",
-    title: "AI Analyzes & Scores",
-    description:
-      "Our AI automatically analyzes responses, generates scores across multiple dimensions, creates summaries, and extracts key candidate information.",
+    title: "System analyzes responses",
+    description: "Responses are processed and converted into structured insights.",
     icon: "robot" as const,
   },
   {
     number: "03",
-    title: "Compare Apples to Apples",
+    title: "Compare candidates",
     description:
-      "Side-by-side candidate comparisons with standardized scoring. Filter by competencies, sort by fit, and identify your top candidates in seconds, not hours of spreadsheet gymnastics.",
+      "See candidates side by side and identify who to move forward with.",
     icon: "file-pdf" as const,
   },
 ] as const;
 
 export const REPORTS_BENEFITS_HEADER = {
   kicker: "Benefits",
-  title: "Why Choose Comprehensive Candidate Reports?",
-  description:
-    "Make faster, more informed hiring decisions with AI-powered candidate reports that provide everything you need.",
+  title: "Why teams rely on reports",
+  description: "Clarity, speed, and the same view for everyone",
 } as const;
 
 export const REPORTS_BENEFIT_ITEMS = [
   {
-    title: "Save Time on Review",
+    title: "Save time on review",
     description:
-      "Get comprehensive insights in minutes instead of spending hours reviewing interviews manually. AI-powered summaries highlight key information instantly.",
+      "Get what you need in minutes instead of reviewing full interviews",
   },
   {
-    title: "Data-Driven Decisions",
+    title: "Make better decisions",
     description:
-      "Make objective hiring decisions based on comprehensive scores, transcripts, and analytics. Reduce bias and improve hiring quality with consistent evaluation criteria.",
+      "Clear structure helps you evaluate candidates consistently",
   },
   {
-    title: "Complete Candidate Picture",
-    description:
-      "Access everything you need in one place: transcripts, scores, summaries, and candidate details. No need to piece together information from multiple sources.",
+    title: "See the full picture",
+    description: "All candidate insights in one place",
   },
   {
-    title: "Easy Sharing & Integration",
-    description:
-      "Export reports in multiple formats and share with your team instantly. Integrate with your ATS for seamless workflow and better collaboration.",
+    title: "Align your team",
+    description: "Everyone works from the same information",
   },
 ] as const;
 
 export const REPORTS_BENEFIT_VISUAL_STATS = [
-  { value: "100%", label: "Complete" },
-  { value: "Instant", label: "Delivery" },
+  { value: "Complete", label: "profiles" },
+  { value: "Instant", label: "insights" },
 ] as const;
 
 export const REPORTS_CTA: MarketingCta = {
-  heading: "Start Getting Comprehensive Candidate Reports Today",
+  heading: "Make faster, more confident hiring decisions",
   description:
-    "Join hundreds of companies using AI-powered candidate reports to make faster, data-driven hiring decisions. Book a demo to see it in action.",
-  primaryLabel: "Book a Demo",
-  primaryHref: "/contact",
+    "Stop relying on memory and scattered notes. Use structured insights to decide who to move forward with.",
+  primaryLabel: "Start Free Trial",
+  primaryHref: "/signup",
 };
 
 export const reportsCanonical = `${SITE_BASE_URL}${REPORTS_PAGE_PATH}`;

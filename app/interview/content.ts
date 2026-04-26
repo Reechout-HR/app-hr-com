@@ -10,7 +10,7 @@ export const INTERVIEW_METADATA = {
   description:
     "Run structured voice interviews automatically. See how candidates think before you spend time with them. Save time and shortlist with confidence.",
   keywords:
-    "AI voice interviews, phone screening, structured interviews, first round interviews, candidate screening, hiring automation, ReechOut, recruitment interviews",
+    "voice interviews, structured interviews, candidate screening, first-round screening, interview automation, recruitment software, hiring signal",
   author: "ReechOut",
   robots: "index, follow",
   language: "English",
@@ -27,7 +27,7 @@ export const INTERVIEW_HERO = {
   stats: [
     { value: "24/7", label: "availability" },
     { value: "10x", label: "faster screening" },
-    { value: "High", label: "volume hiring" },
+    { value: "", label: "Used for high-volume hiring" },
   ] as const,
   ctaLabel: "Start Free Trial",
   ctaHref: "/signup",
@@ -37,7 +37,7 @@ export const INTERVIEW_FEATURES_HEADER = {
   kicker: "The Complete Voice Interview Platform",
   title: "Everything you need to screen candidates properly",
   description:
-    "You don't need more interviews—you need better first-round screening. ReechOut runs structured interviews automatically and evaluates how candidates think, communicate, and solve problems. You focus on the candidates that matter.",
+    "You don't need more interviews. You need better first-round screening. ReechOut runs structured interviews automatically and evaluates how candidates think, communicate, and solve problems. You focus on the candidates that matter.",
 } as const;
 
 export const INTERVIEW_FEATURES = [
@@ -72,7 +72,7 @@ export const INTERVIEW_APPLICATION_STEPS = [
     number: "01",
     title: "Invite candidates",
     description: "Send a link or upload applicants. Candidates can start immediately.",
-    icon: "file-add" as const,
+    icon: "user-add" as const,
   },
   {
     number: "02",
@@ -84,7 +84,7 @@ export const INTERVIEW_APPLICATION_STEPS = [
     number: "03",
     title: "Review results",
     description: "See who stands out and move forward with confidence.",
-    icon: "check-circle" as const,
+    icon: "trophy" as const,
   },
 ] as const;
 

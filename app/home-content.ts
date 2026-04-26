@@ -5,11 +5,12 @@ import { SITE_BASE_URL } from "@/lib/site/marketing-site";
 export const homeCanonical = `${SITE_BASE_URL}/`;
 
 export const HOME_SEO = {
-  title: "Resumes Don't Reflect Real Capability | ReechOut",
+  title:
+    "ReechOut — Hiring based on how candidates think, not resumes | AI Interviews & Shortlists",
   description:
-    "ReechOut is the AI-powered recruitment platform that conducts structured, conversational phone interviews. Eliminate bias, reduce time-to-hire, and make data-driven hiring decisions based on real candidate capabilities—not just polished resumes.",
+    "Resumes are AI-written and everyone looks qualified. ReechOut runs structured voice interviews and gives you a ranked shortlist with real signal—so you know who to move forward with.",
   keywords:
-    "ReechOut, AI phone interviews, recruitment platform, hiring automation, phone screening, structured interviews, HR tech, candidate evaluation",
+    "AI phone interviews, automated HR interviews, candidate screening, interview automation, recruitment software, AI interviewer, phone interview automation, candidate assessment, HR automation",
   author: "ReechOut",
   robots: "index, follow",
   language: "English",
@@ -87,72 +88,60 @@ export const HOME_WHY_CHOOSE_CARDS = [
 export const HOME_APPLICATION_STEPS = [
   {
     number: "01",
-    title: "Design Structured Questionnaires",
-    description:
-      "Create role-specific, competency-based screening criteria that go far beyond static resumes and generic application forms.",
-    icon: "edit" as const,
+    title: "Invite candidates",
+    description: "Share a link or upload applicants",
+    icon: "user-add" as const,
   },
   {
     number: "02",
-    title: "Automate the Phone Screen",
-    description:
-      "Our AI autonomously conducts conversational interviews, analyzing how candidates communicate, reason, and solve problems in real-time.",
+    title: "AI interviews them automatically",
+    description: "Structured voice interviews tailored to your role",
     icon: "phone" as const,
   },
   {
     number: "03",
-    title: "Hire 10x Faster with Confidence",
-    description:
-      "Recruiters receive instant, objective scorecards and actionable insights, drastically reducing time-to-hire and interview scheduling fatigue.",
-    icon: "file-pdf" as const,
+    title: "Get a ranked shortlist",
+    description: "See who to move forward with based on real signal",
+    icon: "trophy" as const,
   },
 ] as const;
 
 export const HOME_TESTIMONIALS = [
   {
     content:
-      "ReechOut has transformed our hiring process. The automated interviews save us so much time and the reports help us make better decisions.",
-    author: "Muhammad Hadi",
-    position: "CEO",
-    company: "Razzaq Consulting",
+      "We were getting hundreds of applicants and did not know who to trust. ReechOut helped us quickly identify the few worth interviewing.",
+    author: "Founder, B2B SaaS Startup",
+    position: "",
+    company: "",
     avatar:
-      "https://storage.googleapis.com/images.reechout.com/review_1.webp",
+      "https://storage.googleapis.com/images.reechout.com/android-chrome-192x192.webp",
   },
   {
     content:
-      "Simple to use and very effective. We can now handle multiple interviews at once without any hassle.",
-    author: "Hassam Shah",
-    position: "Director",
-    company: "Rawaan Pakistan",
+      "I used to spend hours screening candidates. Now I just look at the shortlist.",
+    author: "COO, Marketplace Startup",
+    position: "",
+    company: "",
     avatar:
-      "https://storage.googleapis.com/images.reechout.com/review_2.webp",
+      "https://storage.googleapis.com/images.reechout.com/android-chrome-192x192.webp",
   },
   {
     content:
-      "Great platform! The AI interviews are smooth and the detailed reports are exactly what we need.",
-    author: "Sanan Pervaiz",
-    position: "COO",
-    company: "TPI",
+      "The biggest difference is confidence. I actually trust who we're moving forward with now.",
+    author: "Head of Operations, Series A Startup",
+    position: "",
+    company: "",
     avatar:
-      "https://storage.googleapis.com/images.reechout.com/review_3.webp",
+      "https://storage.googleapis.com/images.reechout.com/android-chrome-192x192.webp",
   },
   {
     content:
-      "The automated interview system has streamlined our recruitment process significantly. We can now screen more candidates efficiently and focus on the most qualified ones.",
-    author: "Salman Shafi",
-    position: "Founder",
-    company: "JustKonvert",
+      "We hired faster and spent way less time on interviews. That alone made it worth it.",
+    author: "Founder, AI Startup",
+    position: "",
+    company: "",
     avatar:
-      "https://storage.googleapis.com/images.reechout.com/review_5.webp",
-  },
-  {
-    content:
-      "ReechOut has been a game-changer for our team. The AI-powered interviews provide consistent, objective candidate evaluation, and the detailed reports help us make informed hiring decisions faster.",
-    author: "Rasheed ahmed",
-    position: "Recruitment head",
-    company: "Trackmyuni",
-    avatar:
-      "https://storage.googleapis.com/images.reechout.com/review_4.webp",
+      "https://storage.googleapis.com/images.reechout.com/android-chrome-192x192.webp",
   },
 ] as const;
 
@@ -222,10 +211,6 @@ export function getHomeProductScreenshot(
   };
 }
 
-const REECHOUT_CONNECT_URL =
-  process.env.NEXT_PUBLIC_REECHOUT_CONNECT_URL ??
-  "https://cal.com/reechout-founders/connect";
-
 /** Shared shape for `HomeCtaSection` (home + solution pages). */
 export type MarketingCta = {
   heading: string;
@@ -238,31 +223,27 @@ export type MarketingCta = {
 
 /** RegulateIQ `HomeCTA` / `CallToActionClient` — copy + links for the dark CTA band. */
 export const HOME_CTA = {
-  heading: `Hire Smarter,\nNot Harder`,
+  heading: "Stop guessing who to hire",
   description:
-    "Don't let manual phone screens slow down your talent pipeline. Partner with ReechOut to automate initial interviews and unlock objective, data-driven hiring signals.",
-  primaryLabel: "Book a Demo",
-  primaryHref: "/contact",
-  secondaryLabel: "Start For Free",
-  secondaryHref: REECHOUT_CONNECT_URL,
+    "You do not need more candidates. You need better signal. ReechOut shows you who to move forward with, fast.",
+  primaryLabel: "Start Free Trial",
+  primaryHref: "/signup",
 } as const satisfies MarketingCta;
 
 export const HOME_PRICING_FEATURES = [
-  "Unlimited AI Interviews",
-  "Dedicated Account Manager",
-  "ATS & Slack Integrations",
-  "Custom Evaluation Rubrics",
-  "Enterprise SLA Guarantee",
+  "Starter — $149/mo: 40 evaluations/month (approximately 2 hires)",
+  "Growth — $299/mo: 100 evaluations/month (approximately 5 hires)",
+  "Enterprise — Custom: unlimited evaluations, advanced reporting and integrations",
 ] as const;
 
 /** Same shell as `HOME_CTA` — pricing card copy. */
 export const HOME_PRICING = {
-  title: "Enterprise Hiring Automation",
+  title: "Simple, transparent pricing",
   description:
-    "Get a tailored HR tech solution engineered for high-volume recruiting. Connect with our team to discuss your specific talent acquisition workflow.",
-  badge: "Enterprise",
-  priceLabel: "Custom",
-  priceSubtitle: "Tailored to your hiring volume",
-  ctaLabel: "Contact Sales",
-  ctaHref: "/contact",
+    "Evaluations include automated interviews and reporting. Credits roll over for up to 12 months. Additional credits available ($5 per credit).",
+  badge: "Plans from $149/mo",
+  priceLabel: "Starter, Growth, or Enterprise",
+  priceSubtitle: "Choose the plan that matches your hiring volume",
+  ctaLabel: "Start Free Trial",
+  ctaHref: "/signup",
 } as const;

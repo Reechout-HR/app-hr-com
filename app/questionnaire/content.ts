@@ -5,11 +5,12 @@ import type { SolutionHeroModel } from "@/components/solution/solution-page-mode
 export const QUESTIONNAIRE_PAGE_PATH = "/questionnaire";
 
 export const QUESTIONNAIRE_METADATA = {
-  title: "Questionnaire Builder - Create AI-Powered Surveys | ReechOut",
+  title:
+    "Questionnaire builder - Structured, role-specific interview questions | ReechOut",
   description:
-    "Build intelligent questionnaires with our AI-powered questionnaire builder. Create dynamic surveys, customize questions, and design engaging interview flows. Perfect for recruitment and candidate screening.",
+    "Build structured, role-specific interviews in minutes. Evaluate real capability with questions that go beyond generic screening—fast setup, full control, consistent evaluation.",
   keywords:
-    "questionnaire builder, survey builder, interview questions, custom questionnaires, AI questionnaire, recruitment questions, candidate screening questions, interview flow builder",
+    "questionnaire builder, interview questions, role-specific screening, hiring signal, candidate evaluation, structured interviews, recruitment, interview design",
   author: "ReechOut",
   robots: "index, follow",
   language: "English",
@@ -17,120 +18,112 @@ export const QUESTIONNAIRE_METADATA = {
 
 export const QUESTIONNAIRE_HERO = {
   badge: "AI Questionnaire Builder",
-  titleLine1: "Create the Perfect Interview",
-  titleLine2Prefix: "in ",
-  titleHighlight: "60 Seconds",
+  titleLine1: "Create interviews that actually reveal",
+  titleLine2Prefix: " ",
+  titleHighlight: "who can do the job",
+  titleLine2Suffix: "",
   description:
-    "AI-powered questionnaire builder that generates role-specific questions instantly. No templates to wrestle with. No hours of writing. Just smart screening questions that actually work.",
+    "Generate structured, role-specific questions in minutes so you can evaluate real capability, not rehearsed answers.",
   stats: [
-    { value: "∞", label: "Questions" },
-    { value: "5min", label: "Setup" },
-    { value: "100%", label: "Customizable" },
+    { value: "∞", label: "Unlimited questions" },
+    { value: "5 min", label: "setup" },
+    { value: "", label: "Fully customizable" },
   ] as const,
-  ctaLabel: "Book a Demo",
-  ctaHref: "/contact",
+  ctaLabel: "Start Free Trial",
+  ctaHref: "/signup",
 } as const satisfies SolutionHeroModel;
 
 export const QUESTIONNAIRE_FEATURES_HEADER = {
   kicker: "Why Questionnaire Builder?",
-  title: "Everything You Need to Create Perfect Questionnaires",
+  title: "Build better interviews from the start",
   description:
-    "Build intelligent questionnaires with powerful features designed to make questionnaire creation fast, easy, and effective.",
+    "Most interviews fail because the questions are weak or generic. ReechOut helps you create structured interviews that surface how candidates think, communicate, and approach real problems.",
 } as const;
 
 export const QUESTIONNAIRE_FEATURES = [
   {
-    title: "From Blank Page to Perfect Interview in Minutes",
+    title: "From role to interview in minutes",
     description:
-      "Type in the role. Add your job description. Our AI generates intelligent, targeted questions automatically. Then customize anything you want, or use it as-is.",
+      "Add a job description or describe the role. Generate a complete interview instantly. Edit or use it as-is.",
     icon: "thunderbolt" as const,
   },
   {
-    title: "Questions That Actually Reveal Who Can Do the Job",
+    title: "Ask what actually matters",
     description:
-      "Forget generic interview questions. Our AI creates role-specific questions based on real job requirements. Get questions that uncover skills, experience, and cultural fit.",
+      "Get role-specific questions designed to uncover real skills, thinking, and decision-making. No generic or repetitive questions.",
     icon: "robot" as const,
   },
   {
-    title: "Your Questions, Your Way",
+    title: "Customize everything",
     description:
-      "Add, edit, reorder, or rewrite any question. Build libraries for different roles. Clone and adapt successful questionnaires. Complete control, zero complexity.",
+      "Edit, reorder, or remove any question. Reuse and adapt interviews across roles. Build your own library over time.",
     icon: "edit" as const,
   },
 ] as const;
 
 export const QUESTIONNAIRE_APPLICATION_HEADER = {
   kicker: "How It Works",
-  title: "Three Simple Steps to Build Your Questionnaire",
-  description:
-    "Create professional questionnaires in minutes with our intuitive builder.",
+  title: "Three simple steps",
+  description: "From a role to a live interview, without the busywork",
 } as const;
 
 export const QUESTIONNAIRE_APPLICATION_STEPS = [
   {
     number: "01",
-    title: "AI Create Questionnaire",
-    description:
-      "Start by creating a new questionnaire. Give it a name, add details and instructions, and choose your preferred template or start from scratch.",
+    title: "Create interview",
+    description: "Add role details or paste a job description",
     icon: "file-add" as const,
   },
   {
     number: "02",
-    title: "AI Add Questions",
-    description:
-      "Add questions one by one or import from templates. Customize question text, set order, and organize questions to create the perfect flow.",
-    icon: "plus-circle" as const,
+    title: "Generate questions",
+    description: "Structured questions are created automatically",
+    icon: "robot" as const,
   },
   {
     number: "03",
-    title: "AI Launch & Use",
-    description:
-      "Review your questionnaire, make any final adjustments, and launch. Use it for phone interviews, candidate screening, or assessments.",
+    title: "Review and launch",
+    description: "Edit if needed and start interviewing candidates",
     icon: "check-circle" as const,
   },
 ] as const;
 
 export const QUESTIONNAIRE_BENEFITS_HEADER = {
   kicker: "Benefits",
-  title: "Why Choose Our Questionnaire Builder?",
-  description:
-    "Build better questionnaires faster and streamline your candidate screening process.",
+  title: "Why teams use it",
+  description: "Build faster, evaluate fairly, and hire with clearer signal",
 } as const;
 
 export const QUESTIONNAIRE_BENEFIT_ITEMS = [
   {
-    title: "Create in Minutes, Not Hours",
-    description:
-      "Build professional questionnaires in minutes instead of spending hours writing and organizing questions manually. Our intuitive interface makes it effortless.",
+    title: "Create interviews quickly",
+    description: "No manual question writing or setup",
   },
   {
-    title: "Consistent Quality Across Roles",
-    description:
-      "Create standardized questionnaires for different roles while maintaining flexibility. Ensure every candidate gets fair, comprehensive screening.",
+    title: "Keep evaluation consistent",
+    description: "Same structure across every candidate",
   },
   {
-    title: "Reuse & Adapt",
-    description:
-      "Save time by duplicating successful questionnaires and adapting them for new roles. Build a library of templates your team can use.",
+    title: "Improve signal",
+    description: "Questions designed to reveal real thinking",
   },
   {
-    title: "Candidates Actually Enjoy Answering",
-    description:
-      "Well-crafted questions get better responses. Our AI creates questions that feel conversational, not interrogational. Higher completion rates mean better data for you.",
+    title: "Reuse and scale",
+    description: "Build a library of interviews for different roles",
   },
 ] as const;
 
 export const QUESTIONNAIRE_BENEFIT_VISUAL_STATS = [
-  { value: "∞", label: "Questions" },
-  { value: "5min", label: "Setup Time" },
+  { value: "∞", label: "Unlimited questions" },
+  { value: "Fast", label: "setup" },
 ] as const;
 
 export const QUESTIONNAIRE_CTA: MarketingCta = {
-  heading: "Start Building Your Questionnaires Today",
+  heading: "Create your first interview in minutes",
   description:
-    "Join hundreds of companies using our questionnaire builder to create effective screening questionnaires. Book a demo to see it in action.",
-  primaryLabel: "Book a Demo",
-  primaryHref: "/contact",
+    "Start with a role and generate a structured interview instantly. No setup complexity, no templates to manage.",
+  primaryLabel: "Start Free Trial",
+  primaryHref: "/signup",
 };
 
 export const questionnaireCanonical = `${SITE_BASE_URL}${QUESTIONNAIRE_PAGE_PATH}`;

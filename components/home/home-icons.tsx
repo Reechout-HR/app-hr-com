@@ -20,6 +20,7 @@ import {
   Shield,
   Star,
   Trophy,
+  UserPlus,
   Users,
   Volume2,
   Zap,
@@ -125,6 +126,8 @@ const APP_ICONS = {
   robot: Bot,
   "file-pdf": FileText,
   "file-add": FilePlus2,
+  "user-add": UserPlus,
+  trophy: Trophy,
   "plus-circle": PlusCircle,
   "check-circle": CheckCircle2,
 } as const;
