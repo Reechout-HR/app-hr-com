@@ -6,7 +6,7 @@ import { Points, PointMaterial } from "@react-three/drei";
 import * as THREE from "three";
 import { useTheme } from "next-themes";
 
-function ParticleField({ count = 5000 }) {
+function ParticleField({ count = 8000 }) {
   const mesh = useRef<THREE.Points>(null);
   const { resolvedTheme } = useTheme();
 
@@ -14,9 +14,9 @@ function ParticleField({ count = 5000 }) {
   const positions = useMemo(() => {
     const pos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 12; // X
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 12; // Y
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 12; // Z
+      pos[i * 3] = (Math.random() - 0.5) * 25; // X
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 25; // Y
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 25; // Z
     }
     return pos;
   }, [count]);
@@ -26,21 +26,24 @@ function ParticleField({ count = 5000 }) {
       const posAttr = mesh.current.geometry.attributes.position;
       const array = posAttr.array as Float32Array;
 
+      // Cap delta to prevent massive jumps when switching tabs
+      const safeDelta = Math.min(delta, 0.1);
+
       for (let i = 0; i < count; i++) {
         const iy = i * 3 + 1;
         // Gentle upward movement
-        array[iy] += delta * 0.08; 
+        array[iy] += safeDelta * 0.15; 
 
-        // Wrap particles back to the bottom when they go off-screen
-        if (array[iy] > 6) {
-          array[iy] = -6;
+        // Wrap particles safely far off-screen
+        if (array[iy] > 12.5) {
+          array[iy] -= 25; // subtract full height to preserve relative spacing
         }
       }
       
       posAttr.needsUpdate = true;
       
       // Extremely slow rotation for subtle depth change
-      mesh.current.rotation.y += delta * 0.01;
+      mesh.current.rotation.y += safeDelta * 0.02;
     }
   });
 

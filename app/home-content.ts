@@ -1,5 +1,5 @@
 import type { SolutionHeroScreenshot } from "@/components/solution/solution-page-model";
-import { SITE_BASE_URL } from "@/lib/site/marketing-site";
+import { REECHOUT_CONNECT_URL, SITE_BASE_URL } from "@/lib/site/marketing-site";
 
 /** Canonical home URL and SEO text — must match [components/hero-section.tsx] h1 + first hero paragraph. */
 export const homeCanonical = `${SITE_BASE_URL}/`;
@@ -165,32 +165,32 @@ export const HOME_IN_ACTION_ITEMS = [
     label: "AI Interviews",
     description:
       "Deploy intelligent, structured phone interviews. Review comprehensive transcripts and automated scoring instantly.",
-    imageLight: "/interview.png",
-    imageDark: "/interview-dark.png",
+    imageLight: "/interview.webp",
+    imageDark: "/interview-dark.webp",
   },
   {
     id: "questionnaire",
     label: "Smart Screening",
     description:
       "Build dynamic, role-relevant screening questionnaires to qualify candidates before scheduling live technical rounds.",
-    imageLight: "/questionnaire.png",
-    imageDark: "/questionnaire-dark.png",
+    imageLight: "/questionnaire.webp",
+    imageDark: "/questionnaire-dark.webp",
   },
   {
     id: "reports",
     label: "Hiring Reports",
     description:
       "Generate stakeholder-ready candidate scorecards packed with clear, objective hiring signals and competency analytics.",
-    imageLight: "/report.png",
-    imageDark: "/report-dark.png",
+    imageLight: "/report.webp",
+    imageDark: "/report-dark.webp",
   },
   {
     id: "personas",
     label: "Candidate Personas",
     description:
       "Define candidate personas and evaluation rubrics to ensure your entire hiring committee is aligned on what 'good' looks like.",
-    imageLight: "/persona.png",
-    imageDark: "/persona-dark.png",
+    imageLight: "/persona.webp",
+    imageDark: "/persona-dark.webp",
   },
 ] as const;
 
@@ -234,6 +234,8 @@ export const HOME_CTA = {
     "You do not need more candidates. You need better signal. ReechOut shows you who to move forward with, fast.",
   primaryLabel: "Start Free Trial",
   primaryHref: "/signup",
+  secondaryLabel: "Book a call",
+  secondaryHref: REECHOUT_CONNECT_URL,
 } as const satisfies MarketingCta;
 
 export const HOME_PRICING_FEATURES = [

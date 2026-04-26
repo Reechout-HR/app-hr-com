@@ -13,8 +13,8 @@ import { PrimaryCtaLink } from "@/components/home/primary-cta-link";
 export type { SolutionHeroModel, SolutionHeroScreenshot };
 
 const DEFAULT_SCREENSHOT: SolutionHeroScreenshot = {
-  imageLight: "/dashboard.png",
-  imageDark: "/dashboard-dark.png",
+  imageLight: "/dashboard.webp",
+  imageDark: "/dashboard-dark.webp",
   alt: "ReechOut dashboard — interviews and questionnaires",
   chromeLabel: "app.reechout.com/dashboard",
 };
