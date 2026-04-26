@@ -92,8 +92,10 @@ export function HeroSection() {
             variants={itemVariants}
           >
             <span className="block text-[var(--text-primary)]">Too many applicants.</span>
+            <span className="mt-1 block text-[var(--text-primary)] opacity-90">
+              Still not sure
+            </span>
             <span className="mt-1 block">
-              <span className="text-[var(--text-primary)] opacity-90">Still not sure </span>
               <span className="relative inline-block bg-[length:200%_auto] bg-gradient-to-br from-[var(--primary-color)] via-[var(--accent-violet)] to-[var(--accent-pink)] bg-clip-text text-transparent animate-[hero-gradient-shift_3s_ease_infinite] after:absolute after:bottom-1 after:left-0 after:right-0 after:h-1 after:rounded-sm after:bg-gradient-to-r after:from-[var(--primary-color)] after:via-[var(--accent-violet)] after:to-[var(--accent-pink)] after:opacity-30 after:content-['']">
                 who to hire
               </span>
