@@ -89,8 +89,11 @@ export function DashboardNav({ onCreateNew }: DashboardNavProps) {
             height={40}
             className="h-8 w-auto max-w-full object-contain md:h-10"
           />
-          <span className="hidden text-lg font-extrabold tracking-tight text-[var(--product-name-color)] md:text-xl md:block">
-            ReechOut
+          <span className="ml-0.5 hidden items-baseline gap-0 text-lg font-extrabold tracking-tight md:flex md:text-xl">
+            <span className="text-[var(--product-name-color)]">Reech</span>
+            <span className="text-[var(--primary-color)] brightness-[1.05]">
+              Out
+            </span>
           </span>
         </Link>
 
