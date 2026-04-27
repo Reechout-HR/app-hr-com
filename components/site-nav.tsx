@@ -13,7 +13,7 @@ import {
 } from "react";
 
 import { useLenis } from "@/components/lenis-provider";
-import { REECHOUT_CONNECT_URL, SITE_LOGO } from "@/lib/site/marketing-site";
+import { SITE_LOGO } from "@/lib/site/marketing-site";
 import { THEME_KEY } from "@/lib/ui/theme";
 import { motion, useReducedMotion } from "framer-motion";
 import {
@@ -435,10 +435,8 @@ export function SiteNav({
           >
             Log In
           </Link>
-          <a
-            href={REECHOUT_CONNECT_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href="/signup"
             className={cn(
               "inline-flex h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-md border-0 bg-[var(--primary-color)] px-4 text-sm font-semibold text-white transition-opacity hover:opacity-90 max-[480px]:h-[34px] max-[480px]:px-3 max-[480px]:text-xs",
               isFloating
@@ -447,7 +445,7 @@ export function SiteNav({
             )}
           >
             Start for Free
-          </a>
+          </Link>
 
           <button
             type="button"

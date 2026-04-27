@@ -243,20 +243,72 @@ export const HOME_CTA = {
   secondaryHref: REECHOUT_CONNECT_URL,
 } as const satisfies MarketingCta;
 
-export const HOME_PRICING_FEATURES = [
-  "Starter — $149/mo: 40 evaluations/month (approximately 2 hires)",
-  "Growth — $299/mo: 100 evaluations/month (approximately 5 hires)",
-  "Enterprise — Custom: unlimited evaluations, advanced reporting and integrations",
-] as const;
-
-/** Same shell as `HOME_CTA` — pricing card copy. */
-export const HOME_PRICING = {
+export const HOME_PRICING_HEADER = {
+  kicker: "Pricing",
   title: "Simple, transparent pricing",
   description:
-    "Evaluations include automated interviews and reporting. Credits roll over for up to 12 months. Additional credits available ($5 per credit).",
-  badge: "Plans from $149/mo",
-  priceLabel: "Starter, Growth, or Enterprise",
-  priceSubtitle: "Choose the plan that matches your hiring volume",
-  ctaLabel: "Start Free Trial",
-  ctaHref: "/signup",
+    "Pick the plan that matches your hiring volume. Every plan includes automated interviews, structured scoring, and shareable reports. Credits roll over for up to 12 months.",
 } as const;
+
+export type HomePricingPlan = {
+  id: "starter" | "growth" | "enterprise";
+  name: string;
+  description: string;
+  price: string;
+  cadence?: string;
+  badge?: string;
+  featured?: boolean;
+  features: readonly string[];
+  cta: { label: string; href: string; external?: boolean };
+};
+
+export const HOME_PRICING_PLANS: readonly HomePricingPlan[] = [
+  {
+    id: "starter",
+    name: "Starter",
+    description: "For small teams running their first structured screens.",
+    price: "$149",
+    cadence: "/mo",
+    features: [
+      "40 evaluations per month (~2 hires)",
+      "Structured AI voice interviews",
+      "Candidate scorecards and reports",
+      "Email support",
+    ],
+    cta: { label: "Start Free Trial", href: "/signup" },
+  },
+  {
+    id: "growth",
+    name: "Growth",
+    description: "For hiring teams scaling structured interviews across roles.",
+    price: "$299",
+    cadence: "/mo",
+    badge: "Most Popular",
+    featured: true,
+    features: [
+      "100 evaluations per month (~5 hires)",
+      "Everything in Starter",
+      "Reusable personas and rubrics",
+      "Team workspace and shared reports",
+      "Priority support",
+    ],
+    cta: { label: "Start Free Trial", href: "/signup" },
+  },
+  {
+    id: "enterprise",
+    name: "Enterprise",
+    description: "For high-volume hiring with custom workflows and integrations.",
+    price: "Custom",
+    features: [
+      "Unlimited evaluations",
+      "Everything in Growth",
+      "Advanced reporting and analytics",
+      "ATS and SSO integrations",
+      "Dedicated success manager",
+    ],
+    cta: { label: "Book a call", href: REECHOUT_CONNECT_URL, external: true },
+  },
+] as const;
+
+export const HOME_PRICING_FOOTNOTE =
+  "Need more credits? Add-ons available at $5 per credit. Annual billing on request.";
