@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
+
 import { DashboardFcmInit } from "@/components/dashboard-fcm-init";
 import { DashboardNav } from "@/components/dashboard-nav";
 import { DashboardFooter } from "@/components/dashboard-footer";
 
 import { DashboardOnboardingGate } from "./dashboard-onboarding-gate";
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default function DashboardLayout({
   children,
