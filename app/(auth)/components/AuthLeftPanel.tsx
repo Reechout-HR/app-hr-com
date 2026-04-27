@@ -1,7 +1,6 @@
 "use client";
 
 import { FileChartColumn, Mic, Users } from "lucide-react";
-import { useRef } from "react";
 import { motion } from "framer-motion";
 
 import { AuthWordmark } from "./AuthWordmark";
@@ -45,54 +44,9 @@ const itemVariants = {
 };
 
 export default function AuthLeftPanel() {
-  const panelRef = useRef<HTMLDivElement>(null);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!panelRef.current) return;
-    const { left, top, width, height } = panelRef.current.getBoundingClientRect();
-    const x = ((e.clientX - left) / width) * 100;
-    const y = ((e.clientY - top) / height) * 100;
-    panelRef.current.style.setProperty("--mouse-x", `${x}%`);
-    panelRef.current.style.setProperty("--mouse-y", `${y}%`);
-  };
-
   return (
-    <div
-      ref={panelRef}
-      className="group relative hidden h-screen min-h-0 w-full flex-1 flex-col overflow-hidden bg-[var(--bg-base)] lg:flex lg:max-w-[800px]"
-      onMouseMove={handleMouseMove}
-    >
-      <div
-        className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(circle_at_20%_20%,color-mix(in_srgb,var(--primary)_15%,transparent)_0%,transparent_40%),radial-gradient(circle_at_80%_80%,color-mix(in_srgb,var(--accent-light)_10%,transparent)_0%,transparent_40%)]"
-        aria-hidden
-      />
-
-      <div
-        className="pointer-events-none absolute -left-[10%] -top-[20%] z-0 h-[65%] w-[65%] rounded-full bg-[radial-gradient(circle,color-mix(in_srgb,var(--primary)_20%,transparent)_0%,transparent_70%)] blur-[120px] motion-reduce:animate-none [animation:authAurora1_25s_ease-in-out_infinite]"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute -bottom-[20%] -right-[10%] z-0 h-[58%] w-[58%] rounded-full bg-[radial-gradient(circle,color-mix(in_srgb,var(--accent-light)_15%,transparent)_0%,transparent_70%)] blur-[140px] motion-reduce:animate-none [animation:authAurora2_30s_ease-in-out_infinite]"
-        aria-hidden
-      />
-
-      <div
-        className="pointer-events-none absolute inset-0 z-0 opacity-40 [mask-image:radial-gradient(circle_at_center,black_0%,transparent_90%)] [-webkit-mask-image:radial-gradient(circle_at_center,black_0%,transparent_90%)] [background-image:linear-gradient(var(--auth-grid-line)_1px,transparent_1px),linear-gradient(90deg,var(--auth-grid-line)_1px,transparent_1px)] [background-size:60px_60px]"
-        aria-hidden
-      />
-
-      <div className="hero-noise absolute inset-0 z-[1] opacity-[0.02]" aria-hidden />
-
-      <div
-        className="pointer-events-none absolute inset-0 z-[1] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-        style={{
-          background:
-            "radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), color-mix(in srgb, var(--primary) 12%, transparent), transparent 50%)",
-        }}
-        aria-hidden
-      />
-
-      <motion.div 
+    <div className="relative z-[1] hidden h-screen min-h-0 w-full flex-1 flex-col overflow-hidden bg-transparent lg:flex lg:max-w-[800px]">
+      <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
@@ -102,52 +56,73 @@ export default function AuthLeftPanel() {
       </motion.div>
 
       <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-10 sm:px-6 xl:py-14">
-        <motion.div 
+        <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
           className="relative z-10 w-full max-w-[min(520px,100%)]"
         >
-          <motion.div variants={itemVariants} className="mb-[clamp(14px,2.5vh,22px)] flex justify-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--primary)_20%,transparent)] bg-gradient-to-br from-[color-mix(in_srgb,var(--primary)_12%,transparent)] to-[color-mix(in_srgb,var(--primary)_4%,transparent)] shadow-[0_8px_24px_-8px_color-mix(in_srgb,var(--primary)_25%,transparent),inset_0_2px_4px_color-mix(in_srgb,#fff_15%,transparent)] backdrop-blur-[8px]">
-              <Mic
-                className="h-6 w-6 text-[var(--primary)] [filter:drop-shadow(0_2px_4px_color-mix(in_srgb,var(--primary)_30%,transparent))]"
+          <motion.div
+            variants={itemVariants}
+            className="mb-[clamp(18px,3vh,26px)] flex justify-center"
+          >
+            <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(var(--primary-color-rgb),0.22)] bg-[rgba(var(--primary-color-rgb),0.08)] px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--primary-color)] dark:border-[rgba(var(--accent-violet-rgb),0.3)] dark:bg-[rgba(var(--primary-color-rgb),0.12)] dark:text-[var(--accent-violet)]">
+              <span
+                className="h-1.5 w-1.5 shrink-0 animate-[roBadgePulse_2s_ease-in-out_infinite] rounded-full bg-[var(--primary-color)] dark:bg-[#c4b5fd]"
                 aria-hidden
               />
+              Structured hiring intelligence
             </div>
           </motion.div>
 
-          <motion.h1 variants={itemVariants} className="mb-[clamp(10px,1.5vh,16px)] text-center text-[clamp(28px,2.6vw,42px)] font-extrabold leading-[1.15] tracking-[-0.03em] text-[var(--text-heading)]">
-            Hiring signal,
-            <br />
-            not resume noise
+          <motion.h1
+            variants={itemVariants}
+            className="mb-[clamp(14px,2vh,20px)] text-center text-[clamp(2rem,3.5vw,3rem)] font-extrabold leading-[1.1] tracking-[-0.03em] text-[var(--text-primary)]"
+          >
+            <span className="block">Hiring</span>
+            <span className="mt-1 block">
+              <span className="relative inline-block bg-[length:200%_auto] bg-gradient-to-br from-[var(--primary-color)] via-[var(--accent-violet)] to-[var(--accent-pink)] bg-clip-text text-transparent animate-[hero-gradient-shift_3s_ease_infinite] after:absolute after:bottom-1 after:left-0 after:right-0 after:h-1 after:rounded-sm after:bg-gradient-to-r after:from-[var(--primary-color)] after:via-[var(--accent-violet)] after:to-[var(--accent-pink)] after:opacity-30 after:content-['']">
+                signal
+              </span>
+              <span className="text-[var(--text-primary)] opacity-90">
+                , not resume noise
+              </span>
+            </span>
           </motion.h1>
 
-          <motion.p variants={itemVariants} className="mb-[clamp(18px,3vh,28px)] text-center text-[16px] leading-relaxed text-[var(--text-muted)]">
-            <span className="relative font-extrabold text-[var(--primary)]">ReechOut</span> is
-            the structured interview and reporting layer that turns conversations into hiring
-            signal—so your team focuses on decisions, not noise.
+          <motion.p
+            variants={itemVariants}
+            className="mb-[clamp(20px,3vh,30px)] text-center text-[clamp(0.95rem,1.4vw,1.05rem)] leading-[1.65] text-[var(--text-secondary)]"
+          >
+            <span className="font-extrabold text-[var(--primary-color)] dark:text-[var(--accent-violet)]">
+              ReechOut
+            </span>{" "}
+            is the structured interview and reporting layer that turns
+            conversations into hiring signal—so your team focuses on decisions,
+            not noise.
           </motion.p>
 
           <div className="flex flex-col gap-3 xl:gap-4">
-            {FEATURES.map((f, i) => {
+            {FEATURES.map((f) => {
               const Icon = f.icon;
               return (
                 <motion.div
-                  key={i}
+                  key={f.title}
                   variants={itemVariants}
                   whileHover={{ x: 4, scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
-                  className="flex cursor-default items-start gap-3 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_6%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_40%,transparent)] px-4 py-4 backdrop-blur-[12px] transition-colors duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:border-[color-mix(in_srgb,var(--primary)_30%,transparent)] hover:bg-[color-mix(in_srgb,var(--bg-card)_90%,transparent)] hover:shadow-[0_8px_20px_-10px_color-mix(in_srgb,var(--primary)_15%,transparent)] xl:px-5"
+                  className="flex cursor-default items-start gap-3 rounded-xl border border-[var(--border-color-light)] bg-[var(--background-color)] px-4 py-4 shadow-[var(--shadow-light)] transition-[transform,box-shadow,border-color] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:border-[rgba(var(--primary-color-rgb),0.28)] hover:shadow-[var(--shadow-medium)] dark:border-white/[0.08] xl:px-5"
                 >
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-[color-mix(in_srgb,var(--primary)_20%,transparent)] bg-[color-mix(in_srgb,var(--primary)_15%,transparent)] text-[var(--primary)] transition-transform duration-300 group-hover:scale-110">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-[rgba(var(--primary-color-rgb),0.22)] bg-[rgba(var(--primary-color-rgb),0.08)] text-[var(--primary-color)] dark:border-[rgba(var(--accent-violet-rgb),0.35)] dark:bg-[rgba(var(--primary-color-rgb),0.12)] dark:text-[var(--accent-violet)]">
                     <Icon className="h-[22px] w-[22px]" aria-hidden />
                   </div>
                   <div className="flex flex-col gap-1 pt-0.5">
                     <span className="text-[15px] font-bold tracking-tight text-[var(--text-heading)]">
                       {f.title}
                     </span>
-                    <span className="text-[14px] leading-relaxed text-[var(--text-muted)]">{f.desc}</span>
+                    <span className="text-[14px] leading-relaxed text-[var(--text-secondary)]">
+                      {f.desc}
+                    </span>
                   </div>
                 </motion.div>
               );
@@ -155,17 +130,6 @@ export default function AuthLeftPanel() {
           </div>
         </motion.div>
       </div>
-
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
-        className="relative z-10 px-6 pb-9 pt-0 text-center"
-      >
-        <div className="inline-flex items-center gap-2 rounded-full border border-[color-mix(in_srgb,var(--primary)_20%,transparent)] bg-[color-mix(in_srgb,var(--primary)_12%,transparent)] px-3.5 py-1.5 text-[13px] font-bold text-[var(--primary)] backdrop-blur-[8px] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[color-mix(in_srgb,var(--primary)_18%,transparent)]">
-          Structured hiring intelligence
-        </div>
-      </motion.div>
     </div>
   );
 }
