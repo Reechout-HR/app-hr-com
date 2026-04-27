@@ -4,7 +4,7 @@
 # - install/build with Bun (matches bun.lock + trustedDependencies in package.json)
 # - run with a slim Node image so `sharp` works without alpine workarounds
 
-ARG BUN_VERSION=1.1.42
+ARG BUN_VERSION=1.3.11
 ARG NODE_VERSION=22
 
 # ---- deps: install dependencies from bun.lock --------------------------------
