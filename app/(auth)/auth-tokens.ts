@@ -36,6 +36,10 @@ export const authCardHeaderClassName = "mb-7 text-center max-md:mb-5";
 export const authCardHeaderLineClassName =
   "mx-auto mb-4 h-[3px] w-10 rounded-[2px] bg-gradient-to-r from-[var(--color-primary)] to-[rgba(var(--color-primary-rgb),0.15)] shadow-[0_0_12px_rgba(var(--color-primary-rgb),0.45)]";
 
+/** Small label above the card title (onboarding: Security, Profile, Review) */
+export const authCardEyebrowClassName =
+  "mb-1 text-center text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]";
+
 /** Row under password field — spaced below input / field error. */
 export const authForgotRowClassName = "mt-4 flex justify-end";
 

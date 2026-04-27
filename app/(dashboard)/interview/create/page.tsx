@@ -61,6 +61,13 @@ export default function CreateInterviewPage() {
   const [isSelectQuestionnaireOpen, setIsSelectQuestionnaireOpen] = useState(false);
   const [editingCandidate, setEditingCandidate] = useState<UICandidate | null>(null);
 
+  // Bulk add
+  const [isBulkOpen, setIsBulkOpen] = useState(false);
+  const [bulkFile, setBulkFile] = useState<File | null>(null);
+  const [bulkParsed, setBulkParsed] = useState<UICandidate[]>([]);
+  const [bulkErrors, setBulkErrors] = useState<string[]>([]);
+  const [isBulkParsing, setIsBulkParsing] = useState(false);
+
   // Queries
   const { data: questionnairesData, isLoading: isLoadingQuestionnaires } = useQuery({
     queryKey: ["questionnaires"],
@@ -103,6 +110,115 @@ export default function CreateInterviewPage() {
 
   const handleRemoveCandidate = (id: string) => {
     setCandidates(cands => cands.filter(c => c.id !== id));
+  };
+
+  const resetBulk = () => {
+    setBulkFile(null);
+    setBulkParsed([]);
+    setBulkErrors([]);
+  };
+
+  const handleBulkFile = async (file: File) => {
+    const okExt = /\.(csv|xlsx|xls)$/i.test(file.name);
+    if (!okExt) {
+      toast.error("You can only upload CSV or Excel files.");
+      return;
+    }
+    if (file.size / 1024 / 1024 > 5) {
+      toast.error("File must be smaller than 5MB.");
+      return;
+    }
+    setBulkFile(file);
+    setBulkParsed([]);
+    setBulkErrors([]);
+    setIsBulkParsing(true);
+    try {
+      const XLSX = await import("xlsx");
+      const buf = await file.arrayBuffer();
+      const wb = XLSX.read(new Uint8Array(buf), { type: "array" });
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { defval: "" });
+
+      if (rows.length === 0) {
+        setBulkErrors(["File is empty or has no data rows."]);
+        toast.error("File is empty or has no data rows.");
+        setIsBulkParsing(false);
+        return;
+      }
+
+      const pickField = (row: Record<string, unknown>, keys: string[]): string => {
+        for (const k of Object.keys(row)) {
+          if (keys.includes(k.toLowerCase().trim())) {
+            return String(row[k] ?? "");
+          }
+        }
+        return "";
+      };
+      const isEmail = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+
+      const accepted: UICandidate[] = [];
+      const errs: string[] = [];
+
+      rows.forEach((row, i) => {
+        const rowNum = i + 2; // +1 for header, +1 for 1-indexed
+        const firstName = pickField(row, ["firstname", "first name", "first_name"]).trim();
+        const lastName = pickField(row, ["lastname", "last name", "last_name"]).trim();
+        const email = pickField(row, ["email", "e-mail"]).trim();
+        const phone = pickField(row, ["phone", "phonenumber", "phone number", "phone_number"]).trim();
+
+        const rowErrs: string[] = [];
+        if (!firstName) rowErrs.push(`Row ${rowNum}: First Name is required`);
+        if (!lastName) rowErrs.push(`Row ${rowNum}: Last Name is required`);
+        if (!email) rowErrs.push(`Row ${rowNum}: Email is required`);
+        else if (!isEmail(email)) rowErrs.push(`Row ${rowNum}: Invalid email format`);
+        if (!phone) rowErrs.push(`Row ${rowNum}: Phone is required`);
+
+        if (rowErrs.length) {
+          errs.push(...rowErrs);
+        } else {
+          accepted.push({
+            id: crypto.randomUUID(),
+            first_name: firstName,
+            last_name: lastName,
+            email,
+            phone,
+          });
+        }
+      });
+
+      setBulkParsed(accepted);
+      setBulkErrors(errs);
+      if (errs.length) {
+        toast.warning(`Parsed with ${errs.length} error(s). Please review before adding.`);
+      } else {
+        toast.success(`Parsed ${accepted.length} candidate(s) successfully.`);
+      }
+    } catch (err) {
+      console.error("Error parsing file:", err);
+      setBulkErrors(["Error parsing file. Please check the file format."]);
+      toast.error("Error parsing file. Please check the file format.");
+    } finally {
+      setIsBulkParsing(false);
+    }
+  };
+
+  const handleBulkCommit = () => {
+    if (!bulkFile) {
+      toast.warning("Please upload a CSV or Excel file");
+      return;
+    }
+    if (bulkErrors.length > 0) {
+      toast.error("Please fix the errors before adding candidates");
+      return;
+    }
+    if (bulkParsed.length === 0) {
+      toast.warning("No valid candidates found in the file");
+      return;
+    }
+    setCandidates(prev => [...prev, ...bulkParsed]);
+    toast.success(`Added ${bulkParsed.length} candidate(s).`);
+    setIsBulkOpen(false);
+    resetBulk();
   };
 
   const handleCreateInterview = () => {
@@ -279,22 +395,32 @@ export default function CreateInterviewPage() {
                 <p className="text-sm text-[var(--text-secondary)] mt-1">Add candidates to invite to this interview.</p>
               </div>
               {candidates.length > 0 && (
-                <Button variant="outline" size="sm" onClick={() => openCandidateModal()} className="h-8 rounded-lg border-[var(--header-floating-border)] text-xs">
-                  <Plus className="w-3.5 h-3.5 mr-1" /> Add
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="sm" onClick={() => openCandidateModal()} className="h-8 rounded-lg border-[var(--header-floating-border)] text-xs">
+                    <Plus className="w-3.5 h-3.5 mr-1" /> Add
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => { resetBulk(); setIsBulkOpen(true); }} className="h-8 rounded-lg border-[var(--header-floating-border)] text-xs">
+                    <Upload className="w-3.5 h-3.5 mr-1" /> Bulk Add
+                  </Button>
+                </div>
               )}
             </div>
-            
+
             {candidates.length === 0 ? (
               <div className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-[var(--header-floating-border)] rounded-[var(--radius-md)] p-8 text-center text-[var(--text-secondary)] bg-background/50">
                 <div className="bg-[var(--surface-2)] p-4 rounded-full mb-4 text-[var(--text-muted)]">
                   <Plus className="w-6 h-6" />
                 </div>
                 <h3 className="font-semibold text-[var(--text-primary)] mb-1">No Candidates Added</h3>
-                <p className="text-sm mb-6 max-w-[260px]">Add candidates manually to invite them to this interview.</p>
-                <Button variant="outline" className="h-10 rounded-xl px-5 border-[var(--header-floating-border)] bg-background hover:bg-[var(--surface-2)] text-[var(--text-primary)] shadow-sm" onClick={() => openCandidateModal()}>
-                  <Plus className="w-4 h-4 mr-2" /> Add First Candidate
-                </Button>
+                <p className="text-sm mb-6 max-w-[260px]">Add candidates manually or upload a CSV/Excel to bulk-import them.</p>
+                <div className="flex items-center gap-3">
+                  <Button variant="outline" className="h-10 rounded-xl px-5 border-[var(--header-floating-border)] bg-background hover:bg-[var(--surface-2)] text-[var(--text-primary)] shadow-sm" onClick={() => openCandidateModal()}>
+                    <Plus className="w-4 h-4 mr-2" /> Add First Candidate
+                  </Button>
+                  <Button variant="outline" className="h-10 rounded-xl px-5 border-[var(--header-floating-border)] bg-background hover:bg-[var(--surface-2)] text-[var(--text-primary)] shadow-sm" onClick={() => { resetBulk(); setIsBulkOpen(true); }}>
+                    <Upload className="w-4 h-4 mr-2" /> Bulk Add
+                  </Button>
+                </div>
               </div>
             ) : (
               <div className="flex-1 flex flex-col min-h-0">
@@ -535,6 +661,83 @@ export default function CreateInterviewPage() {
           </div>
           <DialogFooter className="border-t border-[var(--header-floating-border)] bg-transparent">
             <Button type="button" variant="outline" className="h-10 rounded-xl px-6 border-[var(--header-floating-border)] bg-background text-[var(--text-primary)] hover:bg-[var(--surface-2)]" onClick={() => setIsSelectQuestionnaireOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Bulk Add Candidates Modal */}
+      <Dialog open={isBulkOpen} onOpenChange={(open) => { if (!open) { setIsBulkOpen(false); resetBulk(); } }}>
+        <DialogContent className="sm:max-w-[640px] p-0 overflow-hidden border-[var(--header-floating-border)] bg-[var(--header-floating-bg)] shadow-[0_24px_48px_rgba(var(--shadow-rgb),0.12)] rounded-[var(--radius-md)] backdrop-blur-xl">
+          <DialogHeader className="px-6 py-5 border-b border-[var(--header-floating-border)] bg-transparent">
+            <DialogTitle className="text-xl font-bold">Bulk Add Candidates</DialogTitle>
+            <DialogDescription className="text-sm text-[var(--text-secondary)] mt-1">Upload a CSV or Excel file. Required columns: <strong>FirstName</strong>, <strong>LastName</strong>, <strong>Email</strong>, <strong>Phone</strong>.</DialogDescription>
+          </DialogHeader>
+
+          <div className="px-6 py-6 flex flex-col gap-5 max-h-[70vh] overflow-y-auto">
+            <div className="text-[13px] text-foreground bg-[var(--surface-2)] p-4 rounded-xl border border-[var(--header-floating-border)]">
+              <p className="mb-1 font-semibold">CSV Example:</p>
+              <pre className="text-[12px] bg-black/5 dark:bg-white/5 p-3 rounded-lg overflow-x-auto text-muted-foreground border border-black/5 dark:border-white/5">
+{`FirstName,LastName,Email,Phone
+John,Doe,john.doe@example.com,+1234567890
+Jane,Smith,jane.smith@example.com,+9876543210`}
+              </pre>
+              <p className="text-[11px] text-muted-foreground mt-3 italic">
+                Accepted: .csv, .xlsx, .xls (max 5MB).
+              </p>
+            </div>
+
+            {!bulkFile ? (
+              <label className="relative flex flex-col items-center justify-center border-2 border-dashed border-[var(--header-floating-border)] rounded-xl p-8 bg-background/50 hover:bg-background transition-colors cursor-pointer">
+                <input
+                  type="file"
+                  accept=".csv,.xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv"
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) handleBulkFile(f);
+                  }}
+                />
+                <div className="bg-[var(--primary-color)]/10 text-[var(--primary-color)] p-3 rounded-full mb-3">
+                  <Upload className="w-5 h-5" />
+                </div>
+                <p className="text-sm font-semibold text-[var(--text-primary)]">Click or drag a file here</p>
+                <p className="text-xs text-[var(--text-secondary)] mt-1">CSV or Excel</p>
+              </label>
+            ) : (
+              <div className="flex items-center justify-between rounded-xl border border-[var(--header-floating-border)] bg-background p-4">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="bg-[var(--primary-color)]/10 text-[var(--primary-color)] p-2 rounded-lg">
+                    <FileUp className="w-5 h-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-[var(--text-primary)] truncate max-w-[280px]">{bulkFile.name}</p>
+                    <p className="text-xs text-[var(--text-secondary)]">{(bulkFile.size / 1024).toFixed(1)} KB · {isBulkParsing ? "Parsing…" : `${bulkParsed.length} candidate(s) ready · ${bulkErrors.length} error(s)`}</p>
+                  </div>
+                </div>
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-[var(--text-secondary)] hover:text-destructive hover:bg-destructive/10" onClick={resetBulk}>
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            )}
+
+            {bulkErrors.length > 0 && (
+              <div className="rounded-xl border border-[var(--error-color)]/25 bg-[var(--error-color)]/5 p-4 text-sm text-[var(--error-color)]">
+                <p className="font-semibold mb-2">Errors ({bulkErrors.length}):</p>
+                <ul className="list-disc pl-5 space-y-1 max-h-40 overflow-y-auto">
+                  {bulkErrors.slice(0, 50).map((e, i) => (
+                    <li key={i} className="text-xs">{e}</li>
+                  ))}
+                  {bulkErrors.length > 50 && <li className="text-xs italic">…and {bulkErrors.length - 50} more</li>}
+                </ul>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="border-t border-[var(--header-floating-border)] bg-transparent px-6 py-4">
+            <Button type="button" variant="ghost" onClick={() => { setIsBulkOpen(false); resetBulk(); }} className="h-10 rounded-xl px-4 text-[var(--text-secondary)] hover:text-foreground">Cancel</Button>
+            <Button type="button" onClick={handleBulkCommit} disabled={!bulkFile || isBulkParsing || bulkErrors.length > 0 || bulkParsed.length === 0} className="h-10 rounded-xl px-6 bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] text-white shadow-sm">
+              Add {bulkParsed.length > 0 ? `${bulkParsed.length} ` : ""}Candidate{bulkParsed.length === 1 ? "" : "s"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -59,7 +59,7 @@ export default function AuthLeftPanel() {
   return (
     <div
       ref={panelRef}
-      className="group relative hidden h-screen min-h-0 flex-1 flex-col overflow-hidden bg-[var(--bg-base)] lg:flex"
+      className="group relative hidden h-screen min-h-0 w-full flex-1 flex-col overflow-hidden bg-[var(--bg-base)] lg:flex lg:max-w-[800px]"
       onMouseMove={handleMouseMove}
     >
       <div
@@ -101,35 +101,35 @@ export default function AuthLeftPanel() {
         <AuthWordmark href="/" />
       </motion.div>
 
-      <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-[clamp(18px,3vh,36px)] sm:px-6">
+      <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-10 sm:px-6 xl:py-14">
         <motion.div 
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="relative z-10 w-full max-w-[min(440px,100%)]"
+          className="relative z-10 w-full max-w-[min(520px,100%)]"
         >
           <motion.div variants={itemVariants} className="mb-[clamp(14px,2.5vh,22px)] flex justify-center">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--primary)_20%,transparent)] bg-gradient-to-br from-[color-mix(in_srgb,var(--primary)_12%,transparent)] to-[color-mix(in_srgb,var(--primary)_4%,transparent)] shadow-[0_8px_24px_-8px_color-mix(in_srgb,var(--primary)_25%,transparent),inset_0_2px_4px_color-mix(in_srgb,#fff_15%,transparent)] backdrop-blur-[8px]">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--primary)_20%,transparent)] bg-gradient-to-br from-[color-mix(in_srgb,var(--primary)_12%,transparent)] to-[color-mix(in_srgb,var(--primary)_4%,transparent)] shadow-[0_8px_24px_-8px_color-mix(in_srgb,var(--primary)_25%,transparent),inset_0_2px_4px_color-mix(in_srgb,#fff_15%,transparent)] backdrop-blur-[8px]">
               <Mic
-                className="h-[22px] w-[22px] text-[var(--primary)] [filter:drop-shadow(0_2px_4px_color-mix(in_srgb,var(--primary)_30%,transparent))]"
+                className="h-6 w-6 text-[var(--primary)] [filter:drop-shadow(0_2px_4px_color-mix(in_srgb,var(--primary)_30%,transparent))]"
                 aria-hidden
               />
             </div>
           </motion.div>
 
-          <motion.h1 variants={itemVariants} className="mb-[clamp(10px,1.5vh,16px)] text-center text-[clamp(22px,2.1vw,30px)] font-extrabold leading-[1.15] tracking-[-0.03em] text-[var(--text-heading)]">
+          <motion.h1 variants={itemVariants} className="mb-[clamp(10px,1.5vh,16px)] text-center text-[clamp(28px,2.6vw,42px)] font-extrabold leading-[1.15] tracking-[-0.03em] text-[var(--text-heading)]">
             Hiring signal,
             <br />
             not resume noise
           </motion.h1>
 
-          <motion.p variants={itemVariants} className="mb-[clamp(18px,3vh,28px)] text-center text-[15px] leading-normal text-[var(--text-muted)]">
+          <motion.p variants={itemVariants} className="mb-[clamp(18px,3vh,28px)] text-center text-[16px] leading-relaxed text-[var(--text-muted)]">
             <span className="relative font-extrabold text-[var(--primary)]">ReechOut</span> is
             the structured interview and reporting layer that turns conversations into hiring
             signal—so your team focuses on decisions, not noise.
           </motion.p>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-3 xl:gap-4">
             {FEATURES.map((f, i) => {
               const Icon = f.icon;
               return (
@@ -138,16 +138,16 @@ export default function AuthLeftPanel() {
                   variants={itemVariants}
                   whileHover={{ x: 4, scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
-                  className="flex cursor-default items-start gap-3 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_6%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_40%,transparent)] px-4 py-3.5 backdrop-blur-[12px] transition-colors duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:border-[color-mix(in_srgb,var(--primary)_30%,transparent)] hover:bg-[color-mix(in_srgb,var(--bg-card)_90%,transparent)] hover:shadow-[0_8px_20px_-10px_color-mix(in_srgb,var(--primary)_15%,transparent)]"
+                  className="flex cursor-default items-start gap-3 rounded-xl border border-[color-mix(in_srgb,var(--foreground)_6%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_40%,transparent)] px-4 py-4 backdrop-blur-[12px] transition-colors duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:border-[color-mix(in_srgb,var(--primary)_30%,transparent)] hover:bg-[color-mix(in_srgb,var(--bg-card)_90%,transparent)] hover:shadow-[0_8px_20px_-10px_color-mix(in_srgb,var(--primary)_15%,transparent)] xl:px-5"
                 >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[color-mix(in_srgb,var(--primary)_20%,transparent)] bg-[color-mix(in_srgb,var(--primary)_15%,transparent)] text-[var(--primary)] transition-transform duration-300 group-hover:scale-110">
-                    <Icon className="h-5 w-5" aria-hidden />
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-[color-mix(in_srgb,var(--primary)_20%,transparent)] bg-[color-mix(in_srgb,var(--primary)_15%,transparent)] text-[var(--primary)] transition-transform duration-300 group-hover:scale-110">
+                    <Icon className="h-[22px] w-[22px]" aria-hidden />
                   </div>
                   <div className="flex flex-col gap-1 pt-0.5">
-                    <span className="text-[14px] font-bold tracking-tight text-[var(--text-heading)]">
+                    <span className="text-[15px] font-bold tracking-tight text-[var(--text-heading)]">
                       {f.title}
                     </span>
-                    <span className="text-[13px] leading-snug text-[var(--text-muted)]">{f.desc}</span>
+                    <span className="text-[14px] leading-relaxed text-[var(--text-muted)]">{f.desc}</span>
                   </div>
                 </motion.div>
               );

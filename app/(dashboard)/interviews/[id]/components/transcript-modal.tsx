@@ -1,16 +1,11 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { FileText, User as UserIcon } from "lucide-react";
+import { FileText, Mail, User as UserIcon, X } from "lucide-react";
 
 import { interviewsApi, type InterviewCandidate } from "@/lib/api/interviews";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { cn } from "@/lib/ui/cn";
 
 interface TranscriptModalProps {
@@ -24,7 +19,11 @@ export function TranscriptModal({
   onClose,
   candidate,
 }: TranscriptModalProps) {
-  const { data: report, isLoading, isError } = useQuery({
+  const {
+    data: report,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["candidate-report", candidate?.id],
     queryFn: () => interviewsApi.getCandidateReport(candidate!.id!),
     enabled: isOpen && !!candidate?.id,
@@ -33,21 +32,19 @@ export function TranscriptModal({
   const parseTranscript = (transcript: string | null | undefined) => {
     if (!transcript) return [];
     const messages: Array<{ speaker: string; message: string }> = [];
-    const lines = transcript.split('\n');
-
-    for (const line of lines) {
-      if (line.trim()) {
-        if (line.startsWith('User:')) {
-          messages.push({
-            speaker: 'user',
-            message: line.replace('User:', '').trim(),
-          });
-        } else if (line.startsWith('AI:')) {
-          messages.push({
-            speaker: 'ai',
-            message: line.replace('AI:', '').trim(),
-          });
-        }
+    for (const line of transcript.split("\n")) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+      if (trimmed.startsWith("User:")) {
+        messages.push({
+          speaker: "user",
+          message: trimmed.replace("User:", "").trim(),
+        });
+      } else if (trimmed.startsWith("AI:")) {
+        messages.push({
+          speaker: "ai",
+          message: trimmed.replace("AI:", "").trim(),
+        });
       }
     }
     return messages;
@@ -57,74 +54,100 @@ export function TranscriptModal({
 
   if (!candidate) return null;
 
+  const fullName = `${candidate.first_name ?? ""} ${candidate.last_name ?? ""}`.trim();
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-[1000px] w-[95vw] h-[85vh] p-0 overflow-hidden border-[var(--border-color-light)] bg-[var(--background-color)] shadow-[0_24px_48px_rgba(var(--shadow-rgb),0.12)] rounded-[var(--radius-md)] dark:border-white/[0.09] flex flex-col">
-        
+      <DialogContent
+        showCloseButton={false}
+        className="max-w-[1000px] w-[95vw] h-[85vh] p-0 overflow-hidden border-0 bg-[var(--gray-bg)] shadow-[var(--shadow-medium)] rounded-[var(--radius-lg)] flex flex-col"
+      >
+        <VisuallyHidden>
+          <DialogTitle>Interview Transcript — {fullName}</DialogTitle>
+        </VisuallyHidden>
+
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[var(--border-color-light)] bg-[var(--surface-2)] px-6 py-4 dark:border-white/[0.09] shrink-0">
-          <DialogHeader className="p-0 text-left flex flex-row items-center gap-4 w-full">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[rgba(var(--primary-color-rgb),0.15)] to-[rgba(var(--primary-color-rgb),0.08)] border border-[rgba(var(--primary-color-rgb),0.2)] shadow-[0_2px_8px_rgba(var(--primary-color-rgb),0.1)] transition-all duration-300">
-              <UserIcon className="h-6 w-6 text-[var(--icon-accent-color)]" />
+        <div className="glass-header-overlay relative shrink-0 flex items-center justify-between bg-[var(--glass-bg-medium)] backdrop-blur-[15px] backdrop-saturate-[180%] border-b border-[var(--glass-border-medium)] px-8 py-5 shadow-[0_2px_8px_var(--glass-shadow-medium)] z-10">
+          <div className="relative z-[1] flex items-center gap-5 min-w-0">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[var(--primary-color)] to-[var(--primary-hover)] shadow-[0_4px_16px_rgba(var(--primary-color-rgb),0.3)]">
+              <UserIcon className="h-8 w-8 text-white" />
             </div>
-            <div className="flex flex-col gap-[2px]">
-              <DialogTitle className="text-xl font-bold text-foreground leading-none">
-                {candidate.first_name} {candidate.last_name}
-              </DialogTitle>
-              <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1 font-medium">
-                <span className="flex items-center gap-1.5">
-                  <MailIcon className="h-3.5 w-3.5" />
-                  {candidate.email}
+            <div className="flex flex-col min-w-0 gap-1.5">
+              <h2 className="text-2xl font-bold tracking-[-0.5px] leading-tight text-[var(--text-primary)] m-0 truncate">
+                {fullName || candidate.email}
+              </h2>
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-sm text-[var(--text-secondary)]">
+                <span className="flex items-center gap-1.5 min-w-0">
+                  <Mail className="h-4 w-4 shrink-0 text-[var(--icon-accent-color)]" />
+                  <span className="truncate">{candidate.email}</span>
                 </span>
-                <span className="flex items-center gap-1.5 text-[var(--primary-color)]">
-                  <FileText className="h-3.5 w-3.5" />
+                <span className="flex items-center gap-1.5">
+                  <FileText className="h-4 w-4 text-[var(--icon-accent-color)]" />
                   Interview Transcript
                 </span>
               </div>
             </div>
-          </DialogHeader>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+            className="relative z-[1] flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-[var(--glass-white-overlay)] backdrop-blur-[10px] border border-[var(--glass-border-medium)] shadow-[0_2px_4px_var(--glass-shadow-medium)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[var(--glass-white-overlay-dark)] hover:border-[var(--glass-border-dark)] hover:-translate-y-0.5 hover:shadow-[0_4px_8px_var(--glass-shadow-dark)] active:translate-y-0 group"
+          >
+            <X className="h-[18px] w-[18px] text-[var(--text-secondary)] transition-colors duration-300 group-hover:text-[var(--primary-color)]" />
+          </button>
         </div>
 
-        {/* Chat Container */}
-        <div className="flex-1 overflow-y-auto p-6 bg-[var(--surface-1)]">
+        {/* Chat area */}
+        <div className="chat-top-fade glass-scrollbar relative flex-1 overflow-y-auto bg-[var(--gray-bg)] px-8 py-6">
           {isLoading ? (
-            <div className="min-h-[200px] flex-1" aria-hidden />
+            <div className="min-h-[200px]" aria-hidden />
           ) : isError || !report ? (
-            <div className="flex flex-col items-center justify-center h-full gap-3 text-muted-foreground">
+            <div className="flex flex-col items-center justify-center h-full gap-3 text-[var(--text-secondary)]">
               <FileText className="h-10 w-10 opacity-50" />
               <p>Unable to load the transcript.</p>
             </div>
           ) : messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full gap-3 text-muted-foreground">
+            <div className="flex flex-col items-center justify-center h-full gap-3 text-[var(--text-secondary)]">
               <FileText className="h-10 w-10 opacity-50" />
               <p>No transcript available for this interview.</p>
             </div>
           ) : (
-            <div className="flex flex-col gap-5 max-w-4xl mx-auto w-full px-2 sm:px-6">
+            <div className="mx-auto flex max-w-3xl flex-col gap-4">
               {messages.map((msg, idx) => (
-                <div 
-                  key={idx} 
+                <div
+                  key={idx}
                   className={cn(
                     "flex w-full",
-                    msg.speaker === 'user' ? 'justify-end' : 'justify-start'
+                    msg.speaker === "user"
+                      ? "justify-end"
+                      : "justify-start",
                   )}
+                  style={{
+                    animation: "fade-in-up 0.3s ease both",
+                    animationDelay: `${Math.min(idx * 30, 600)}ms`,
+                  }}
                 >
-                  <div 
+                  <div
                     className={cn(
-                      "flex flex-col max-w-[85%] sm:max-w-[75%] rounded-[16px] p-[16px_20px] shadow-sm",
-                      msg.speaker === 'user' 
-                        ? 'bg-gradient-to-br from-[var(--primary-color)] to-[var(--primary-color-hover)] text-white rounded-br-[4px]' 
-                        : 'bg-[var(--surface-2)] border border-[var(--border-color-light)] dark:border-white/[0.09] text-foreground rounded-bl-[4px]'
+                      "flex flex-col max-w-[75%] px-[18px] py-[14px]",
+                      msg.speaker === "user"
+                        ? "bg-gradient-to-br from-[var(--primary-color)] to-[var(--primary-hover)] text-white rounded-[20px_20px_4px_20px] shadow-[0_4px_12px_rgba(var(--primary-color-rgb),0.25)]"
+                        : "bg-[var(--glass-bg-medium)] backdrop-blur-[15px] border border-[var(--glass-border-medium)] text-[var(--text-primary)] rounded-[20px_20px_20px_4px] shadow-[0_2px_8px_var(--glass-shadow-medium)]",
                     )}
                   >
-                    <div className="text-[14px] sm:text-[15px] leading-[1.6] whitespace-pre-wrap">{msg.message}</div>
-                    <div 
+                    <div className="text-[14px] leading-[1.6] whitespace-pre-wrap">
+                      {msg.message}
+                    </div>
+                    <div
                       className={cn(
-                        "text-[11px] mt-2 font-bold uppercase tracking-wider", 
-                        msg.speaker === 'user' ? 'text-white/70 text-right' : 'text-muted-foreground text-left'
+                        "mt-2 text-[11px] font-medium",
+                        msg.speaker === "user"
+                          ? "text-white/85 text-right"
+                          : "text-[var(--text-secondary)] text-left",
                       )}
                     >
-                      {msg.speaker === 'user' ? 'You' : 'AI Assistant'}
+                      {msg.speaker === "user" ? "You" : "AI Assistant"}
                     </div>
                   </div>
                 </div>
@@ -132,35 +155,7 @@ export function TranscriptModal({
             </div>
           )}
         </div>
-
-        {/* Footer */}
-        <div className="flex shrink-0 items-center justify-end gap-3 border-t border-[var(--border-color-light)] bg-[var(--surface-2)] px-6 py-4 dark:border-white/[0.09]">
-          <Button variant="outline" onClick={onClose} className="rounded-xl px-6">
-            Close
-          </Button>
-        </div>
       </DialogContent>
     </Dialog>
-  );
-}
-
-// Inline helper because we just need the icon here without importing it at the top globally
-function MailIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect width="20" height="16" x="2" y="4" rx="2" />
-      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-    </svg>
   );
 }

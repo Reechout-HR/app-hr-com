@@ -5,23 +5,35 @@
 
 import type { QuestionnaireCreateBody } from "@/lib/api/questionnaires";
 
-const WORK_LEVEL_LABELS = ["Very Low", "Low", "Medium", "High", "Very High"] as const;
+export const WORK_LEVEL_LABELS = ["Very Low", "Low", "Medium", "High", "Very High"] as const;
 
-const COMPETENCY_IMPORTANCE_LABELS = [
+export const COMPETENCY_IMPORTANCE_LABELS = [
   "Not Relevant",
   "Nice to Have",
   "Important",
   "Critical",
 ] as const;
 
-function workDemandToLabel(value: number): string {
+export function workDemandToLabel(value: number): string {
   const idx = Math.max(0, Math.min(4, value - 1));
   return WORK_LEVEL_LABELS[idx] ?? "Medium";
 }
 
-function competencyToLabel(value: number): string {
+export function competencyToLabel(value: number): string {
   const idx = Math.max(0, Math.min(3, value));
   return COMPETENCY_IMPORTANCE_LABELS[idx] ?? "Nice to Have";
+}
+
+export function workLabelToValue(label: string | undefined): number {
+  const idx = WORK_LEVEL_LABELS.indexOf(label as (typeof WORK_LEVEL_LABELS)[number]);
+  return idx >= 0 ? idx + 1 : 3;
+}
+
+export function competencyLabelToValue(label: string | undefined): number {
+  const idx = COMPETENCY_IMPORTANCE_LABELS.indexOf(
+    label as (typeof COMPETENCY_IMPORTANCE_LABELS)[number],
+  );
+  return idx >= 0 ? idx : 2;
 }
 
 function parseOptionalDecimal(raw: string): number | null {
@@ -58,10 +70,11 @@ export type CreateQuestionnaireModalState = {
     valuesCultureFit: number;
   };
   culture: {
-    paceOfWork: number;
-    feedbackStyle: number;
-    decisionMaking: number;
-    collaboration: number;
+    innovation: number;
+    structure: number;
+    teamOrientation: number;
+    detailFocus: number;
+    outcomeFocus: number;
   };
   performance: {
     topPerformers: string;
@@ -69,28 +82,86 @@ export type CreateQuestionnaireModalState = {
   };
 };
 
-const COMPETENCY_ROWS: {
+export const COMPETENCY_ROWS: {
   id: string;
   name: string;
+  description: string;
   key: keyof CreateQuestionnaireModalState["competencies"];
 }[] = [
-  { id: "reliability", name: "Reliability & Ownership", key: "reliabilityOwnership" },
-  { id: "learning", name: "Learning & Adaptability", key: "learningAdaptability" },
-  { id: "communication", name: "Communication & Clarity", key: "communicationClarity" },
-  { id: "empathy", name: "Empathy & Collaboration", key: "empathyCollaboration" },
-  { id: "resilience", name: "Resilience Under Stress", key: "resilienceStress" },
-  { id: "values", name: "Values & Culture Fit", key: "valuesCultureFit" },
+  {
+    id: "reliability",
+    name: "Reliability & Ownership",
+    description: "Taking responsibility for outcomes and consistently delivering.",
+    key: "reliabilityOwnership",
+  },
+  {
+    id: "learning",
+    name: "Learning & Adaptability",
+    description: "Quickly acquiring new skills and adjusting to changes.",
+    key: "learningAdaptability",
+  },
+  {
+    id: "communication",
+    name: "Communication & Clarity",
+    description: "Expressing ideas clearly to diverse audiences.",
+    key: "communicationClarity",
+  },
+  {
+    id: "empathy",
+    name: "Empathy & Collaboration",
+    description: "Working well with others and understanding their perspectives.",
+    key: "empathyCollaboration",
+  },
+  {
+    id: "resilience",
+    name: "Resilience Under Stress",
+    description: "Maintaining performance under pressure or after setbacks.",
+    key: "resilienceStress",
+  },
+  {
+    id: "values",
+    name: "Values & Culture Fit",
+    description: "Alignment with the company's mission and behavioral norms.",
+    key: "valuesCultureFit",
+  },
 ];
 
-const CULTURE_ROWS: {
+export const CULTURE_ROWS: {
   id: string;
   label: string;
+  description: string;
   key: keyof CreateQuestionnaireModalState["culture"];
 }[] = [
-  { id: "pace", label: "Pace of Work", key: "paceOfWork" },
-  { id: "feedback", label: "Feedback Style", key: "feedbackStyle" },
-  { id: "decision", label: "Decision Making", key: "decisionMaking" },
-  { id: "collaboration", label: "Collaboration", key: "collaboration" },
+  {
+    id: "innovation",
+    label: "Innovation / Experimentation",
+    description: "How important is innovation and experimentation in your team culture?",
+    key: "innovation",
+  },
+  {
+    id: "structure",
+    label: "Structure / Process",
+    description: "How important are structured processes and clear procedures?",
+    key: "structure",
+  },
+  {
+    id: "teamOrientation",
+    label: "Team Orientation",
+    description: "How important is team collaboration versus individual contribution?",
+    key: "teamOrientation",
+  },
+  {
+    id: "detailFocus",
+    label: "Attention to Detail",
+    description: "How important is attention to detail versus focusing on the big picture?",
+    key: "detailFocus",
+  },
+  {
+    id: "outcomeFocus",
+    label: "Outcome Focus",
+    description: "How important are results and outcomes versus following processes?",
+    key: "outcomeFocus",
+  },
 ];
 
 export function mapCreateFormToApiBody(

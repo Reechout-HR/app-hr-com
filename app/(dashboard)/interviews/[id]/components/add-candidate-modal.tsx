@@ -34,14 +34,14 @@ export function AddCandidateModal({
     last_name: "",
     email: "",
     phone: "",
-    schedule_date: "",
   });
 
   const addMutation = useMutation({
     mutationFn: () =>
-      interviewsApi.addCandidateToInterview({
+      interviewsApi.addCandidate({
         interview_id: interviewId,
         ...formData,
+        schedule_date: new Date().toISOString(),
       }),
     onSuccess: () => {
       toast.success("Candidate Added", {
@@ -53,7 +53,6 @@ export function AddCandidateModal({
         last_name: "",
         email: "",
         phone: "",
-        schedule_date: "",
       });
       onClose();
     },
@@ -66,9 +65,9 @@ export function AddCandidateModal({
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.first_name || !formData.last_name || !formData.email) {
+    if (!formData.first_name || !formData.last_name || !formData.email || !formData.phone) {
       toast.error("Validation Error", {
-        description: "Please fill in all required fields (First Name, Last Name, Email).",
+        description: "Please fill in all required fields (First Name, Last Name, Email, Phone).",
       });
       return;
     }
@@ -134,7 +133,7 @@ export function AddCandidateModal({
 
             <div className="flex flex-col gap-2">
               <Label htmlFor="phone" className="text-[13px] font-semibold uppercase tracking-wide text-muted-foreground">
-                Phone Number
+                Phone Number *
               </Label>
               <Input
                 id="phone"
@@ -143,11 +142,10 @@ export function AddCandidateModal({
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 className="rounded-xl"
                 placeholder="+1 (555) 000-0000"
+                required
               />
             </div>
 
-            {/* Note: schedule_date is optional in the interface, we'll omit the visual field to keep it simple, or add a simple datetime-local input */}
-            
             <div className="flex items-center justify-end gap-3 pt-4 border-t border-[var(--border-color-light)] dark:border-white/[0.09] mt-2">
               <Button
                 type="button"

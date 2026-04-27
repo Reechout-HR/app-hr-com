@@ -12,7 +12,10 @@ export const registerSchema = z
     first_name: z.string().min(1, "First name is required"),
     last_name: z.string().min(1, "Last name is required"),
     email: z.string().min(1, "Email is required").email("Enter a valid email"),
-    password: z.string().min(8, "Use at least 8 characters"),
+    password: z
+      .string()
+      .min(8, "Use at least 8 characters")
+      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "Password must contain an uppercase letter, lowercase letter, and number"),
     confirm_password: z.string().min(1, "Confirm your password"),
     terms: z.boolean().refine((v) => v === true, {
       message: "Accept the terms to continue",

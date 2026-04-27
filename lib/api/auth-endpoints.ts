@@ -14,6 +14,14 @@ export const AUTH_API_PATHS = {
   forgotPassword: "auth/forgot-password",
   /** `POST` body `{ token, password }` — matches `AuthService.resetPassword`. */
   resetPassword: "auth/reset-password",
+  /** `GET` matches `AuthService.getMe`. */
+  me: "auth/me",
+  /** `POST` body `{ code }` matches `AuthService.verifyEmail`. */
+  verifyEmail: "auth/verify-email",
+  /** `POST` matches `AuthService.resendVerification`. */
+  resendVerification: "auth/resend-verification",
+  /** `POST` body matches `AuthService.completeCompanyProfile` (includes required `company_email`). */
+  completeCompanyProfile: "auth/complete-company-profile",
   /**
    * `POST` body `{ refresh }` — not exposed on `AuthService`; used by axios refresh.
    * @see api-hr-io `path("login/refresh/", ...)`

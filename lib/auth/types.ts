@@ -16,7 +16,16 @@ export type AuthUser = {
   email: string;
   first_name: string;
   last_name: string;
+  email_verified: boolean;
+  account_approved: boolean;
+  company_profile_completed: boolean;
+  company_name: string | null;
+  company_email: string | null;
+  company_website: string | null;
+  intended_use: string | null;
 };
+
+export type AuthMeUser = AuthUser;
 
 /**
  * HTTP JSON body for `POST ${apiUrl}/auth/login` — matches `AuthService.login()` payload.
@@ -67,6 +76,12 @@ export type SignupPayload = {
   last_name: string;
   email: string;
   password: string;
+};
+
+export type SignUpData = {
+  access: string;
+  refresh: string;
+  user: AuthMeUser;
 };
 
 /** Same as `AuthService.forgotPassword(email)` POST body. */

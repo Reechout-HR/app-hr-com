@@ -81,7 +81,7 @@ const getStatusColor = (status: string) => {
 const getScoreColor = (score: number | null | undefined) => {
   if (score === null || score === undefined) return "text-[var(--text-secondary)]";
   if (score >= 70) return "text-[var(--success-color)]";
-  if (score >= 40) return "text-[var(--warning-color)]";
+  if (score >= 60) return "text-[var(--warning-color)]";
   return "text-[var(--error-color)]";
 };
 
@@ -165,7 +165,8 @@ export function CandidatesTable({
         (c) =>
           c.first_name.toLowerCase().includes(lowerQ) ||
           c.last_name.toLowerCase().includes(lowerQ) ||
-          c.email.toLowerCase().includes(lowerQ)
+          c.email.toLowerCase().includes(lowerQ) ||
+          (c.phone || "").toLowerCase().includes(lowerQ)
       );
     }
     if (statusFilter) {

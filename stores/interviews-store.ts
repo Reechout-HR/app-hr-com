@@ -9,6 +9,7 @@ interface InterviewsState {
   searchQuery: string;
   dateFilter: string;
   statusFilter: string;
+  candidatesFilter: string;
   isDeleteModalOpen: boolean;
   selectedInterview: InterviewListItem | null;
 
@@ -17,6 +18,7 @@ interface InterviewsState {
   setSearchQuery: (query: string) => void;
   setDateFilter: (filter: string) => void;
   setStatusFilter: (filter: string) => void;
+  setCandidatesFilter: (filter: string) => void;
   setIsDeleteModalOpen: (isOpen: boolean) => void;
   setSelectedInterview: (interview: InterviewListItem | null) => void;
 }
@@ -28,6 +30,7 @@ export const useInterviewsStore = create<InterviewsState>()(
       searchQuery: "",
       dateFilter: "",
       statusFilter: "",
+      candidatesFilter: "",
       isDeleteModalOpen: false,
       selectedInterview: null,
 
@@ -35,6 +38,7 @@ export const useInterviewsStore = create<InterviewsState>()(
       setSearchQuery: (query) => set({ searchQuery: query }),
       setDateFilter: (filter) => set({ dateFilter: filter }),
       setStatusFilter: (filter) => set({ statusFilter: filter }),
+      setCandidatesFilter: (filter) => set({ candidatesFilter: filter }),
       setIsDeleteModalOpen: (isOpen) => set({ isDeleteModalOpen: isOpen }),
       setSelectedInterview: (interview) => set({ selectedInterview: interview }),
     }),

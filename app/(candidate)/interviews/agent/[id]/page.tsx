@@ -1,14 +1,23 @@
 "use client";
 
 import { use, useEffect, useState, useRef } from "react";
-import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { Mic, PhoneOff, AlertCircle } from "lucide-react";
+import { Mic, PhoneOff, AlertCircle, CheckCircle2, CalendarClock } from "lucide-react";
 import Vapi from "@vapi-ai/web";
 import { toast } from "sonner";
 
 import { Orb as NewOrb } from "@/components/ui/orb";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/ui/cn";
 import { interviewsApi } from "@/lib/api/interviews";
 
@@ -40,7 +49,6 @@ interface AgentPageProps {
 
 export default function WebVoiceAgentPage({ params }: AgentPageProps) {
   const { id: candidateId } = use(params);
-  const router = useRouter();
 
   // State
   const [buttonText, setButtonText] = useState("Start Interview");
@@ -49,9 +57,11 @@ export default function WebVoiceAgentPage({ params }: AgentPageProps) {
   const [orbAgentState, setOrbAgentState] = useState<AgentState>("idle");
   const [countdownText, setCountdownText] = useState("");
   const [isFutureDate, setIsFutureDate] = useState(false);
+  const [isWarningOpen, setIsWarningOpen] = useState(false);
 
   // Vapi refs
   const vapiRef = useRef<Vapi | null>(null);
+
 
   // Vapi config from backend (NEXT_PUBLIC_API_URL), same as Angular `assistant-data/:id/`
   const { data, isLoading, isError, refetch } = useQuery({
@@ -66,6 +76,8 @@ export default function WebVoiceAgentPage({ params }: AgentPageProps) {
     enabled: !!candidateId,
     retry: false
   });
+
+  const interviewStatus: string | null = data?.status ?? null;
 
   // Effect to handle Vapi lifecycle and countdown logic
   useEffect(() => {
@@ -177,38 +189,68 @@ export default function WebVoiceAgentPage({ params }: AgentPageProps) {
     }
   };
 
-  const toggleCall = async () => {
+  const isLocked =
+    interviewStatus === "completed" || interviewStatus === "rescheduled";
+
+  const handleStartClick = () => {
+    if (isLocked) return;
+    if (isConnected) {
+      vapiRef.current?.stop();
+      setIsConnected(false);
+      setOrbAgentState("idle");
+      setButtonText("Interview Ended");
+      return;
+    }
     if (!vapiRef.current || !data?.assistant_id) {
       toast.error("Not Ready", { description: "The assistant configuration is not loaded yet." });
       return;
     }
+    setIsWarningOpen(true);
+  };
 
-    if (isConnected) {
-      // End the call
-      vapiRef.current.stop();
-      setIsConnected(false);
+  const startCall = async () => {
+    if (isLocked) return;
+    if (!vapiRef.current || !data?.assistant_id) {
+      toast.error("Not Ready", { description: "The assistant configuration is not loaded yet." });
+      return;
+    }
+    try {
+      setIsConnecting(true);
+      setButtonText("Connecting...");
+      setOrbAgentState("connecting");
+
+      await vapiRef.current.start(data.assistant_id, {
+        endCallMessage: "Thanks again, take care!",
+        endCallPhrases: ["Thanks again, take care!"],
+        voicemailMessage:
+          "Hey there! This is Sarah from Reechout. We tried to reach you for your scheduled interview. Give us a call back when you can—looking forward to chatting with you!",
+        maxDurationSeconds: 1200,
+        backgroundSound: "off",
+        serverMessages: ["end-of-call-report"],
+        artifactPlan: {
+          recordingEnabled: true,
+        },
+        startSpeakingPlan: {
+          waitSeconds: 0.8,
+          smartEndpointingPlan: {
+            provider: "livekit",
+          },
+          transcriptionEndpointingPlan: {
+            onPunctuationSeconds: 0.2,
+            onNoPunctuationSeconds: 1.5,
+          },
+        },
+        stopSpeakingPlan: {
+          numWords: 3,
+        },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any);
+    } catch (err) {
+      console.error("Error starting Vapi call:", err);
+      setIsConnecting(false);
       setOrbAgentState("idle");
-      setButtonText("Interview Ended");
-    } else {
-      // Start the call
-      try {
-        setIsConnecting(true);
-        setButtonText("Connecting...");
-        setOrbAgentState("connecting");
-        
-        // Pass the candidate_id down so Vapi knows who is talking
-        await vapiRef.current.start(data.assistant_id, {
-          variableValues: {
-            candidate_id: candidateId,
-          }
-        });
-      } catch (err) {
-        console.error("Error starting Vapi call:", err);
-        setIsConnecting(false);
-        setOrbAgentState("idle");
-        setButtonText("Start Interview");
-        toast.error("Failed to Start", { description: "Could not start the audio stream. Please check your microphone permissions." });
-      }
+      setButtonText("Start Interview");
+      toast.error("Failed to Start", { description: "Could not start the audio stream. Please check your microphone permissions." });
     }
   };
 
@@ -271,8 +313,24 @@ export default function WebVoiceAgentPage({ params }: AgentPageProps) {
 
           {/* Interaction Area */}
           <div className="flex flex-col items-center w-full max-w-md">
-            
-            {isFutureDate ? (
+
+            {isLocked ? (
+              <div className="flex flex-col items-center justify-center gap-3 p-6 rounded-2xl bg-[var(--surface-2)] border border-[var(--border-color-light)] dark:border-white/5 w-full text-center">
+                {interviewStatus === "completed" ? (
+                  <>
+                    <CheckCircle2 className="w-8 h-8 text-[var(--success-color)]" />
+                    <span className="text-lg font-bold text-foreground">Interview already completed</span>
+                    <span className="text-sm text-muted-foreground">Thanks for participating. You can close this window.</span>
+                  </>
+                ) : (
+                  <>
+                    <CalendarClock className="w-8 h-8 text-[var(--warning-color)]" />
+                    <span className="text-lg font-bold text-foreground">Interview rescheduled</span>
+                    <span className="text-sm text-muted-foreground">Check your email for the updated invite link.</span>
+                  </>
+                )}
+              </div>
+            ) : isFutureDate ? (
               <div className="flex flex-col items-center justify-center gap-3 p-6 rounded-2xl bg-[var(--surface-2)] border border-[var(--border-color-light)] dark:border-white/5 w-full text-center">
                 <span className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Starts In</span>
                 <span className="text-3xl font-black text-[var(--primary-color)] tracking-tight tabular-nums">
@@ -283,12 +341,12 @@ export default function WebVoiceAgentPage({ params }: AgentPageProps) {
             ) : (
               <Button
                 size="lg"
-                onClick={toggleCall}
+                onClick={handleStartClick}
                 disabled={isConnecting || (!isConnected && (!data.assistant_id || !data.vapi_public_key))}
                 className={cn(
                   "w-full h-16 rounded-2xl text-[18px] font-bold shadow-lg transition-all duration-300",
-                  isConnected 
-                    ? "bg-[var(--error-color)] hover:bg-[var(--error-color)]/90 text-white shadow-[var(--error-color)]/20" 
+                  isConnected
+                    ? "bg-[var(--error-color)] hover:bg-[var(--error-color)]/90 text-white shadow-[var(--error-color)]/20"
                     : "bg-gradient-to-r from-[var(--primary-color)] to-[var(--primary-color-hover)] hover:opacity-90 text-white shadow-[var(--primary-color)]/30"
                 )}
               >
@@ -324,9 +382,32 @@ export default function WebVoiceAgentPage({ params }: AgentPageProps) {
               </div>
             )}
           </div>
-          
+
         </div>
       </div>
+
+      <AlertDialog open={isWarningOpen} onOpenChange={setIsWarningOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Important Notice</AlertDialogTitle>
+            <AlertDialogDescription>
+              Once you start the interview, you cannot cancel it. Please ensure you are
+              ready before proceeding.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setIsWarningOpen(false);
+                startCall();
+              }}
+            >
+              I Understand, Start Interview
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

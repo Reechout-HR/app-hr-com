@@ -244,7 +244,15 @@ export default function QuestionnaireDetailPage() {
 
   const reorderQuestionsMutation = useMutation({
     mutationFn: (payload: import('@/lib/api/questions').UpdateQuestionsOrderRequest) => questionsApi.updateQuestionsOrder(payload),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["questionnaire", id] })
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["questionnaire", id] });
+      toast.success("Question order updated successfully");
+    },
+    onError: () => {
+      // Revert local state to server truth, matching Angular's loadQuestionnaire() on error.
+      queryClient.invalidateQueries({ queryKey: ["questionnaire", id] });
+      toast.error("Failed to update question order");
+    }
   });
 
   // Handlers

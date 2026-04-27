@@ -731,3 +731,110 @@ body {
     cursor: pointer;
   }
 }
+
+@layer utilities {
+  .glass-card-shimmer::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--glass-white-overlay-dark) 50%,
+      transparent
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .glass-header-overlay::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      var(--glass-primary-overlay) 0%,
+      transparent 100%
+    );
+    pointer-events: none;
+  }
+
+  .glass-sidebar-overlay::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      var(--glass-primary-overlay-light) 0%,
+      transparent 100%
+    );
+    pointer-events: none;
+  }
+
+  .chat-top-fade::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--gray-bg), transparent);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .glass-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+  .glass-scrollbar::-webkit-scrollbar-track {
+    background: var(--glass-shadow-light);
+    border-radius: 4px;
+  }
+  .glass-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--glass-border-medium);
+    border-radius: 4px;
+  }
+  .glass-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--glass-border-dark);
+  }
+
+  .glass-scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+  .glass-scrollbar-thin::-webkit-scrollbar-track {
+    background: var(--glass-shadow-light);
+  }
+  .glass-scrollbar-thin::-webkit-scrollbar-thumb {
+    background: var(--glass-border-medium);
+    border-radius: 3px;
+  }
+  .glass-scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: var(--glass-border-dark);
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+}

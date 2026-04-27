@@ -38,7 +38,8 @@ import { AuthPasswordField } from "@/app/(auth)/components/AuthPasswordField";
 import { AuthWordmark } from "@/app/(auth)/components/AuthWordmark";
 import { loginSchema, type LoginFormValues } from "@/lib/auth/auth-schemas";
 import { authApi, parseApiError, parseFieldErrors } from "@/lib/api";
-import { useRedirectIfAuthenticated } from "@/lib/auth/use-redirect-if-authenticated";
+import { useRedirectIfAuthenticatedWithOnboarding } from "@/lib/auth/use-redirect-if-authenticated-with-onboarding";
+import { getFirstIncompleteOnboardingPath } from "@/lib/auth/onboarding";
 import { useAuthStore } from "@/lib/store";
 import type { LoginPayload } from "@/lib/auth/types";
 
@@ -52,7 +53,7 @@ export default function LoginPage() {
   const setSession = useAuthStore((s) => s.setSession);
   const [formError, setFormError] = useState<string | null>(null);
 
-  useRedirectIfAuthenticated("/interviews");
+  useRedirectIfAuthenticatedWithOnboarding();
 
   const {
     register,
@@ -65,17 +66,40 @@ export default function LoginPage() {
   });
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (payload: LoginPayload) =>
-      authApi.login(payload.email, payload.password),
-    onSuccess: (response, variables) => {
-      /** Same tokens as Angular `login.component.ts` (`response.data.access` / `refresh`). */
-      setSession(response.data, {
+    mutationFn: async (payload: LoginPayload) => {
+      const loginRes = await authApi.login(payload.email, payload.password);
+      
+      // Store session temporarily so getMe can authenticate
+      setSession(loginRes.data, {
         id: "",
-        email: variables.email,
+        email: payload.email,
         first_name: "",
         last_name: "",
+        email_verified: false,
+        account_approved: false,
+        company_profile_completed: false,
+        company_name: null,
+        company_email: null,
+        company_website: null,
+        intended_use: null,
       });
-      router.replace("/interviews");
+
+      try {
+        const meRes = await authApi.getMe();
+        return { loginRes, meRes };
+      } catch {
+        // Fallback if me fails
+        return { loginRes, meRes: null };
+      }
+    },
+    onSuccess: (result) => {
+      if (result.meRes?.data) {
+        setSession(result.loginRes.data, result.meRes.data);
+        const path = getFirstIncompleteOnboardingPath(result.meRes.data);
+        router.replace(path ? path : "/interviews");
+      } else {
+        router.replace("/interviews");
+      }
     },
     onError: (error) => {
       const fieldErrors = parseFieldErrors(error);
@@ -109,11 +133,11 @@ export default function LoginPage() {
 
             <div className={authCardClassName}>
               <div className={authCardInnerClassName}>
-                <div className={authCardHeaderClassName}>
+                <header className={authCardHeaderClassName}>
                   <div className={authCardHeaderLineClassName} />
                   <h2 className={authCardTitleClassName}>Welcome back</h2>
                   <p className={authCardSubtitleClassName}>Sign in to your workspace.</p>
-                </div>
+                </header>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
                   {formError ? (

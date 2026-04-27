@@ -73,9 +73,9 @@ export const authApi = {
     last_name?: string,
     email?: string,
     password?: string,
-  ): Promise<ApiEnvelope<unknown>> => {
+  ): Promise<ApiEnvelope<import("@/lib/auth/types").SignUpData>> => {
     const body = normalizeSignupPayload(firstOrPayload, last_name, email, password);
-    const { data } = await apiClient.post<ApiEnvelope<unknown>>(AUTH_API_PATHS.signup, body);
+    const { data } = await apiClient.post<ApiEnvelope<import("@/lib/auth/types").SignUpData>>(AUTH_API_PATHS.signup, body);
     return data;
   },
 
@@ -113,6 +113,40 @@ export const authApi = {
       device_id: deviceId,
       device_type: "web",
     });
+    return data;
+  },
+
+  getMe: async (): Promise<ApiEnvelope<import("@/lib/auth/types").AuthMeUser>> => {
+    const { data } = await apiClient.get<ApiEnvelope<import("@/lib/auth/types").AuthMeUser>>(AUTH_API_PATHS.me);
+    return data;
+  },
+
+  verifyEmail: async (code: string): Promise<ApiEnvelope<import("@/lib/auth/types").AuthMeUser>> => {
+    const { data } = await apiClient.post<ApiEnvelope<import("@/lib/auth/types").AuthMeUser>>(
+      AUTH_API_PATHS.verifyEmail,
+      { code }
+    );
+    return data;
+  },
+
+  resendVerification: async (): Promise<ApiEnvelope<null>> => {
+    const { data } = await apiClient.post<ApiEnvelope<null>>(
+      AUTH_API_PATHS.resendVerification,
+      {}
+    );
+    return data;
+  },
+
+  completeCompanyProfile: async (payload: {
+    company_name: string;
+    company_email: string;
+    company_website: string;
+    intended_use: string;
+  }): Promise<ApiEnvelope<import("@/lib/auth/types").AuthMeUser>> => {
+    const { data } = await apiClient.post<ApiEnvelope<import("@/lib/auth/types").AuthMeUser>>(
+      AUTH_API_PATHS.completeCompanyProfile,
+      payload
+    );
     return data;
   },
 };

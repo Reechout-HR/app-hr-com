@@ -39,7 +39,9 @@ import { AuthWordmark } from "@/app/(auth)/components/AuthWordmark";
 import PasswordStrengthBar from "@/app/(auth)/components/PasswordStrengthBar";
 import { registerSchema, type RegisterFormValues } from "@/lib/auth/auth-schemas";
 import { authApi, parseApiError, parseFieldErrors } from "@/lib/api";
+import { useRedirectIfAuthenticatedWithOnboarding } from "@/lib/auth/use-redirect-if-authenticated-with-onboarding";
 import { cn } from "@/lib/ui/cn";
+import { useAuthStore } from "@/lib/store";
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
@@ -70,12 +72,37 @@ export default function RegisterPage() {
 
   const password = useWatch({ control, name: "password", defaultValue: "" }) ?? "";
 
+  const setSession = useAuthStore((s) => s.setSession);
+
+  useRedirectIfAuthenticatedWithOnboarding();
+
   const { mutate, isPending } = useMutation({
     mutationFn: (values: RegisterFormValues) => {
       return authApi.signup(values.first_name, values.last_name, values.email, values.password);
     },
-    onSuccess: () => {
-      router.replace("/login");
+    onSuccess: (response) => {
+      const data = response.data;
+      if (data?.access) {
+        setSession(
+          { access: data.access, refresh: data.refresh },
+          data.user || {
+            id: "",
+            email: "",
+            first_name: "",
+            last_name: "",
+            email_verified: false,
+            account_approved: false,
+            company_profile_completed: false,
+            company_name: null,
+            company_email: null,
+            company_website: null,
+            intended_use: null,
+          }
+        );
+        router.replace("/verify-email");
+      } else {
+        router.replace("/login");
+      }
     },
     onError: (error) => {
       const fieldErrors = parseFieldErrors(error);

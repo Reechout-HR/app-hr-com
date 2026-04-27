@@ -269,6 +269,16 @@ export const interviewsApi = {
     return data;
   },
 
+  /**
+   * Authenticated single-candidate add — matches Angular `addCandidate()` POST `/api/interviews/candidate/`.
+   * Used by the detail-page Add Candidate modal. The plural `candidates/` route does not exist on the
+   * backend without an `interview_id` segment, so detail flows must use this singular variant.
+   */
+  addCandidate: async (payload: AddCandidateRequest) => {
+    const { data } = await apiClient.post<InterviewCandidate>(`/api/interviews/candidate/`, payload);
+    return data;
+  },
+
   getCandidateReport: async (candidateId: string) => {
     const { data } = await apiClient.get<CandidateReport>(
       `/api/interviews/candidates/${candidateId}/report/`

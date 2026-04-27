@@ -11,7 +11,6 @@ import {
   MoreVertical,
   Search,
   User as UserIcon,
-  Edit,
   Trash,
   Users,
 } from "lucide-react";
@@ -87,6 +86,8 @@ function InterviewsDashboard() {
     setDateFilter,
     statusFilter,
     setStatusFilter,
+    candidatesFilter,
+    setCandidatesFilter,
     isDeleteModalOpen,
     setIsDeleteModalOpen,
     selectedInterview,
@@ -117,10 +118,6 @@ function InterviewsDashboard() {
     router.push("/interview/create");
   };
 
-  const handleEditClick = (item: InterviewListItem) => {
-    router.push(`/interview/edit/${item.id}`);
-  };
-
   const handleDeleteClick = (item: InterviewListItem) => {
     setSelectedInterview(item);
     setIsDeleteModalOpen(true);
@@ -142,9 +139,22 @@ function InterviewsDashboard() {
     if (statusFilter) {
       results = results.filter((i) => i.status.toLowerCase() === statusFilter.toLowerCase());
     }
-    
+
+    if (candidatesFilter) {
+      results = results.filter((i) => {
+        const n = i.candidate_number;
+        switch (candidatesFilter) {
+          case "1-5": return n >= 1 && n <= 5;
+          case "6-10": return n >= 6 && n <= 10;
+          case "11-20": return n >= 11 && n <= 20;
+          case "20+": return n > 20;
+          default: return true;
+        }
+      });
+    }
+
     return results;
-  }, [data?.results, searchQuery, statusFilter]);
+  }, [data?.results, searchQuery, statusFilter, candidatesFilter]);
 
   const getStatusClasses = (status: InterviewListItem["status"]) => {
     const baseClasses = "inline-flex items-center justify-center gap-2 rounded-xl border px-3 py-1.5 text-[12px] font-bold capitalize tracking-wide backdrop-blur-md transition-all duration-200 hover:-translate-y-[1px] shadow-sm";
@@ -196,6 +206,17 @@ function InterviewsDashboard() {
                 { label: "Pending", value: "pending" },
                 { label: "Scheduled", value: "scheduled" },
                 { label: "Completed", value: "completed" },
+              ]}
+            />
+            <FilterDropdown
+              label="Candidates"
+              value={candidatesFilter}
+              onChange={setCandidatesFilter}
+              options={[
+                { label: "1–5 candidates", value: "1-5" },
+                { label: "6–10 candidates", value: "6-10" },
+                { label: "11–20 candidates", value: "11-20" },
+                { label: "20+ candidates", value: "20+" },
               ]}
             />
           </div>
@@ -358,10 +379,6 @@ function InterviewsDashboard() {
                                 </button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end" className="w-32 rounded-xl" onClick={(e) => e.stopPropagation()}>
-                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleEditClick(item!); }}>
-                                  <Edit className="mr-2 h-4 w-4" />
-                                  Edit
-                                </DropdownMenuItem>
                                 <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleDeleteClick(item!); }} className="text-destructive focus:text-destructive focus:bg-destructive/10 dark:focus:bg-destructive/20">
                                   <Trash className="mr-2 h-4 w-4" />
                                   Delete
@@ -394,10 +411,6 @@ function InterviewsDashboard() {
                                 </button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end" className="w-32 rounded-xl" onClick={(e) => e.stopPropagation()}>
-                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleEditClick(item!); }}>
-                                  <Edit className="mr-2 h-4 w-4" />
-                                  Edit
-                                </DropdownMenuItem>
                                 <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleDeleteClick(item!); }} className="text-destructive focus:text-destructive focus:bg-destructive/10 dark:focus:bg-destructive/20">
                                   <Trash className="mr-2 h-4 w-4" />
                                   Delete
@@ -450,10 +463,6 @@ function InterviewsDashboard() {
                               </button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-32 rounded-xl" onClick={(e) => e.stopPropagation()}>
-                              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleEditClick(item!); }}>
-                                <Edit className="mr-2 h-4 w-4" />
-                                Edit
-                              </DropdownMenuItem>
                               <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleDeleteClick(item!); }} className="text-destructive focus:text-destructive focus:bg-destructive/10 dark:focus:bg-destructive/20">
                                 <Trash className="mr-2 h-4 w-4" />
                                 Delete

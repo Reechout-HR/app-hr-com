@@ -62,6 +62,48 @@ function isRefreshUrl(url: string | undefined): boolean {
   return url.includes("auth/login/refresh");
 }
 
+function isAuthApiPath(url: string | undefined): boolean {
+  if (!url) return false;
+  return url.includes("/auth/") || url.includes("auth/");
+}
+
+const ONBOARDING_ROUTE_PREFIXES = ["/verify-email", "/company-setup", "/pending-approval"];
+
+function isOnboardingRoute(path: string): boolean {
+  return ONBOARDING_ROUTE_PREFIXES.some((p) => path === p || path.startsWith(`${p}/`));
+}
+
+/** After 403 from a protected HR endpoint, sync session and send user to the right onboarding step. */
+function scheduleOnboardingRedirectAfter403(requestUrl: string | undefined) {
+  if (isAuthApiPath(requestUrl)) {
+    return;
+  }
+  onClient(() => {
+    if (!getAccessToken()) {
+      return;
+    }
+    const path = window.location.pathname;
+    if (isOnboardingRoute(path)) {
+      return;
+    }
+    void (async () => {
+      const { authApi } = await import("@/lib/api/auth");
+      const { useAuthStore } = await import("@/lib/store/auth.store");
+      const { getFirstIncompleteOnboardingPath } = await import("@/lib/auth/onboarding");
+      try {
+        const me = await authApi.getMe();
+        useAuthStore.getState().setUser(me.data);
+        const next = getFirstIncompleteOnboardingPath(me.data);
+        if (next) {
+          window.location.assign(next);
+        }
+      } catch {
+        /* leave user on page; they may retry */
+      }
+    })();
+  });
+}
+
 /** Single in-flight refresh so parallel 401s share one token rotation. */
 let refreshPromise: Promise<void> | null = null;
 
@@ -138,7 +180,13 @@ apiClient.interceptors.response.use(
       onClient(() => useLoaderStore.getState().hide());
     }
 
-    if (!error.response || error.response.status !== 401 || !config) {
+    const status = error.response?.status;
+
+    if (status === 403 && config) {
+      scheduleOnboardingRedirectAfter403(config.url);
+    }
+
+    if (!error.response || status !== 401 || !config) {
       return Promise.reject(error);
     }
 
