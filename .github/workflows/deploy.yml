@@ -8,7 +8,7 @@ env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   REGION: ${{ secrets.GCP_REGION }}
   SERVICE: app-hr-com
-  REGISTRY: ${{ secrets.GCP_REGION }}-docker.pkg.dev
+  IMAGE: ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/app-hr-com
 
 jobs:
   deploy:
@@ -42,7 +42,7 @@ jobs:
             NEXT_PUBLIC_FIREBASE_VAPID_KEY:hr-app-475516/NEXT_PUBLIC_FIREBASE_VAPID_KEY
 
       - name: Configure Docker for Artifact Registry
-        run: gcloud auth configure-docker ${{ env.REGISTRY }} --quiet
+        run: gcloud auth configure-docker ${{ secrets.GCP_REGION }}-docker.pkg.dev --quiet
 
       - name: Build Docker Image
         run: |
@@ -56,19 +56,19 @@ jobs:
             --build-arg NEXT_PUBLIC_FIREBASE_APP_ID="${{ steps.secrets.outputs.NEXT_PUBLIC_FIREBASE_APP_ID }}" \
             --build-arg NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID="${{ steps.secrets.outputs.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID }}" \
             --build-arg NEXT_PUBLIC_FIREBASE_VAPID_KEY="${{ steps.secrets.outputs.NEXT_PUBLIC_FIREBASE_VAPID_KEY }}" \
-            -t ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/${{ env.SERVICE }}:${{ github.sha }} \
-            -t ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/${{ env.SERVICE }}:latest \
+            -t ${{ env.IMAGE }}:${{ github.sha }} \
+            -t ${{ env.IMAGE }}:latest \
             .
 
       - name: Push Docker Image
         run: |
-          docker push ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/${{ env.SERVICE }}:${{ github.sha }}
-          docker push ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/${{ env.SERVICE }}:latest
+          docker push ${{ env.IMAGE }}:${{ github.sha }}
+          docker push ${{ env.IMAGE }}:latest
 
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: ${{ env.SERVICE }}
           region: ${{ env.REGION }}
-          image: ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/${{ env.SERVICE }}:${{ github.sha }}
+          image: ${{ env.IMAGE }}:${{ github.sha }}
           flags: "--allow-unauthenticated"
