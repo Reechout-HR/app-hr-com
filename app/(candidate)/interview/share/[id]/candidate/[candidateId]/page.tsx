@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/ui/cn";
-import { getCandidatePortal, updateCandidatePortal } from "@/lib/api/interviews";
+import { interviewsApi } from "@/lib/api/interviews";
 
 interface SharePageProps {
   params: Promise<{ id: string; candidateId: string }>;
@@ -45,7 +45,7 @@ export default function CandidateSharePage({ params }: SharePageProps) {
     queryKey: ["candidate-share", candidateId, token],
     queryFn: () => {
       if (!candidateId || !token) throw new Error("Invalid link");
-      return getCandidatePortal(candidateId, token);
+      return interviewsApi.getCandidate(candidateId, token);
     },
     enabled: !!candidateId && !!token,
     retry: false,
@@ -71,13 +71,16 @@ export default function CandidateSharePage({ params }: SharePageProps) {
       if (!candidateId || !token || !interviewId) {
         throw new Error("Invalid link");
       }
-      return updateCandidatePortal(candidateId, interviewId, token, {
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        email: formData.email,
-        phone: formData.phone,
-        schedule_date_iso: new Date(formData.preferredDateTime).toISOString(),
-      });
+      const submitData = new FormData();
+      submitData.append("interview_id", interviewId);
+      submitData.append("first_name", formData.first_name);
+      submitData.append("last_name", formData.last_name);
+      submitData.append("email", formData.email);
+      submitData.append("phone", formData.phone);
+      submitData.append("schedule_date", new Date(formData.preferredDateTime).toISOString());
+      submitData.append("id", candidateId);
+
+      return interviewsApi.updateCandidateWithFile(submitData, token);
     },
     onSuccess: () => {
       setSubmitted(true);
@@ -155,11 +158,7 @@ export default function CandidateSharePage({ params }: SharePageProps) {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex w-full flex-1 items-center justify-center">
-        <Loader2 className="h-10 w-10 animate-spin text-[var(--primary-color)]" />
-      </div>
-    );
+    return null;
   }
 
   if (isError) {

@@ -15,8 +15,7 @@ import {
   ChevronRight,
   FileText,
   Building2,
-  Briefcase,
-  Loader2
+  Briefcase
 } from "lucide-react";
 import { parseApiError } from "@/lib/api/client";
 import { interviewsApi } from "@/lib/api/interviews";
@@ -26,6 +25,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/ui/cn";
+import { useLoaderStore } from "@/stores/loader-store";
 
 const basicInfoSchema = z.object({
   first_name: z.string().min(2, "First name is required"),
@@ -174,8 +174,10 @@ export default function ScreeningPage() {
         );
       } else if (result.passed) {
         setCurrentStep("redirecting");
+        useLoaderStore.getState().show();
         toast.success("Congratulations! Your application has been approved.");
         setTimeout(() => {
+          useLoaderStore.getState().hide();
           router.push(`/interview/share/${interviewId}/candidate/${result.candidate_id}`);
         }, 2000);
       } else {
@@ -190,33 +192,8 @@ export default function ScreeningPage() {
 
   const progress = currentStep === "basic-info" ? 33 : currentStep === "questions" ? 66 : 100;
 
-  if (currentStep === "loading") {
-    return (
-      <div className="flex h-screen w-full items-center justify-center">
-        <Loader2 className="h-10 w-10 animate-spin text-[var(--primary-color)]" />
-      </div>
-    );
-  }
-
-  if (currentStep === "evaluating" || currentStep === "redirecting") {
-    return (
-      <div className="flex h-screen w-full flex-col items-center justify-center gap-6 px-4 text-center">
-        <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-[var(--primary-color)]/10">
-          <div className="absolute inset-0 animate-ping rounded-full bg-[var(--primary-color)]/20" />
-          <Loader2 className="h-10 w-10 animate-spin text-[var(--primary-color)] relative z-10" />
-        </div>
-        <div className="space-y-2">
-          <h3 className="text-2xl font-bold text-[var(--text-primary)] tracking-tight">
-            {currentStep === "redirecting" ? "Preparing Interview..." : "Analyzing Application"}
-          </h3>
-          <p className="text-[var(--text-secondary)] text-sm max-w-sm mx-auto leading-relaxed">
-            {currentStep === "redirecting" 
-              ? "We're setting up your interview environment." 
-              : "Our AI is securely processing your responses and resume. Please do not close this window."}
-          </p>
-        </div>
-      </div>
-    );
+  if (currentStep === "loading" || currentStep === "evaluating" || currentStep === "redirecting") {
+    return null;
   }
 
   if (currentStep === "submitted") {

@@ -40,14 +40,14 @@ export interface Questionnaire {
 }
 
 export interface QuestionnaireResponse {
-  questionnaire_id: number;
+  questionnaire_id: string;
   questionnaire_title: string;
   questions: Question[];
   screening_questions?: Question[];
   regular_questions?: Question[];
   total_questions: number;
   total_screening_questions?: number;
-  total_regular_questions?: number;
+  total_main_questions?: number;
   first_message?: string;
   company_values?: string;
   candidate_attributes?: string;

@@ -514,12 +514,14 @@ export function CreateQuestionnaireModal({
 
           {/* Body Container */}
           <div className="flex flex-1 min-h-0 w-full flex-col bg-transparent md:flex-row overflow-hidden">
-            {/* Sidebar */}
-            <div className="flex w-full flex-none flex-col overflow-y-auto bg-transparent p-4 sm:p-6 md:w-[260px] border-b md:border-b-0 md:border-r border-[var(--header-floating-border)]">
+          {/* Sidebar */}
+          <div className="relative flex w-full flex-none flex-col overflow-y-auto bg-[var(--surface-2)]/40 md:w-[260px] border-b md:border-b-0 md:border-r border-[var(--header-floating-border)]">
+            <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-[rgba(var(--primary-color-rgb),0.06)] to-transparent" />
+            <div className="relative z-10 p-4 sm:p-6">
               <h4 className="mb-4 px-2 text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
                 Configuration Steps
               </h4>
-              <div className="flex flex-row gap-1.5 overflow-x-auto pb-2 md:flex-col md:pb-0 scrollbar-none">
+              <div className="flex flex-row gap-2 overflow-x-auto pb-2 md:flex-col md:pb-0 scrollbar-none">
                 {STEPS.map((step) => {
                   const Icon = step.icon;
                   const isActive = currentStep === step.id;
@@ -539,32 +541,35 @@ export function CreateQuestionnaireModal({
                       disabled={blocked}
                       onClick={() => goToStep(step.id)}
                       className={cn(
-                        "group relative flex items-center gap-3 whitespace-nowrap rounded-[var(--radius-md)] px-3 py-2.5 text-left text-sm transition-all md:whitespace-normal",
+                        "group relative flex items-center gap-3 whitespace-nowrap rounded-[var(--radius-md)] px-4 py-3 text-left text-sm transition-all md:whitespace-normal overflow-hidden",
+                        "backdrop-blur-md border shadow-sm mx-1 mb-2",
                         isActive
-                          ? "bg-[var(--primary-color)]/10 text-[var(--primary-color)] font-medium"
-                          : "text-[var(--text-secondary)] hover:bg-[var(--surface-2)] hover:text-foreground disabled:opacity-40",
-                        completed && !isActive && "text-foreground",
+                          ? "bg-gradient-to-br from-[rgba(var(--primary-color-rgb),0.15)] to-[rgba(var(--primary-color-rgb),0.08)] border-[rgba(var(--primary-color-rgb),0.6)] border-[1.5px] shadow-[0_4px_12px_rgba(var(--primary-color-rgb),0.15)] text-[var(--primary-color)] font-bold"
+                          : "border-[var(--border-color)] bg-background/60 hover:bg-background/80 hover:border-[var(--primary-color)]/30 hover:shadow-md text-[var(--text-primary)] disabled:opacity-40",
+                        completed && !isActive && "border-[rgba(var(--success-color-rgb),0.3)] text-foreground",
                       )}
                     >
+                      <div className="absolute inset-0 bg-gradient-to-br from-[rgba(var(--primary-color-rgb),0.1)] to-transparent opacity-0 transition-opacity group-hover:opacity-100 pointer-events-none" />
                       <Icon
                         className={cn(
-                          "h-4 w-4 shrink-0 transition-colors",
+                          "h-[18px] w-[18px] shrink-0 transition-transform duration-300 relative z-10",
                           isActive
-                            ? "text-[var(--primary-color)]"
+                            ? "text-[var(--primary-color)] scale-110"
                             : completed
                               ? "text-[var(--success-color)]"
-                              : "text-[var(--text-secondary)] group-hover:text-foreground",
+                              : "text-[var(--text-secondary)] group-hover:text-[var(--primary-color)] group-hover:scale-110",
                         )}
                       />
-                      <span className="flex-1 transition-colors">{step.title}</span>
+                      <span className="flex-1 transition-colors relative z-10">{step.title}</span>
                       {completed && !isActive && (
-                        <CheckCircle className="h-3.5 w-3.5 shrink-0 text-[var(--success-color)]" />
+                        <CheckCircle className="h-[18px] w-[18px] shrink-0 text-[var(--success-color)] relative z-10" />
                       )}
                     </button>
                   );
                 })}
               </div>
             </div>
+          </div>
 
             {/* Main Content Area */}
             <div className="flex-1 w-full min-w-0 overflow-y-auto bg-transparent p-5 sm:p-8 md:p-10">
