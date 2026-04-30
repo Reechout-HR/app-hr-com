@@ -1,84 +1,66 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
-import { authApi } from "@/lib/api";
-import { getAccessToken } from "@/lib/auth/auth-token";
 import { getFirstIncompleteOnboardingPath } from "@/lib/auth/onboarding";
 import { useAuthStore } from "@/lib/store";
 
 export type OnboardingStepName = "verify" | "setup" | "pending";
 
 /**
- * Redirects to the correct route for the current user, matching Angular
- * `verifyEmailPageGuard`, `companySetupPageGuard`, `pendingApprovalPageGuard`.
- * Returns `true` when the current page is the right step to show.
+ * Checks that the current page matches the user's actual onboarding step,
+ * redirecting if they've already completed it or haven't reached it yet.
+ * Pure store read — no network call. Boot-time `/auth/me` populates the
+ * store, and mutation responses keep it fresh.
+ *
+ * Returns `true` once the guard has decided the user belongs on this page.
  */
 export function useOnboardingStepGuard(step: OnboardingStepName): boolean {
   const router = useRouter();
-  const setUser = useAuthStore((s) => s.setUser);
-  const [ok, setOk] = useState(false);
+  const user = useAuthStore((s) => s.user);
+  const isReady = useAuthStore((s) => s.isReady);
 
   useEffect(() => {
-    if (!getAccessToken()) {
+    if (!isReady) return;
+    if (!user) {
       router.replace("/login");
       return;
     }
 
-    let cancelled = false;
-
-    (async () => {
-      try {
-        const me = await authApi.getMe();
-        if (cancelled) {
-          return;
-        }
-        setUser(me.data);
-        const u = me.data;
-
-        if (step === "verify") {
-          if (u.email_verified) {
-            router.replace(getFirstIncompleteOnboardingPath(u) ?? "/interviews");
-            return;
-          }
-        } else if (step === "setup") {
-          if (!u.email_verified) {
-            router.replace("/verify-email");
-            return;
-          }
-          if (u.company_profile_completed) {
-            router.replace(getFirstIncompleteOnboardingPath(u) ?? "/interviews");
-            return;
-          }
-        } else {
-          if (!u.email_verified) {
-            router.replace("/verify-email");
-            return;
-          }
-          if (!u.company_profile_completed) {
-            router.replace("/company-setup");
-            return;
-          }
-          if (u.account_approved) {
-            router.replace("/interviews");
-            return;
-          }
-        }
-        if (!cancelled) {
-          setOk(true);
-        }
-      } catch {
-        if (!cancelled) {
-          router.replace("/login");
-        }
+    if (step === "verify") {
+      if (user.email_verified) {
+        router.replace(getFirstIncompleteOnboardingPath(user) ?? "/interviews");
       }
-    })();
+    } else if (step === "setup") {
+      if (!user.email_verified) {
+        router.replace("/verify-email");
+        return;
+      }
+      if (user.company_profile_completed) {
+        router.replace(getFirstIncompleteOnboardingPath(user) ?? "/interviews");
+      }
+    } else {
+      if (!user.email_verified) {
+        router.replace("/verify-email");
+        return;
+      }
+      if (!user.company_profile_completed) {
+        router.replace("/company-setup");
+        return;
+      }
+      if (user.account_approved) {
+        router.replace("/interviews");
+      }
+    }
+  }, [isReady, user, step, router]);
 
-    return () => {
-      cancelled = true;
-    };
-  }, [router, setUser, step]);
+  if (!isReady || !user) return false;
 
-  return ok;
+  if (step === "verify") return !user.email_verified;
+  if (step === "setup") return user.email_verified && !user.company_profile_completed;
+  // "pending"
+  return (
+    user.email_verified && user.company_profile_completed && !user.account_approved
+  );
 }

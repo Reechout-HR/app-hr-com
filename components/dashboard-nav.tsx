@@ -60,7 +60,13 @@ export function DashboardNav({ onCreateNew }: DashboardNavProps) {
     setDarkMode(next === "dark");
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      const { authApi } = await import("@/lib/api");
+      await authApi.logout();
+    } catch {
+      /* best effort — fall through to clearing client state regardless */
+    }
     clearAuth();
     router.push("/login");
   };

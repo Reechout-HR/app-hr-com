@@ -35,7 +35,13 @@ export default function PendingApprovalPage() {
   const clearAuth = useAuthStore((s) => s.clearAuth);
   const user = useAuthStore((s) => s.user);
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    try {
+      const { authApi } = await import("@/lib/api");
+      await authApi.logout();
+    } catch {
+      /* best effort */
+    }
     clearAuth();
     router.replace("/login");
   };

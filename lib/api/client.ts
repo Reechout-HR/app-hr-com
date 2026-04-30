@@ -3,13 +3,7 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from "axios";
 
-import {
-  getAccessToken,
-  getRefreshToken,
-  setAccessToken,
-  setRefreshToken,
-} from "@/lib/auth/auth-token";
-import type { ApiEnvelope, TokenPair } from "@/lib/auth/types";
+import type { ApiEnvelope, AuthEnvelopeData } from "@/lib/auth/types";
 import { getPublicApiBaseUrl } from "@/lib/config/env";
 import { AUTH_API_PATHS } from "@/lib/api/auth-endpoints";
 import { queryClient } from "@/lib/query/query-client";
@@ -30,10 +24,12 @@ function onClient(fn: () => void) {
 }
 
 /**
- * Bare client for refresh only — avoids going through interceptors / refresh loop.
+ * Bare client for the refresh call only — avoids the interceptor refresh loop.
+ * `withCredentials` lets the browser attach / receive the httpOnly auth cookies.
  */
 const refreshHttp = axios.create({
   baseURL: getPublicApiBaseUrl(),
+  withCredentials: true,
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",
@@ -44,6 +40,14 @@ async function redirectToLogin() {
   queryClient.clear();
   const { useAuthStore } = await import("@/lib/store/auth.store");
   useAuthStore.getState().clearAuth();
+  // Best-effort: drop the server-side session too, but don't block on the response.
+  try {
+    await refreshHttp.post(AUTH_API_PATHS.logout, null, {
+      headers: { [SKIP_LOADING_HEADER]: "true" },
+    });
+  } catch {
+    /* ignore */
+  }
   if (typeof window !== "undefined") {
     const path = window.location.pathname;
     if (!path.startsWith("/login")) {
@@ -59,7 +63,7 @@ function isAuthLoginUrl(url: string | undefined): boolean {
 
 function isRefreshUrl(url: string | undefined): boolean {
   if (!url) return false;
-  return url.includes("auth/login/refresh");
+  return url.includes("auth/refresh");
 }
 
 function isAuthApiPath(url: string | undefined): boolean {
@@ -79,9 +83,6 @@ function scheduleOnboardingRedirectAfter403(requestUrl: string | undefined) {
     return;
   }
   onClient(() => {
-    if (!getAccessToken()) {
-      return;
-    }
     const path = window.location.pathname;
     if (isOnboardingRoute(path)) {
       return;
@@ -104,28 +105,28 @@ function scheduleOnboardingRedirectAfter403(requestUrl: string | undefined) {
   });
 }
 
-/** Single in-flight refresh so parallel 401s share one token rotation. */
+/** Single in-flight refresh so parallel 401s share one rotation. */
 let refreshPromise: Promise<void> | null = null;
 
 function refreshAccessToken(): Promise<void> {
   if (!refreshPromise) {
     const p = (async () => {
-      const refresh = getRefreshToken();
-      if (!refresh) {
-        throw new Error("No refresh token");
-      }
-      const { data: envelope } = await refreshHttp.post<ApiEnvelope<TokenPair>>(
-        AUTH_API_PATHS.loginRefresh,
-        { refresh },
+      // Cookies carry the refresh token; the server rotates them on this call.
+      const { data: envelope } = await refreshHttp.post<ApiEnvelope<AuthEnvelopeData>>(
+        AUTH_API_PATHS.refresh,
+        null,
         { headers: { [SKIP_LOADING_HEADER]: "true" } },
       );
-      const tokens = envelope?.data;
-      if (!tokens?.access) {
-        throw new Error(envelope?.message || "Session expired");
+      if (!envelope) {
+        throw new Error("Session expired");
       }
-      setAccessToken(tokens.access);
-      if (tokens.refresh) {
-        setRefreshToken(tokens.refresh);
+      // The refresh response includes the fresh user profile; sync it so any
+      // admin-triggered changes (approval, role updates) propagate without a
+      // separate /auth/me round trip.
+      const user = envelope.data?.user;
+      if (user) {
+        const { useAuthStore } = await import("@/lib/store/auth.store");
+        useAuthStore.getState().setUser(user);
       }
     })();
     refreshPromise = p.finally(() => {
@@ -136,11 +137,12 @@ function refreshAccessToken(): Promise<void> {
 }
 
 /**
- * Shared Axios instance: Bearer token, loader overlay, 401 + refresh (RegulateIQ-style),
- * aligned with ReechOut Django `/auth/*` and `CustomResponse` errors.
+ * Shared axios instance. Tokens live in httpOnly cookies so requests authenticate
+ * themselves as long as `withCredentials: true` and CORS permit credentials.
  */
 export const apiClient = axios.create({
   baseURL: getPublicApiBaseUrl(),
+  withCredentials: true,
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",
@@ -149,15 +151,9 @@ export const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   (config) => {
-    const token = getAccessToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-
     if (!shouldSkipLoading(config)) {
       onClient(() => useLoaderStore.getState().show());
     }
-
     return config;
   },
   (error) => {
@@ -209,7 +205,6 @@ apiClient.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    config.headers.Authorization = `Bearer ${getAccessToken()}`;
     return apiClient(config);
   },
 );

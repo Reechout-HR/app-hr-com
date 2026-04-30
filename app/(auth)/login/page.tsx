@@ -67,35 +67,14 @@ export default function LoginPage() {
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (payload: LoginPayload) => {
-      const loginRes = await authApi.login(payload.email, payload.password);
-      
-      // Store session temporarily so getMe can authenticate
-      setSession(loginRes.data, {
-        id: "",
-        email: payload.email,
-        first_name: "",
-        last_name: "",
-        email_verified: false,
-        account_approved: false,
-        company_profile_completed: false,
-        company_name: null,
-        company_email: null,
-        company_website: null,
-        intended_use: null,
-      });
-
-      try {
-        const meRes = await authApi.getMe();
-        return { loginRes, meRes };
-      } catch {
-        // Fallback if me fails
-        return { loginRes, meRes: null };
-      }
+      // Login sets httpOnly auth cookies; the envelope carries the user profile.
+      return authApi.login(payload.email, payload.password);
     },
-    onSuccess: (result) => {
-      if (result.meRes?.data) {
-        setSession(result.loginRes.data, result.meRes.data);
-        const path = getFirstIncompleteOnboardingPath(result.meRes.data);
+    onSuccess: (loginRes) => {
+      const user = loginRes.data?.user;
+      if (user) {
+        setSession(user);
+        const path = getFirstIncompleteOnboardingPath(user);
         router.replace(path ? path : "/interviews");
       } else {
         router.replace("/interviews");

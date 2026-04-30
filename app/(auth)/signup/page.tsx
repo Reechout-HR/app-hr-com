@@ -81,24 +81,9 @@ export default function RegisterPage() {
       return authApi.signup(values.first_name, values.last_name, values.email, values.password);
     },
     onSuccess: (response) => {
-      const data = response.data;
-      if (data?.access) {
-        setSession(
-          { access: data.access, refresh: data.refresh },
-          data.user || {
-            id: "",
-            email: "",
-            first_name: "",
-            last_name: "",
-            email_verified: false,
-            account_approved: false,
-            company_profile_completed: false,
-            company_name: null,
-            company_email: null,
-            company_website: null,
-            intended_use: null,
-          }
-        );
+      const user = response.data?.user;
+      if (user) {
+        setSession(user);
         router.replace("/verify-email");
       } else {
         router.replace("/login");

@@ -1,56 +1,35 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
-import { authApi } from "@/lib/api";
-import { getAccessToken } from "@/lib/auth/auth-token";
 import { getFirstIncompleteOnboardingPath } from "@/lib/auth/onboarding";
 import { useAuthStore } from "@/lib/store";
 
 /**
- * Client gate: only render dashboard UI when the user is fully onboarded.
- * Otherwise redirect to the next onboarding step (same as Angular `onboardingCompleteGuard`).
+ * Dashboard gate: renders children only when the user is fully onboarded.
+ * Reads from the Zustand store populated at app boot by `AuthBootstrap` —
+ * no network call here. If the session is invalid, the axios interceptor
+ * (on any API call made by the dashboard) will 401 → refresh → redirect.
  */
 export function DashboardOnboardingGate({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const setUser = useAuthStore((s) => s.setUser);
-  const [ready, setReady] = useState(false);
+  const user = useAuthStore((s) => s.user);
+  const isReady = useAuthStore((s) => s.isReady);
 
   useEffect(() => {
-    const token = getAccessToken();
-    if (!token) {
+    if (!isReady) return;
+    if (!user) {
       router.replace("/login");
       return;
     }
+    const next = getFirstIncompleteOnboardingPath(user);
+    if (next) {
+      router.replace(next);
+    }
+  }, [isReady, user, router]);
 
-    let cancelled = false;
-
-    (async () => {
-      try {
-        const me = await authApi.getMe();
-        if (cancelled) {
-          return;
-        }
-        setUser(me.data);
-        const next = getFirstIncompleteOnboardingPath(me.data);
-        if (next) {
-          router.replace(next);
-          return;
-        }
-        setReady(true);
-      } catch {
-        if (!cancelled) {
-          router.replace("/login");
-        }
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [router, setUser]);
-
+  const ready = isReady && user && !getFirstIncompleteOnboardingPath(user);
   if (!ready) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-[var(--background-color)]">

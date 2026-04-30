@@ -22,11 +22,10 @@ export const AUTH_API_PATHS = {
   resendVerification: "auth/resend-verification",
   /** `POST` body matches `AuthService.completeCompanyProfile` (includes required `company_email`). */
   completeCompanyProfile: "auth/complete-company-profile",
-  /**
-   * `POST` body `{ refresh }` — not exposed on `AuthService`; used by axios refresh.
-   * @see api-hr-io `path("login/refresh/", ...)`
-   */
-  loginRefresh: "auth/login/refresh/",
+  /** `POST`, no body — server reads the refresh cookie and rotates it. */
+  refresh: "auth/refresh",
+  /** `POST`, no body — revokes the current refresh row, clears cookies. */
+  logout: "auth/logout",
   /** `POST` body `{ token, device_id }`. */
   registerFCMToken: "auth/fcm-token",
 } as const;

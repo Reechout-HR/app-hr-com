@@ -2,21 +2,12 @@ import { apiClient } from "./client";
 import { AUTH_API_PATHS } from "./auth-endpoints";
 import type {
   ApiEnvelope,
-  LoginApiResponse,
+  AuthEnvelopeData,
+  AuthMeUser,
   LoginPayload,
   ResetPasswordPayload,
   SignupPayload,
 } from "@/lib/auth/types";
-import { clearAccessToken } from "@/lib/auth/auth-token";
-
-function assertLoginData(
-  data: LoginApiResponse["data"] | null | undefined,
-  message: string,
-): asserts data is LoginApiResponse["data"] {
-  if (!data?.access || !data?.refresh) {
-    throw new Error(message);
-  }
-}
 
 function normalizeLoginPayload(
   emailOrPayload: string | LoginPayload,
@@ -46,43 +37,35 @@ function normalizeSignupPayload(
 }
 
 /**
- * Mirrors `app_hr_com/src/app/services/auth/auth.service.ts` — same URLs, bodies, and
- * response shapes the Angular `HttpClient` sees.
+ * Auth endpoints — tokens live in httpOnly cookies; the body carries only the
+ * current user profile. `withCredentials: true` is set on the shared client.
  */
 export const authApi = {
-  /**
-   * `POST ${apiUrl}/auth/login` with `{ email, password }`.
-   * Same as `AuthService.login(email, password)`.
-   */
   login: async (
     emailOrPayload: string | LoginPayload,
     password?: string,
-  ): Promise<LoginApiResponse> => {
+  ): Promise<ApiEnvelope<AuthEnvelopeData>> => {
     const body = normalizeLoginPayload(emailOrPayload, password);
-    const { data } = await apiClient.post<LoginApiResponse>(AUTH_API_PATHS.login, body);
-    assertLoginData(data.data, data.message || "Login failed");
+    const { data } = await apiClient.post<ApiEnvelope<AuthEnvelopeData>>(AUTH_API_PATHS.login, body);
     return data;
   },
 
-  /**
-   * `POST ${apiUrl}/auth/signup` with `{ first_name, last_name, email, password }`.
-   * Same as `AuthService.signup(first_name, last_name, email, password)`.
-   */
   signup: async (
     firstOrPayload: string | SignupPayload,
     last_name?: string,
     email?: string,
     password?: string,
-  ): Promise<ApiEnvelope<import("@/lib/auth/types").SignUpData>> => {
+  ): Promise<ApiEnvelope<AuthEnvelopeData>> => {
     const body = normalizeSignupPayload(firstOrPayload, last_name, email, password);
-    const { data } = await apiClient.post<ApiEnvelope<import("@/lib/auth/types").SignUpData>>(AUTH_API_PATHS.signup, body);
+    const { data } = await apiClient.post<ApiEnvelope<AuthEnvelopeData>>(AUTH_API_PATHS.signup, body);
     return data;
   },
 
-  /**
-   * `POST ${apiUrl}/auth/forgot-password` with `{ email }`.
-   * Same as `AuthService.forgotPassword(email)`.
-   */
+  /** Clears server-side refresh row + clears cookies. Safe to call even if already signed out. */
+  logout: async (): Promise<void> => {
+    await apiClient.post(AUTH_API_PATHS.logout, null);
+  },
+
   forgotPassword: async (email: string): Promise<ApiEnvelope<null>> => {
     const { data } = await apiClient.post<ApiEnvelope<null>>(AUTH_API_PATHS.forgotPassword, {
       email,
@@ -90,10 +73,6 @@ export const authApi = {
     return data;
   },
 
-  /**
-   * `POST ${apiUrl}/auth/reset-password` with `{ token, password }`.
-   * Same as `AuthService.resetPassword(token, password)`.
-   */
   resetPassword: async (token: string, password: string): Promise<ApiEnvelope<unknown>> => {
     const body: ResetPasswordPayload = { token, password };
     const { data } = await apiClient.post<ApiEnvelope<unknown>>(
@@ -103,10 +82,6 @@ export const authApi = {
     return data;
   },
 
-  /**
-   * `POST ${apiUrl}/auth/fcm-token` with `{ token, device_id, device_type }`.
-   * Matches Angular `NotificationService.registerFCMToken` (`device_type: 'web'`).
-   */
   registerFCMToken: async (token: string, deviceId: string): Promise<ApiEnvelope<unknown>> => {
     const { data } = await apiClient.post<ApiEnvelope<unknown>>(AUTH_API_PATHS.registerFCMToken, {
       token,
@@ -116,24 +91,18 @@ export const authApi = {
     return data;
   },
 
-  getMe: async (): Promise<ApiEnvelope<import("@/lib/auth/types").AuthMeUser>> => {
-    const { data } = await apiClient.get<ApiEnvelope<import("@/lib/auth/types").AuthMeUser>>(AUTH_API_PATHS.me);
+  getMe: async (): Promise<ApiEnvelope<AuthMeUser>> => {
+    const { data } = await apiClient.get<ApiEnvelope<AuthMeUser>>(AUTH_API_PATHS.me);
     return data;
   },
 
-  verifyEmail: async (code: string): Promise<ApiEnvelope<import("@/lib/auth/types").AuthMeUser>> => {
-    const { data } = await apiClient.post<ApiEnvelope<import("@/lib/auth/types").AuthMeUser>>(
-      AUTH_API_PATHS.verifyEmail,
-      { code }
-    );
+  verifyEmail: async (code: string): Promise<ApiEnvelope<AuthMeUser>> => {
+    const { data } = await apiClient.post<ApiEnvelope<AuthMeUser>>(AUTH_API_PATHS.verifyEmail, { code });
     return data;
   },
 
   resendVerification: async (): Promise<ApiEnvelope<null>> => {
-    const { data } = await apiClient.post<ApiEnvelope<null>>(
-      AUTH_API_PATHS.resendVerification,
-      {}
-    );
+    const { data } = await apiClient.post<ApiEnvelope<null>>(AUTH_API_PATHS.resendVerification, {});
     return data;
   },
 
@@ -142,20 +111,11 @@ export const authApi = {
     company_email: string;
     company_website: string;
     intended_use: string;
-  }): Promise<ApiEnvelope<import("@/lib/auth/types").AuthMeUser>> => {
-    const { data } = await apiClient.post<ApiEnvelope<import("@/lib/auth/types").AuthMeUser>>(
+  }): Promise<ApiEnvelope<AuthMeUser>> => {
+    const { data } = await apiClient.post<ApiEnvelope<AuthMeUser>>(
       AUTH_API_PATHS.completeCompanyProfile,
-      payload
+      payload,
     );
     return data;
   },
 };
-
-/**
- * Same as `AuthService.logout()` — removes only `localStorage` key `token`.
- * (Angular does not remove a separate refresh key; the SPA also stores only `access` as `token`.)
- * Prefer `useAuthStore.getState().clearAuth()` when signing out of Next.js (clears refresh + cache).
- */
-export function authLogoutLocal(): void {
-  clearAccessToken();
-}

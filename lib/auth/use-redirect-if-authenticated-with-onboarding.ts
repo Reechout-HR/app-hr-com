@@ -3,47 +3,22 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-import { getAccessToken } from "@/lib/auth/auth-token";
 import { getFirstIncompleteOnboardingPath } from "@/lib/auth/onboarding";
-import { authApi } from "@/lib/api";
 import { useAuthStore } from "@/lib/store";
 
 /**
- * When a token exists, resolve `/auth/me` and send the user to the next
- * onboarding step (or /interviews). Matches Angular
- * `redirectIfAuthenticatedOnboarding` on /login and /signup.
+ * Used on /login and /signup. If the store already has a user (populated by
+ * the boot-time `/auth/me` in `AuthBootstrap`), redirect straight to the next
+ * onboarding step or /interviews. Pure store read — no extra network call.
  */
 export function useRedirectIfAuthenticatedWithOnboarding() {
   const router = useRouter();
-  const setUser = useAuthStore((s) => s.setUser);
-  const clearAuth = useAuthStore((s) => s.clearAuth);
+  const user = useAuthStore((s) => s.user);
+  const isReady = useAuthStore((s) => s.isReady);
 
   useEffect(() => {
-    if (!getAccessToken()) {
-      return;
-    }
-
-    let cancelled = false;
-
-    (async () => {
-      try {
-        const meRes = await authApi.getMe();
-        if (cancelled) {
-          return;
-        }
-        setUser(meRes.data);
-        const next = getFirstIncompleteOnboardingPath(meRes.data);
-        router.replace(next ?? "/interviews");
-      } catch {
-        if (cancelled) {
-          return;
-        }
-        clearAuth();
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [router, setUser, clearAuth]);
+    if (!isReady || !user) return;
+    const next = getFirstIncompleteOnboardingPath(user);
+    router.replace(next ?? "/interviews");
+  }, [isReady, user, router]);
 }

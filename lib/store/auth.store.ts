@@ -1,7 +1,6 @@
 import { create } from "zustand";
 
-import { clearAllTokens, setAccessToken, setRefreshToken } from "@/lib/auth/auth-token";
-import type { AuthTokens, AuthUser } from "@/lib/auth/types";
+import type { AuthUser } from "@/lib/auth/types";
 import { queryClient } from "@/lib/query/query-client";
 
 type AuthState = {
@@ -10,7 +9,11 @@ type AuthState = {
   isReady: boolean;
   setReady: (ready: boolean) => void;
   setUser: (user: AuthUser | null) => void;
-  setSession: (tokens: AuthTokens, user: AuthUser) => void;
+  /**
+   * Establish the in-memory session. Tokens live in httpOnly cookies that the
+   * browser attaches automatically, so only the user profile needs to be stored.
+   */
+  setSession: (user: AuthUser) => void;
   clearAuth: () => void;
 };
 
@@ -22,14 +25,11 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   setUser: (user) => set({ user }),
 
-  setSession: (tokens, user) => {
-    setAccessToken(tokens.access);
-    setRefreshToken(tokens.refresh);
+  setSession: (user) => {
     set({ user });
   },
 
   clearAuth: () => {
-    clearAllTokens();
     queryClient.clear();
     set({ user: null });
   },

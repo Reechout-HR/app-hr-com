@@ -3,8 +3,8 @@
 import { useEffect, useRef } from "react";
 
 import { authApi } from "@/lib/api/auth";
-import { hasClientSession } from "@/lib/auth/auth-token";
 import { getFirebaseConfig } from "@/lib/config/firebase-config";
+import { useAuthStore } from "@/lib/store/auth.store";
 import { useNotificationStore, type QuestionnaireUpdate } from "@/lib/store/notification-store";
 
 /**
@@ -54,17 +54,18 @@ function showBrowserNotification(payload: any) {
 
 /**
  * Next.js equivalent of Angular's NotificationService constructor logic.
- * Declaratively initializes when a session exists (`token` in localStorage), so it
- * still runs after a full page refresh (Zustand `user` is not rehydrated).
- * Session = access or refresh token in localStorage.
+ * Initializes once the Zustand user is populated (post-login or post-`/auth/me`).
+ * Cookies are httpOnly so this is the most reliable session signal available
+ * to client JS.
  */
 export function useFcmInit() {
   const setLatestUpdate = useNotificationStore((s) => s.setLatestUpdate);
+  const user = useAuthStore((s) => s.user);
   const isInitialized = useRef(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (!hasClientSession()) {
+    if (!user) {
       isInitialized.current = false;
       return;
     }
@@ -147,5 +148,5 @@ export function useFcmInit() {
     };
 
     initFirebase();
-  }, [setLatestUpdate]);
+  }, [setLatestUpdate, user]);
 }
