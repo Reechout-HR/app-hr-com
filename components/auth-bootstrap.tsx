@@ -4,7 +4,8 @@ import axios from "axios";
 import { useEffect, useRef } from "react";
 
 import { AUTH_API_PATHS } from "@/lib/api/auth-endpoints";
-import type { ApiEnvelope, AuthMeUser } from "@/lib/auth/types";
+import { SKIP_LOADING_HEADER } from "@/lib/api/client";
+import type { ApiEnvelope, AuthEnvelopeData, AuthMeUser } from "@/lib/auth/types";
 import { getPublicApiBaseUrl } from "@/lib/config/env";
 import { useAuthStore } from "@/lib/store/auth.store";
 import { useLoaderStore } from "@/stores/loader-store";
@@ -12,13 +13,28 @@ import { useLoaderStore } from "@/stores/loader-store";
 /**
  * Bare client used ONLY for the boot probe. We deliberately skip the shared
  * `apiClient` interceptor because a 401 here just means "anonymous visitor" —
- * not "session expired, bounce to /login".
+ * not "session expired, bounce to /login". When the access cookie is expired
+ * but the refresh cookie is still valid, we attempt one silent refresh below
+ * before giving up (otherwise returning users get kicked to /login on reload).
  */
 const probe = axios.create({
   baseURL: getPublicApiBaseUrl(),
   withCredentials: true,
-  headers: { Accept: "application/json" },
+  headers: { Accept: "application/json", "Content-Type": "application/json" },
 });
+
+async function tryRefresh(): Promise<boolean> {
+  try {
+    await probe.post<ApiEnvelope<AuthEnvelopeData>>(
+      AUTH_API_PATHS.refresh,
+      null,
+      { headers: { [SKIP_LOADING_HEADER]: "true" } },
+    );
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Runs once on app mount. Calls `/auth/me`, hydrates the Zustand store, and
@@ -41,14 +57,25 @@ export function AuthBootstrap() {
     const loader = useLoaderStore.getState();
     loader.show();
     (async () => {
+      const fetchMe = () =>
+        probe.get<ApiEnvelope<AuthMeUser>>(AUTH_API_PATHS.me);
       try {
-        const { data: envelope } = await probe.get<ApiEnvelope<AuthMeUser>>(
-          AUTH_API_PATHS.me,
-        );
+        const { data: envelope } = await fetchMe();
         if (cancelled) return;
         setUser(envelope?.data ?? null);
-      } catch {
-        if (!cancelled) setUser(null);
+      } catch (err) {
+        const status = axios.isAxiosError(err) ? err.response?.status : undefined;
+        if (status === 401 && (await tryRefresh())) {
+          try {
+            const { data: envelope } = await fetchMe();
+            if (cancelled) return;
+            setUser(envelope?.data ?? null);
+          } catch {
+            if (!cancelled) setUser(null);
+          }
+        } else if (!cancelled) {
+          setUser(null);
+        }
       } finally {
         loader.hide();
         if (!cancelled) setReady(true);
