@@ -12,7 +12,6 @@ import {
   Mail,
   Save,
   ShieldCheck,
-  Trash2,
   User as UserIcon,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -350,23 +349,6 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                   <Mail className="h-3.5 w-3.5" />
                   <span className="truncate">{user?.email ?? ""}</span>
                 </div>
-                {avatarPreview && (
-                  <div className="mt-1.5">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setAvatarPreview(null);
-                        toast.message("Photo removed locally", {
-                          description: "Upload a new one to replace it.",
-                        });
-                      }}
-                      className="inline-flex items-center gap-1 text-[12px] font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--error-color)]"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                      Remove photo
-                    </button>
-                  </div>
-                )}
               </div>
             </div>
 

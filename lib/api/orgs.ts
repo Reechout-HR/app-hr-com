@@ -123,4 +123,16 @@ export const orgsApi = {
     );
     return data;
   },
+
+  signupFromInvitation: async (payload: {
+    token: string;
+    first_name: string;
+    last_name: string;
+    password: string;
+  }): Promise<ApiEnvelope<{ user: import("@/lib/auth/types").AuthUser }>> => {
+    const { data } = await apiClient.post<
+      ApiEnvelope<{ user: import("@/lib/auth/types").AuthUser }>
+    >(ORG_API_PATHS.invitationSignup, payload);
+    return data;
+  },
 };

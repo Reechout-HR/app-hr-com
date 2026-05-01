@@ -22,4 +22,6 @@ export const ORG_API_PATHS = {
   previewInvitation: (token: string) => `invitations/${token}`,
   /** `POST` body `{ token }` — accept invitation (auth optional). */
   acceptInvitation: "invitations/accept",
+  /** `POST` body `{ token, first_name, last_name, password }` — signup bound to an invitation (auto-approved). */
+  invitationSignup: "invitations/signup",
 } as const;
