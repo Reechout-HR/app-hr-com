@@ -644,7 +644,7 @@ export function CreateQuestionnaireModal({
                             setRoleInfo({ ...roleInfo, seniorityLevel: val })
                           }
                         >
-                          <SelectTrigger className="h-10 rounded-[var(--radius-md)] bg-background border-[var(--header-floating-border)] focus:ring-[var(--primary-color)] shadow-sm">
+                          <SelectTrigger className="h-10 w-full rounded-[6px] bg-background border-[var(--header-floating-border)] focus:ring-[var(--primary-color)] shadow-sm">
                             <SelectValue placeholder="Select level" />
                           </SelectTrigger>
                           <SelectContent>

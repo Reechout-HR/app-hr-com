@@ -346,7 +346,7 @@ export default function CreateInterviewPage() {
                 <Smartphone className="w-4 h-4 text-[var(--primary-color)]" /> Interview Type
               </Label>
               <Select value={interviewType} onValueChange={setInterviewType}>
-                <SelectTrigger className="h-10 w-full rounded-xl bg-background border-[var(--header-floating-border)] focus:ring-[var(--primary-color)] shadow-sm">
+                <SelectTrigger className="h-10 w-full rounded-[6px] bg-background border-[var(--header-floating-border)] focus:ring-[var(--primary-color)] shadow-sm">
                   <SelectValue placeholder="Select interview type" />
                 </SelectTrigger>
                 <SelectContent>

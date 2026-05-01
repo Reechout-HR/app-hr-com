@@ -15,6 +15,7 @@ export type AuthUser = {
   company_email: string | null;
   company_website: string | null;
   intended_use: string | null;
+  avatar_url: string | null;
 };
 
 export type AuthMeUser = AuthUser;

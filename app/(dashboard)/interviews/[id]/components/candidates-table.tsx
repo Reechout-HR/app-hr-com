@@ -233,7 +233,7 @@ export function CandidatesTable({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between p-5 bg-[var(--header-floating-bg)] border border-[var(--header-floating-border)] rounded-[var(--radius-md)] mb-4 shadow-[0_4px_32px_rgba(var(--shadow-rgb),0.09)] transition-all hover:shadow-[0_20px_40px_rgba(var(--shadow-rgb),0.08)] hover:border-[rgba(var(--primary-color-rgb),0.28)]">
         <div className="flex items-center gap-3">
           <Select value={statusFilter || "all"} onValueChange={(val) => setStatusFilter(val === "all" ? "" : val)}>
-            <SelectTrigger className="h-10 min-w-[160px] rounded-xl bg-background shadow-sm border-[var(--header-floating-border)] focus:ring-[var(--primary-color)]">
+            <SelectTrigger className="h-10 min-w-[160px] rounded-[6px] bg-background shadow-sm border-[var(--header-floating-border)] focus:ring-[var(--primary-color)]">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -469,7 +469,7 @@ export function CandidatesTable({
                           <MoreVertical className="h-5 w-5" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-[0_8px_32px_rgba(var(--shadow-rgb),0.12)] border-[var(--header-floating-border)] bg-[var(--header-floating-bg)]">
+                      <DropdownMenuContent align="end" className="w-48 rounded-[6px] shadow-[0_8px_32px_rgba(var(--shadow-rgb),0.12)] border-[var(--header-floating-border)] bg-[var(--header-floating-bg)]">
                         <DropdownMenuItem 
                           disabled={!candidate.has_resume_file}
                           onClick={() => onDownloadResume(candidate)}
@@ -500,7 +500,7 @@ export function CandidatesTable({
               value={pageSize.toString()} 
               onValueChange={(val) => { setPageSize(Number(val)); setPage(1); }}
             >
-              <SelectTrigger className="h-9 w-[110px] rounded-xl border-[var(--header-floating-border)] bg-background text-[var(--text-primary)] shadow-sm">
+              <SelectTrigger className="h-9 w-[110px] rounded-[6px] border-[var(--header-floating-border)] bg-background text-[var(--text-primary)] shadow-sm">
                 <SelectValue placeholder="10 / page" />
               </SelectTrigger>
               <SelectContent>

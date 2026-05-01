@@ -72,7 +72,7 @@ function FilterDropdown({
 }) {
   return (
     <Select value={value || "all"} onValueChange={(val) => onChange(val === "all" ? "" : val)}>
-      <SelectTrigger className="h-10 min-w-[140px] rounded-xl border border-[var(--header-floating-border)] bg-background shadow-sm focus:ring-primary">
+      <SelectTrigger className="h-10 min-w-[140px] rounded-[6px] border border-[var(--header-floating-border)] bg-background shadow-sm focus:ring-primary">
         <SelectValue placeholder={label} />
       </SelectTrigger>
       <SelectContent>
@@ -332,7 +332,7 @@ function QuestionnairesDashboard() {
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-10 w-full rounded-xl border border-[var(--header-floating-border)] pl-9 bg-background focus-visible:ring-primary placeholder:text-muted-foreground shadow-sm"
+                className="h-10 w-full rounded-[6px] border border-[var(--header-floating-border)] pl-9 bg-background focus-visible:ring-primary placeholder:text-muted-foreground shadow-sm"
               />
             </div>
 
@@ -341,19 +341,19 @@ function QuestionnairesDashboard() {
               type="single" 
               value={viewMode} 
               onValueChange={(val) => val && setViewMode(val as ViewMode)} 
-              className="h-10 items-center gap-0 rounded-xl border border-[var(--header-floating-border)] bg-background p-1 shadow-sm"
+              className="h-10 items-center gap-0 rounded-[6px] border border-[var(--header-floating-border)] bg-background p-1 shadow-sm"
             >
               <ToggleGroupItem 
                 value="grid" 
                 aria-label="Grid view" 
-                className={cn("h-full w-10 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground data-[state=on]:bg-primary data-[state=on]:text-primary-foreground")}
+                className={cn("h-full w-10 rounded-[4px] text-muted-foreground hover:bg-muted hover:text-foreground data-[state=on]:bg-primary data-[state=on]:text-primary-foreground")}
               >
                 <LayoutGrid className="h-4 w-4" />
               </ToggleGroupItem>
               <ToggleGroupItem 
                 value="list" 
                 aria-label="List view" 
-                className={cn("h-full w-10 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground data-[state=on]:bg-primary data-[state=on]:text-primary-foreground")}
+                className={cn("h-full w-10 rounded-[4px] text-muted-foreground hover:bg-muted hover:text-foreground data-[state=on]:bg-primary data-[state=on]:text-primary-foreground")}
               >
                 <ListIcon className="h-4 w-4" />
               </ToggleGroupItem>
@@ -489,7 +489,7 @@ function QuestionnairesDashboard() {
                                   <MoreVertical className="h-5 w-5" />
                                 </button>
                               </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="w-32 rounded-xl" onClick={(e) => e.stopPropagation()}>
+                              <DropdownMenuContent align="end" className="w-32 rounded-[6px]" onClick={(e) => e.stopPropagation()}>
                                 <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleEditClick(item!); }}>
                                   <Edit className="mr-2 h-4 w-4" />
                                   Edit
@@ -525,7 +525,7 @@ function QuestionnairesDashboard() {
                                   <MoreVertical className="h-4 w-4" />
                                 </button>
                               </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="w-32 rounded-xl" onClick={(e) => e.stopPropagation()}>
+                              <DropdownMenuContent align="end" className="w-32 rounded-[6px]" onClick={(e) => e.stopPropagation()}>
                                 <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleEditClick(item!); }}>
                                   <Edit className="mr-2 h-4 w-4" />
                                   Edit
@@ -581,7 +581,7 @@ function QuestionnairesDashboard() {
                                 <MoreVertical className="h-4 w-4" />
                               </button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-32 rounded-xl" onClick={(e) => e.stopPropagation()}>
+                            <DropdownMenuContent align="end" className="w-32 rounded-[6px]" onClick={(e) => e.stopPropagation()}>
                               <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleEditClick(item!); }}>
                                 <Edit className="mr-2 h-4 w-4" />
                                 Edit
@@ -667,7 +667,7 @@ function QuestionnairesDashboard() {
                     setPageSize(Number(e.target.value));
                     setPage(1); // Reset to page 1 on size change
                   }}
-                  className="h-8 rounded-xl border border-[var(--header-floating-border)] bg-[var(--header-floating-bg)] px-2 text-sm text-[var(--text-secondary)] outline-none focus:border-[var(--primary-color)] focus:ring-1 focus:ring-[var(--primary-color)]"
+                  className="h-8 rounded-[6px] border border-[var(--header-floating-border)] bg-[var(--header-floating-bg)] px-2 text-sm text-[var(--text-secondary)] outline-none focus:border-[var(--primary-color)] focus:ring-1 focus:ring-[var(--primary-color)]"
                 >
                   <option value={10}>10 / page</option>
                   <option value={20}>20 / page</option>

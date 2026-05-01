@@ -118,4 +118,37 @@ export const authApi = {
     );
     return data;
   },
+
+  updateProfile: async (payload: {
+    first_name: string;
+    last_name: string;
+  }): Promise<ApiEnvelope<AuthMeUser>> => {
+    const { data } = await apiClient.patch<ApiEnvelope<AuthMeUser>>(
+      AUTH_API_PATHS.updateMe,
+      payload,
+    );
+    return data;
+  },
+
+  uploadAvatar: async (file: File): Promise<ApiEnvelope<AuthMeUser>> => {
+    const form = new FormData();
+    form.append("file", file);
+    const { data } = await apiClient.post<ApiEnvelope<AuthMeUser>>(
+      AUTH_API_PATHS.uploadAvatar,
+      form,
+      { headers: { "Content-Type": "multipart/form-data" } },
+    );
+    return data;
+  },
+
+  changePassword: async (payload: {
+    current_password: string;
+    new_password: string;
+  }): Promise<ApiEnvelope<null>> => {
+    const { data } = await apiClient.post<ApiEnvelope<null>>(
+      AUTH_API_PATHS.changePassword,
+      payload,
+    );
+    return data;
+  },
 };

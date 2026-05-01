@@ -61,7 +61,7 @@ export function QuestionModal({ isOpen, isSaving, question, activeTab, onClose, 
             {activeTab === "screening" ? (
               <>
                 <Select value="screening" disabled>
-                  <SelectTrigger className="h-10 rounded-xl bg-muted/50 border-border focus:ring-primary shadow-sm text-muted-foreground opacity-100">
+                  <SelectTrigger className="h-10 rounded-[6px] bg-muted/50 border-border focus:ring-primary shadow-sm text-muted-foreground opacity-100">
                     <SelectValue placeholder="Application" />
                   </SelectTrigger>
                   <SelectContent>
@@ -75,7 +75,7 @@ export function QuestionModal({ isOpen, isSaving, question, activeTab, onClose, 
                 value={formData.question_type} 
                 onValueChange={(val) => setFormData({...formData, question_type: val})}
               >
-                <SelectTrigger className="h-10 rounded-xl bg-[var(--surface-2)] border-[var(--border-color-light)] hover:border-[rgba(var(--primary-color-rgb),0.28)] dark:border-white/[0.09] focus:ring-primary shadow-sm">
+                <SelectTrigger className="h-10 rounded-[6px] bg-[var(--surface-2)] border-[var(--border-color-light)] hover:border-[rgba(var(--primary-color-rgb),0.28)] dark:border-white/[0.09] focus:ring-primary shadow-sm">
                   <SelectValue placeholder="Select question type" />
                 </SelectTrigger>
                 <SelectContent>

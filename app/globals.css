@@ -20,10 +20,10 @@
   );
   --text-primary: #1d1c1d;
   --text-primary-rgb: 29, 28, 29;
-  --text-secondary: #616061;
+  --text-secondary: var(--text-primary);
   --gray-bg: #f9f9f9;
   --white: #ffffff;
-  --border-color: #e8e8e8;
+  --border-color: #c7c7c7;
   --text-heading: #1d1c1d;
   --success-color: #52c41a;
   --success-color-rgb: 82, 196, 26;
@@ -69,20 +69,20 @@
   --bg-purple-deeper: #fafafa;
   --bg-purple-gradient: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
   --surface-1: #ffffff;
-  --surface-2: #f9f9f9;
+  --surface-2: #ebebeb;
   --surface-3: #f3f3f3;
 
   --text-on-purple: #1d1c1d;
   --text-color: #1d1c1d;
   --accent-purple: #611f69;
-  --border-color-light: #e8e8e8;
+  --border-color-light: #d4d4d4;
 
-  --text-muted: #7a7a7a;
-  --text-very-muted: #aaa;
-  --text-gray-600: #6b7280;
-  --text-gray-600-rgb: 107, 114, 128;
-  --text-gray-700: #4b5563;
-  --divider-color: #bdbdbd;
+  --text-muted: var(--text-primary);
+  --text-very-muted: var(--text-primary);
+  --text-gray-600: var(--text-primary);
+  --text-gray-600-rgb: var(--text-primary-rgb);
+  --text-gray-700: var(--text-primary);
+  --divider-color: #9a9a9a;
 
   --icon-accent-color: var(--primary-color);
   --text-accent-color: var(--primary-color);
@@ -192,16 +192,16 @@
   --background-color: #0f0f0f;
   --background-color-rgb: 15, 15, 15;
   --surface-1: #1a1a1a;
-  --surface-2: #242424;
-  --surface-3: #2e2e2e;
+  --surface-2: #2e2e2e;
+  --surface-3: #3a3a3a;
   --hero-bg-tint: #1a1a1a;
   --bg-near-white: #242424;
   --header-bg-light: #2a2a2a;
 
   --text-primary: #e5e7eb;
   --text-primary-rgb: 229, 231, 235;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
+  --text-secondary: var(--text-primary);
+  --text-muted: var(--text-primary);
   --text-on-purple: #f9fafb;
   --text-heading: #f9fafb;
   --text-color: #e5e7eb;
@@ -240,10 +240,10 @@
   --warning-color: #f59e0b;
   --warning-color-rgb: 245, 158, 11;
 
-  --border-color: #374151;
-  --border-color-light: #374151;
-  --divider-color: #2d3748;
-  --pricing-border: #374151;
+  --border-color: #5a6373;
+  --border-color-light: #5a6373;
+  --divider-color: #5a6373;
+  --pricing-border: #5a6373;
 
   --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.15);
   --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.2);
@@ -276,9 +276,9 @@
   --brand-blue-modern: #3b82f6;
   --brand-blue-modern-rgb: 59, 130, 246;
   --star-gold: #fbbf24;
-  --text-gray-600: #9ca3af;
-  --text-gray-600-rgb: 156, 163, 175;
-  --text-gray-700: #d1d5db;
+  --text-gray-600: var(--text-primary);
+  --text-gray-600-rgb: var(--text-primary-rgb);
+  --text-gray-700: var(--text-primary);
 
   --product-name-color: #c084fc;
   --product-name-color-rgb: 192, 132, 252;
@@ -363,8 +363,7 @@
   --color-foreground: var(--foreground);
   --color-primary: var(--primary-color);
   --color-primary-hover: var(--primary-hover);
-  --color-secondary: var(--text-secondary);
-  --color-muted: var(--text-muted);
+  --color-muted: var(--muted);
   --color-border: var(--border-color);
   --color-destructive: var(--error-color);
   --color-success: var(--success-color);

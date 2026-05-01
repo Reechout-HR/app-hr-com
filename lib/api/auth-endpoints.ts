@@ -28,4 +28,10 @@ export const AUTH_API_PATHS = {
   logout: "auth/logout",
   /** `POST` body `{ token, device_id }`. */
   registerFCMToken: "auth/fcm-token",
+  /** `PATCH` body `{ first_name, last_name }` — updates the signed-in user's profile. */
+  updateMe: "auth/me",
+  /** `POST` multipart `file` — uploads a new avatar image for the signed-in user. */
+  uploadAvatar: "auth/me/avatar",
+  /** `POST` body `{ current_password, new_password }` — inline password change. */
+  changePassword: "auth/change-password",
 } as const;

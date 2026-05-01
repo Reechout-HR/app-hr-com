@@ -19,6 +19,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ProfileModal } from "@/components/profile-modal";
 
 interface DashboardNavProps {
   /** 
@@ -32,8 +33,10 @@ export function DashboardNav({ onCreateNew }: DashboardNavProps) {
   const pathname = usePathname();
   const router = useRouter();
   const clearAuth = useAuthStore((s) => s.clearAuth);
-  
+  const user = useAuthStore((s) => s.user);
+
   const [darkMode, setDarkMode] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
 
   // Determine active tab based on route
   const activeTab = pathname?.includes("/questionnaire") ? "questionnaires" : "interviews";
@@ -85,7 +88,7 @@ export function DashboardNav({ onCreateNew }: DashboardNavProps) {
 
   return (
     <header className="sticky top-2 z-40 flex w-full flex-col items-stretch px-4 sm:top-4 sm:px-6 lg:px-8 mb-2 sm:mb-4">
-      <div className="mx-auto flex w-full max-w-[1400px] min-h-[52px] shrink-0 items-center justify-between gap-3 rounded-[var(--radius-md)] border border-[var(--header-floating-border)] bg-[var(--header-floating-bg)] py-3 px-[clamp(0.875rem,2.5vw,1.125rem)] shadow-[0_4px_32px_rgba(var(--shadow-rgb),0.09),0_1px_4px_rgba(var(--shadow-rgb),0.05)] sm:px-[clamp(1.125rem,3.5vw,1.5rem)] lg:px-[clamp(1.25rem,4vw,2rem)]">
+      <div className="mx-auto flex w-full max-w-[1400px] min-h-[52px] shrink-0 items-center justify-between gap-3 rounded-[6px] border border-[var(--header-floating-border)] bg-[var(--header-floating-bg)] py-3 px-[clamp(0.875rem,2.5vw,1.125rem)] shadow-[0_4px_32px_rgba(var(--shadow-rgb),0.09),0_1px_4px_rgba(var(--shadow-rgb),0.05)] sm:px-[clamp(1.125rem,3.5vw,1.5rem)] lg:px-[clamp(1.25rem,4vw,2rem)]">
         {/* Left: Logo & Product Name */}
         <Link href="/interviews" className="flex min-w-0 shrink-0 items-center gap-2 sm:gap-2.5 no-underline outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md">
           <Image
@@ -105,12 +108,12 @@ export function DashboardNav({ onCreateNew }: DashboardNavProps) {
 
         {/* Center: Navigation Tabs */}
         <nav className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-sm:hidden">
-          <ul className="flex items-center gap-1 rounded-[14px] border border-[var(--header-floating-border)] bg-[var(--surface-1)] p-1 shadow-sm">
+          <ul className="flex items-center gap-1 rounded-[6px] border border-[var(--header-floating-border)] bg-[var(--surface-1)] p-1 shadow-sm">
             <li>
               <Link
                 href="/interviews"
                 className={cn(
-                  "block rounded-[10px] px-4 py-1.5 text-[14px] transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary-color)]",
+                  "block rounded-[3px] px-4 py-1.5 text-[14px] transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary-color)]",
                   activeTab === "interviews"
                     ? "bg-[var(--background-color)] font-bold text-[var(--text-primary)] shadow-sm border border-[var(--header-floating-border)]"
                     : "font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-2)] border border-transparent"
@@ -123,7 +126,7 @@ export function DashboardNav({ onCreateNew }: DashboardNavProps) {
               <Link
                 href="/questionnaires"
                 className={cn(
-                  "block rounded-[10px] px-4 py-1.5 text-[14px] transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary-color)]",
+                  "block rounded-[3px] px-4 py-1.5 text-[14px] transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary-color)]",
                   activeTab === "questionnaires"
                     ? "bg-[var(--background-color)] font-bold text-[var(--text-primary)] shadow-sm border border-[var(--header-floating-border)]"
                     : "font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-2)] border border-transparent"
@@ -161,17 +164,31 @@ export function DashboardNav({ onCreateNew }: DashboardNavProps) {
           {/* Profile Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon" className="h-8 w-8 shrink-0 bg-[var(--header-floating-bg)] md:h-10 md:w-10">
-                <UserIcon className="h-4 w-4 md:h-5 md:w-5" strokeWidth={2} />
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8 shrink-0 overflow-hidden bg-[var(--header-floating-bg)] p-0 md:h-10 md:w-10"
+                aria-label="Open profile menu"
+              >
+                {user?.avatar_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={user.avatar_url}
+                    alt="Profile"
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <UserIcon className="h-4 w-4 md:h-5 md:w-5" strokeWidth={2} />
+                )}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem disabled>
+              <DropdownMenuItem onClick={() => setProfileOpen(true)}>
                 <UserIcon className="mr-2 h-4 w-4" />
                 Profile
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 onClick={handleLogout}
                 className="text-red-600 focus:bg-red-50 focus:text-red-600 dark:text-red-500 dark:focus:bg-red-950/50 dark:focus:text-red-500"
               >
@@ -182,6 +199,10 @@ export function DashboardNav({ onCreateNew }: DashboardNavProps) {
           </DropdownMenu>
         </div>
       </div>
+      <ProfileModal
+        isOpen={profileOpen}
+        onClose={() => setProfileOpen(false)}
+      />
     </header>
   );
 }
