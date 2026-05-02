@@ -1,11 +1,10 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { ArrowLeft, CheckCircle, Mail } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
 
 import {
   authBackLinkClassName,
@@ -50,15 +49,6 @@ export default function ForgotPasswordPage() {
   const [submitted, setSubmitted] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<ForgotPasswordFormValues>({
-    resolver: zodResolver(forgotPasswordSchema),
-    defaultValues: { email: "" },
-  });
-
   const { mutate, isPending } = useMutation({
     mutationFn: (payload: ForgotPasswordFormValues) =>
       authApi.forgotPassword(payload.email),
@@ -70,10 +60,14 @@ export default function ForgotPasswordPage() {
     },
   });
 
-  const onSubmit = (values: ForgotPasswordFormValues) => {
-    setFormError(null);
-    mutate(values);
-  };
+  const form = useForm({
+    defaultValues: { email: "" } as ForgotPasswordFormValues,
+    validators: { onSubmit: forgotPasswordSchema },
+    onSubmit: ({ value }) => {
+      setFormError(null);
+      mutate(value);
+    },
+  });
 
   return (
     <AuthPageRoot>
@@ -129,26 +123,42 @@ export default function ForgotPasswordPage() {
                     </p>
                   </div>
 
-                  <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      void form.handleSubmit();
+                    }}
+                    className="flex flex-col gap-4"
+                  >
                     {formError ? (
                       <div className={authFormErrorBoxClassName} role="alert">
                         {formError}
                       </div>
                     ) : null}
-                    <div>
-                      <label htmlFor="forgot-email" className={authLabelClassName}>
-                        Email
-                      </label>
-                      <AuthInputField
-                        id="forgot-email"
-                        type="email"
-                        autoComplete="email"
-                        placeholder="jane@company.com"
-                        icon={<Mail className="h-4 w-4" strokeWidth={2} aria-hidden />}
-                        {...register("email")}
-                      />
-                      <FieldError message={errors.email?.message} />
-                    </div>
+                    <form.Field name="email">
+                      {(field) => (
+                        <div>
+                          <label htmlFor="forgot-email" className={authLabelClassName}>
+                            Email
+                          </label>
+                          <AuthInputField
+                            id="forgot-email"
+                            type="email"
+                            autoComplete="email"
+                            placeholder="jane@company.com"
+                            icon={<Mail className="h-4 w-4" strokeWidth={2} aria-hidden />}
+                            name={field.name}
+                            value={field.state.value}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                            onBlur={field.handleBlur}
+                          />
+                          <FieldError
+                            message={field.state.meta.errors[0]?.message}
+                          />
+                        </div>
+                      )}
+                    </form.Field>
 
                     <button type="submit" disabled={isPending} className={authSubmitButtonClassName}>
                       {isPending ? "Sending…" : "Send Reset Link"}

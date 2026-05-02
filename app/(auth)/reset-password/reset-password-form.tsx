@@ -1,12 +1,11 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { AlertTriangle, ArrowLeft, CheckCircle, Lock } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useForm, useWatch } from "react-hook-form";
 
 import {
   authBackLinkClassName,
@@ -45,18 +44,6 @@ export function ResetPasswordForm() {
   const [success, setSuccess] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  const {
-    register,
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<ResetPasswordFormValues>({
-    resolver: zodResolver(resetPasswordSchema),
-    defaultValues: { new_password: "", confirm_password: "" },
-  });
-
-  const newPassword = useWatch({ control, name: "new_password", defaultValue: "" }) ?? "";
-
   useEffect(() => {
     if (!success) return;
     const timer = setTimeout(() => router.push("/login"), 3000);
@@ -78,10 +65,17 @@ export function ResetPasswordForm() {
     },
   });
 
-  const onSubmit = (values: ResetPasswordFormValues) => {
-    setFormError(null);
-    mutate(values);
-  };
+  const form = useForm({
+    defaultValues: {
+      new_password: "",
+      confirm_password: "",
+    } as ResetPasswordFormValues,
+    validators: { onSubmit: resetPasswordSchema },
+    onSubmit: ({ value }) => {
+      setFormError(null);
+      mutate(value);
+    },
+  });
 
   if (!token) {
     return (
@@ -140,40 +134,61 @@ export function ResetPasswordForm() {
           <p className={authCardSubtitleClassName}>Choose a strong password for your account.</p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            void form.handleSubmit();
+          }}
+          className="flex flex-col gap-4"
+        >
           {formError ? (
             <div className={authFormErrorBoxClassName} role="alert">
               {formError}
             </div>
           ) : null}
-          <div className={authPasswordStrengthBlockClassName}>
-            <label htmlFor="reset-new" className={authLabelClassName}>
-              New Password
-            </label>
-            <AuthPasswordField
-              id="reset-new"
-              autoComplete="new-password"
-              placeholder="••••••••"
-              icon={<Lock className="h-4 w-4" strokeWidth={2} aria-hidden />}
-              {...register("new_password")}
-            />
-            <PasswordStrengthBar password={newPassword} />
-            <FieldError message={errors.new_password?.message} />
-          </div>
+          <form.Field name="new_password">
+            {(field) => (
+              <div className={authPasswordStrengthBlockClassName}>
+                <label htmlFor="reset-new" className={authLabelClassName}>
+                  New Password
+                </label>
+                <AuthPasswordField
+                  id="reset-new"
+                  autoComplete="new-password"
+                  placeholder="••••••••"
+                  icon={<Lock className="h-4 w-4" strokeWidth={2} aria-hidden />}
+                  name={field.name}
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={field.handleBlur}
+                />
+                <PasswordStrengthBar password={field.state.value ?? ""} />
+                <FieldError message={field.state.meta.errors[0]?.message} />
+              </div>
+            )}
+          </form.Field>
 
-          <div>
-            <label htmlFor="reset-confirm" className={authLabelClassName}>
-              Confirm Password
-            </label>
-            <AuthPasswordField
-              id="reset-confirm"
-              autoComplete="new-password"
-              placeholder="••••••••"
-              icon={<Lock className="h-4 w-4" strokeWidth={2} aria-hidden />}
-              {...register("confirm_password")}
-            />
-            <FieldError message={errors.confirm_password?.message} />
-          </div>
+          <form.Field name="confirm_password">
+            {(field) => (
+              <div>
+                <label htmlFor="reset-confirm" className={authLabelClassName}>
+                  Confirm Password
+                </label>
+                <AuthPasswordField
+                  id="reset-confirm"
+                  autoComplete="new-password"
+                  placeholder="••••••••"
+                  icon={<Lock className="h-4 w-4" strokeWidth={2} aria-hidden />}
+                  name={field.name}
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={field.handleBlur}
+                />
+                <FieldError message={field.state.meta.errors[0]?.message} />
+              </div>
+            )}
+          </form.Field>
 
           <button type="submit" disabled={isPending} className={authSubmitButtonClassName}>
             {isPending ? "Resetting…" : "Reset Password"}

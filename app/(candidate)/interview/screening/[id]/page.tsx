@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "@tanstack/react-form";
 import * as z from "zod";
 import { toast } from "sonner";
 import {
@@ -70,14 +69,22 @@ export default function ScreeningPage() {
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [evaluationResult, setEvaluationResult] = useState<any>(null);
 
-  const basicInfoForm = useForm<BasicInfoValues>({
-    resolver: zodResolver(basicInfoSchema),
+  const basicInfoForm = useForm({
     defaultValues: {
+      first_name: "",
+      last_name: "",
+      email: "",
       countryCode: "usa",
-    },
+      phoneNumber: "",
+    } as BasicInfoValues,
+    validators: { onSubmit: basicInfoSchema },
+    onSubmit: () => onBasicInfoSubmit(),
   });
 
-  const screeningForm = useForm<Record<string, string>>();
+  const [screeningAnswers, setScreeningAnswers] = useState<Record<string, string>>({});
+  const allScreeningAnswered =
+    screeningQuestions.length > 0 &&
+    screeningQuestions.every((q) => (screeningAnswers[`question_${q.id}`] ?? "").trim().length > 0);
 
   useEffect(() => {
     if (interviewId) {
@@ -143,9 +150,9 @@ export default function ScreeningPage() {
 
   const onScreeningSubmit = async (data: Record<string, string>) => {
     setCurrentStep("evaluating");
-    
+
     try {
-      const basicInfo = basicInfoForm.getValues();
+      const basicInfo = basicInfoForm.state.values;
       const formData = new FormData();
       formData.append("interview_id", interviewId);
       formData.append("first_name", basicInfo.first_name);
@@ -318,41 +325,83 @@ export default function ScreeningPage() {
               </div>
               
               <div className="p-6 sm:p-8">
-                <form onSubmit={basicInfoForm.handleSubmit(onBasicInfoSubmit)} className="space-y-6">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    void basicInfoForm.handleSubmit();
+                  }}
+                  className="space-y-6"
+                >
                   <div className="grid sm:grid-cols-2 gap-5">
-                    <div className="space-y-2">
-                      <Label htmlFor="first_name" className="text-sm font-medium text-[var(--text-primary)]">First Name <span className="text-[var(--error-color)]">*</span></Label>
-                      <Input id="first_name" {...basicInfoForm.register("first_name")} placeholder="e.g. Emily" className="h-11 rounded-xl bg-background border-[var(--header-floating-border)] focus-visible:ring-[var(--primary-color)]" />
-                      {basicInfoForm.formState.errors.first_name && (
-                        <p className="text-xs text-[var(--error-color)] font-medium">{basicInfoForm.formState.errors.first_name.message}</p>
+                    <basicInfoForm.Field name="first_name">
+                      {(field) => (
+                        <div className="space-y-2">
+                          <Label htmlFor="first_name" className="text-sm font-medium text-[var(--text-primary)]">First Name <span className="text-[var(--error-color)]">*</span></Label>
+                          <Input
+                            id="first_name"
+                            name={field.name}
+                            value={field.state.value}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                            onBlur={field.handleBlur}
+                            placeholder="e.g. Emily"
+                            className="h-11 rounded-xl bg-background border-[var(--header-floating-border)] focus-visible:ring-[var(--primary-color)]"
+                          />
+                          {field.state.meta.errors[0]?.message && (
+                            <p className="text-xs text-[var(--error-color)] font-medium">{field.state.meta.errors[0].message}</p>
+                          )}
+                        </div>
                       )}
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="last_name" className="text-sm font-medium text-[var(--text-primary)]">Last Name <span className="text-[var(--error-color)]">*</span></Label>
-                      <Input id="last_name" {...basicInfoForm.register("last_name")} placeholder="e.g. Chen" className="h-11 rounded-xl bg-background border-[var(--header-floating-border)] focus-visible:ring-[var(--primary-color)]" />
-                      {basicInfoForm.formState.errors.last_name && (
-                        <p className="text-xs text-[var(--error-color)] font-medium">{basicInfoForm.formState.errors.last_name.message}</p>
+                    </basicInfoForm.Field>
+                    <basicInfoForm.Field name="last_name">
+                      {(field) => (
+                        <div className="space-y-2">
+                          <Label htmlFor="last_name" className="text-sm font-medium text-[var(--text-primary)]">Last Name <span className="text-[var(--error-color)]">*</span></Label>
+                          <Input
+                            id="last_name"
+                            name={field.name}
+                            value={field.state.value}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                            onBlur={field.handleBlur}
+                            placeholder="e.g. Chen"
+                            className="h-11 rounded-xl bg-background border-[var(--header-floating-border)] focus-visible:ring-[var(--primary-color)]"
+                          />
+                          {field.state.meta.errors[0]?.message && (
+                            <p className="text-xs text-[var(--error-color)] font-medium">{field.state.meta.errors[0].message}</p>
+                          )}
+                        </div>
                       )}
-                    </div>
+                    </basicInfoForm.Field>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="email" className="text-sm font-medium text-[var(--text-primary)]">Email Address <span className="text-[var(--error-color)]">*</span></Label>
-                    <Input id="email" type="email" {...basicInfoForm.register("email")} placeholder="emily@example.com" className="h-11 rounded-xl bg-background border-[var(--header-floating-border)] focus-visible:ring-[var(--primary-color)]" />
-                    {basicInfoForm.formState.errors.email && (
-                      <p className="text-xs text-[var(--error-color)] font-medium">{basicInfoForm.formState.errors.email.message}</p>
+                  <basicInfoForm.Field name="email">
+                    {(field) => (
+                      <div className="space-y-2">
+                        <Label htmlFor="email" className="text-sm font-medium text-[var(--text-primary)]">Email Address <span className="text-[var(--error-color)]">*</span></Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          name={field.name}
+                          value={field.state.value}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          onBlur={field.handleBlur}
+                          placeholder="emily@example.com"
+                          className="h-11 rounded-xl bg-background border-[var(--header-floating-border)] focus-visible:ring-[var(--primary-color)]"
+                        />
+                        {field.state.meta.errors[0]?.message && (
+                          <p className="text-xs text-[var(--error-color)] font-medium">{field.state.meta.errors[0].message}</p>
+                        )}
+                      </div>
                     )}
-                  </div>
+                  </basicInfoForm.Field>
 
                   <div className="space-y-2">
                     <Label htmlFor="phone" className="text-sm font-medium text-[var(--text-primary)]">Phone Number <span className="text-[var(--error-color)]">*</span></Label>
                     <div className="flex gap-3">
                       <div className="w-[120px] sm:w-[140px] shrink-0">
-                        <Controller
-                          control={basicInfoForm.control}
-                          name="countryCode"
-                          render={({ field }) => (
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <basicInfoForm.Field name="countryCode">
+                          {(field) => (
+                            <Select value={field.state.value} onValueChange={(v) => field.handleChange(v)}>
                               <SelectTrigger className="h-11 rounded-xl bg-background border-[var(--header-floating-border)] focus:ring-[var(--primary-color)]">
                                 <SelectValue placeholder="Code" />
                               </SelectTrigger>
@@ -363,18 +412,27 @@ export default function ScreeningPage() {
                               </SelectContent>
                             </Select>
                           )}
-                        />
+                        </basicInfoForm.Field>
                       </div>
-                      <Input 
-                        id="phone" 
-                        className="flex-1 h-11 rounded-xl bg-background border-[var(--header-floating-border)] focus-visible:ring-[var(--primary-color)]" 
-                        {...basicInfoForm.register("phoneNumber")} 
-                        placeholder="555 123 4567" 
-                      />
+                      <basicInfoForm.Field name="phoneNumber">
+                        {(field) => (
+                          <Input
+                            id="phone"
+                            className="flex-1 h-11 rounded-xl bg-background border-[var(--header-floating-border)] focus-visible:ring-[var(--primary-color)]"
+                            name={field.name}
+                            value={field.state.value}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                            onBlur={field.handleBlur}
+                            placeholder="555 123 4567"
+                          />
+                        )}
+                      </basicInfoForm.Field>
                     </div>
-                    {basicInfoForm.formState.errors.phoneNumber && (
-                      <p className="text-xs text-[var(--error-color)] font-medium">{basicInfoForm.formState.errors.phoneNumber.message}</p>
-                    )}
+                    <basicInfoForm.Subscribe selector={(s) => s.fieldMeta?.phoneNumber?.errors?.[0]?.message}>
+                      {(msg) => (msg ? (
+                        <p className="text-xs text-[var(--error-color)] font-medium">{String(msg)}</p>
+                      ) : null)}
+                    </basicInfoForm.Subscribe>
                   </div>
 
                   <div className="space-y-2 pt-2">
@@ -440,40 +498,54 @@ export default function ScreeningPage() {
               </div>
 
               <div className="p-6 sm:p-8">
-                <form onSubmit={screeningForm.handleSubmit(onScreeningSubmit)} className="space-y-8">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (!allScreeningAnswered) return;
+                    void onScreeningSubmit(screeningAnswers);
+                  }}
+                  className="space-y-8"
+                >
                   <div className="space-y-6">
-                    {screeningQuestions.map((q, i) => (
-                      <div key={q.id} className="space-y-4 p-5 sm:p-6 rounded-2xl border border-[var(--header-floating-border)] bg-[var(--surface-2)] transition-colors hover:border-[rgba(var(--primary-color-rgb),0.2)]">
-                        <Label htmlFor={`question_${q.id}`} className="text-base font-semibold leading-relaxed text-[var(--text-primary)] flex items-start gap-2">
-                          <span className="flex items-center justify-center shrink-0 w-6 h-6 rounded-md bg-[var(--primary-color)]/10 text-[var(--primary-color)] text-xs font-bold mt-0.5">
-                            {i + 1}
-                          </span>
-                          <span className="mt-0.5">{q.question_text}</span>
-                        </Label>
-                        <Textarea
-                          id={`question_${q.id}`}
-                          {...screeningForm.register(`question_${q.id}`, { required: true })}
-                          placeholder="Type your answer here..."
-                          rows={5}
-                          className="bg-background border-[var(--header-floating-border)] focus-visible:ring-[var(--primary-color)] rounded-xl resize-y min-h-[120px] text-[15px] p-4 shadow-sm"
-                        />
-                      </div>
-                    ))}
+                    {screeningQuestions.map((q, i) => {
+                      const key = `question_${q.id}`;
+                      return (
+                        <div key={q.id} className="space-y-4 p-5 sm:p-6 rounded-2xl border border-[var(--header-floating-border)] bg-[var(--surface-2)] transition-colors hover:border-[rgba(var(--primary-color-rgb),0.2)]">
+                          <Label htmlFor={key} className="text-base font-semibold leading-relaxed text-[var(--text-primary)] flex items-start gap-2">
+                            <span className="flex items-center justify-center shrink-0 w-6 h-6 rounded-md bg-[var(--primary-color)]/10 text-[var(--primary-color)] text-xs font-bold mt-0.5">
+                              {i + 1}
+                            </span>
+                            <span className="mt-0.5">{q.question_text}</span>
+                          </Label>
+                          <Textarea
+                            id={key}
+                            value={screeningAnswers[key] ?? ""}
+                            onChange={(e) =>
+                              setScreeningAnswers((prev) => ({ ...prev, [key]: e.target.value }))
+                            }
+                            placeholder="Type your answer here..."
+                            rows={5}
+                            className="bg-background border-[var(--header-floating-border)] focus-visible:ring-[var(--primary-color)] rounded-xl resize-y min-h-[120px] text-[15px] p-4 shadow-sm"
+                          />
+                        </div>
+                      );
+                    })}
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-4 pt-6 mt-6 border-t border-[var(--header-floating-border)]">
-                    <Button 
-                      type="button" 
-                      variant="outline" 
+                    <Button
+                      type="button"
+                      variant="outline"
                       className="h-12 flex-1 rounded-xl border-[var(--header-floating-border)] bg-background text-[var(--text-primary)] hover:bg-[var(--surface-2)] shadow-sm font-medium"
                       onClick={() => setCurrentStep("basic-info")}
                     >
                       <ArrowLeft className="mr-2 w-4 h-4" /> Back
                     </Button>
-                    <Button 
-                      type="submit" 
+                    <Button
+                      type="submit"
                       className="h-12 flex-[2] rounded-xl text-base font-bold shadow-md bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] hover:shadow-[0_8px_20px_rgba(var(--primary-color-rgb),0.25)] hover:-translate-y-0.5 active:translate-y-0 text-white transition-all duration-200"
-                      disabled={!screeningForm.formState.isValid}
+                      disabled={!allScreeningAnswered}
                     >
                       Submit Application <CheckCircle2 className="ml-2 w-5 h-5" />
                     </Button>

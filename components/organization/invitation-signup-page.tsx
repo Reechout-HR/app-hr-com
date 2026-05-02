@@ -1,11 +1,10 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AlertTriangle, Building2, Lock, Mail, User } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Controller, useForm, useWatch } from "react-hook-form";
 import { useState } from "react";
 
 import {
@@ -68,25 +67,10 @@ export function InvitationSignupPage() {
     retry: false,
   });
 
-  const {
-    register,
-    control,
-    handleSubmit,
-    setError,
-    formState: { errors },
-  } = useForm<InvitationSignupFormValues>({
-    resolver: zodResolver(invitationSignupSchema),
-    defaultValues: {
-      first_name: "",
-      last_name: "",
-      password: "",
-      confirm_password: "",
-      terms: false,
-    },
-  });
-
-  const password =
-    useWatch({ control, name: "password", defaultValue: "" }) ?? "";
+  type InviteFieldKey = "password" | "first_name" | "last_name";
+  const [serverFieldErrors, setServerFieldErrors] = useState<
+    Partial<Record<InviteFieldKey, string>>
+  >({});
 
   const { mutate, isPending } = useMutation({
     mutationFn: (values: InvitationSignupFormValues) =>
@@ -107,21 +91,35 @@ export function InvitationSignupPage() {
     },
     onError: (error) => {
       const fieldErrors = parseFieldErrors(error);
+      const next: Partial<Record<InviteFieldKey, string>> = {};
       for (const [key, msg] of Object.entries(fieldErrors)) {
-        if (key === "password") setError("password", { message: msg });
-        if (key === "first_name") setError("first_name", { message: msg });
-        if (key === "last_name") setError("last_name", { message: msg });
+        if (key === "password" || key === "first_name" || key === "last_name") {
+          next[key as InviteFieldKey] = msg;
+        }
       }
-      if (!Object.keys(fieldErrors).length) {
+      if (Object.keys(next).length) {
+        setServerFieldErrors(next);
+      } else {
         setFormError(parseApiError(error));
       }
     },
   });
 
-  const onSubmit = (values: InvitationSignupFormValues) => {
-    setFormError(null);
-    mutate(values);
-  };
+  const form = useForm({
+    defaultValues: {
+      first_name: "",
+      last_name: "",
+      password: "",
+      confirm_password: "",
+      terms: false,
+    } as InvitationSignupFormValues,
+    validators: { onSubmit: invitationSignupSchema },
+    onSubmit: ({ value }) => {
+      setFormError(null);
+      setServerFieldErrors({});
+      mutate(value);
+    },
+  });
 
   if (!token) {
     return (
@@ -189,7 +187,11 @@ export function InvitationSignupPage() {
           </header>
 
           <form
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              void form.handleSubmit();
+            }}
             className="flex flex-col gap-4"
           >
             {formError ? (
@@ -199,39 +201,57 @@ export function InvitationSignupPage() {
             ) : null}
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <label
-                  htmlFor="invite-first-name"
-                  className={authLabelClassName}
-                >
-                  First Name
-                </label>
-                <AuthInputField
-                  id="invite-first-name"
-                  autoComplete="given-name"
-                  placeholder="Jane"
-                  icon={<User className="h-4 w-4" strokeWidth={2} aria-hidden />}
-                  {...register("first_name")}
-                />
-                <FieldError message={errors.first_name?.message} />
-              </div>
+              <form.Field name="first_name">
+                {(field) => (
+                  <div>
+                    <label htmlFor="invite-first-name" className={authLabelClassName}>
+                      First Name
+                    </label>
+                    <AuthInputField
+                      id="invite-first-name"
+                      autoComplete="given-name"
+                      placeholder="Jane"
+                      icon={<User className="h-4 w-4" strokeWidth={2} aria-hidden />}
+                      name={field.name}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      onBlur={field.handleBlur}
+                    />
+                    <FieldError
+                      message={
+                        serverFieldErrors.first_name ??
+                        field.state.meta.errors[0]?.message
+                      }
+                    />
+                  </div>
+                )}
+              </form.Field>
 
-              <div>
-                <label
-                  htmlFor="invite-last-name"
-                  className={authLabelClassName}
-                >
-                  Last Name
-                </label>
-                <AuthInputField
-                  id="invite-last-name"
-                  autoComplete="family-name"
-                  placeholder="Doe"
-                  icon={<User className="h-4 w-4" strokeWidth={2} aria-hidden />}
-                  {...register("last_name")}
-                />
-                <FieldError message={errors.last_name?.message} />
-              </div>
+              <form.Field name="last_name">
+                {(field) => (
+                  <div>
+                    <label htmlFor="invite-last-name" className={authLabelClassName}>
+                      Last Name
+                    </label>
+                    <AuthInputField
+                      id="invite-last-name"
+                      autoComplete="family-name"
+                      placeholder="Doe"
+                      icon={<User className="h-4 w-4" strokeWidth={2} aria-hidden />}
+                      name={field.name}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      onBlur={field.handleBlur}
+                    />
+                    <FieldError
+                      message={
+                        serverFieldErrors.last_name ??
+                        field.state.meta.errors[0]?.message
+                      }
+                    />
+                  </div>
+                )}
+              </form.Field>
             </div>
 
             <div>
@@ -251,77 +271,93 @@ export function InvitationSignupPage() {
               </p>
             </div>
 
-            <div className={authPasswordStrengthBlockClassName}>
-              <label htmlFor="invite-password" className={authLabelClassName}>
-                Password
-              </label>
-              <AuthPasswordField
-                id="invite-password"
-                autoComplete="new-password"
-                placeholder="••••••••"
-                icon={<Lock className="h-4 w-4" strokeWidth={2} aria-hidden />}
-                {...register("password")}
-              />
-              <PasswordStrengthBar password={password} />
-              <FieldError message={errors.password?.message} />
-            </div>
+            <form.Field name="password">
+              {(field) => (
+                <div className={authPasswordStrengthBlockClassName}>
+                  <label htmlFor="invite-password" className={authLabelClassName}>
+                    Password
+                  </label>
+                  <AuthPasswordField
+                    id="invite-password"
+                    autoComplete="new-password"
+                    placeholder="••••••••"
+                    icon={<Lock className="h-4 w-4" strokeWidth={2} aria-hidden />}
+                    name={field.name}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    onBlur={field.handleBlur}
+                  />
+                  <PasswordStrengthBar password={field.state.value ?? ""} />
+                  <FieldError
+                    message={
+                      serverFieldErrors.password ??
+                      field.state.meta.errors[0]?.message
+                    }
+                  />
+                </div>
+              )}
+            </form.Field>
 
-            <div>
-              <label htmlFor="invite-confirm" className={authLabelClassName}>
-                Confirm Password
-              </label>
-              <AuthPasswordField
-                id="invite-confirm"
-                autoComplete="new-password"
-                placeholder="••••••••"
-                icon={<Lock className="h-4 w-4" strokeWidth={2} aria-hidden />}
-                {...register("confirm_password")}
-              />
-              <FieldError message={errors.confirm_password?.message} />
-            </div>
+            <form.Field name="confirm_password">
+              {(field) => (
+                <div>
+                  <label htmlFor="invite-confirm" className={authLabelClassName}>
+                    Confirm Password
+                  </label>
+                  <AuthPasswordField
+                    id="invite-confirm"
+                    autoComplete="new-password"
+                    placeholder="••••••••"
+                    icon={<Lock className="h-4 w-4" strokeWidth={2} aria-hidden />}
+                    name={field.name}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    onBlur={field.handleBlur}
+                  />
+                  <FieldError message={field.state.meta.errors[0]?.message} />
+                </div>
+              )}
+            </form.Field>
 
-            <div className={authCheckboxRowClassName}>
-              <Controller
-                name="terms"
-                control={control}
-                render={({ field }) => (
+            <form.Field name="terms">
+              {(field) => (
+                <div className={authCheckboxRowClassName}>
                   <input
                     id="invite-terms"
                     type="checkbox"
                     className="mt-0.5 h-4 w-4 shrink-0 rounded border border-[var(--border-color)] accent-[var(--primary-color)]"
-                    checked={field.value}
-                    onChange={field.onChange}
-                    onBlur={field.onBlur}
-                    ref={field.ref}
+                    checked={Boolean(field.state.value)}
+                    onChange={(e) => field.handleChange(e.target.checked)}
+                    onBlur={field.handleBlur}
                   />
-                )}
-              />
-              <div>
-                <label
-                  htmlFor="invite-terms"
-                  className={cn(
-                    authLabelClassName,
-                    "mb-0 cursor-pointer font-normal",
-                  )}
-                >
-                  I agree to the{" "}
-                  <Link
-                    href="/terms-of-service"
-                    className={authSignInLinkClassName}
-                  >
-                    Terms of Service
-                  </Link>{" "}
-                  and{" "}
-                  <Link
-                    href="/privacy-policy"
-                    className={authSignInLinkClassName}
-                  >
-                    Privacy Policy
-                  </Link>
-                </label>
-                <FieldError message={errors.terms?.message} />
-              </div>
-            </div>
+                  <div>
+                    <label
+                      htmlFor="invite-terms"
+                      className={cn(
+                        authLabelClassName,
+                        "mb-0 cursor-pointer font-normal",
+                      )}
+                    >
+                      I agree to the{" "}
+                      <Link
+                        href="/terms-of-service"
+                        className={authSignInLinkClassName}
+                      >
+                        Terms of Service
+                      </Link>{" "}
+                      and{" "}
+                      <Link
+                        href="/privacy-policy"
+                        className={authSignInLinkClassName}
+                      >
+                        Privacy Policy
+                      </Link>
+                    </label>
+                    <FieldError message={field.state.meta.errors[0]?.message} />
+                  </div>
+                </div>
+              )}
+            </form.Field>
 
             <button
               type="submit"

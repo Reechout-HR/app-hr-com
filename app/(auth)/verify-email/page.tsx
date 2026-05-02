@@ -1,12 +1,11 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { Lock } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import {
@@ -65,15 +64,6 @@ export default function VerifyEmailPage() {
   const [isResending, setIsResending] = useState(false);
   const setUser = useAuthStore((s) => s.setUser);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<VerifyEmailFormValues>({
-    resolver: zodResolver(verifyEmailSchema),
-    defaultValues: { code: "" },
-  });
-
   useEffect(() => {
     if (stepOk) {
       setCountdown(60);
@@ -103,10 +93,14 @@ export default function VerifyEmailPage() {
     },
   });
 
-  const onSubmit = (values: VerifyEmailFormValues) => {
-    setFormError(null);
-    mutate(values);
-  };
+  const form = useForm({
+    defaultValues: { code: "" } as VerifyEmailFormValues,
+    validators: { onSubmit: verifyEmailSchema },
+    onSubmit: ({ value }) => {
+      setFormError(null);
+      mutate(value);
+    },
+  });
 
   const handleResend = async () => {
     if (isResending || countdown > 0) return;
@@ -153,30 +147,44 @@ export default function VerifyEmailPage() {
                   </p>
                 </header>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    void form.handleSubmit();
+                  }}
+                  className="flex flex-col gap-4"
+                >
                   {formError && (
                     <div className={authFormErrorBoxClassName} role="alert">
                       {formError}
                     </div>
                   )}
 
-                  <div className="space-y-[8px]">
-                    <label htmlFor="code" className={authLabelClassName}>
-                      Code
-                    </label>
-                    <AuthInputField
-                      id="code"
-                      type="text"
-                      inputMode="numeric"
-                      autoComplete="one-time-code"
-                      maxLength={6}
-                      placeholder="000000"
-                      icon={<Lock className="text-[var(--text-muted)]" size={20} />}
-                      {...register("code")}
-                      aria-invalid={!!errors.code}
-                    />
-                    <FieldError message={errors.code?.message} />
-                  </div>
+                  <form.Field name="code">
+                    {(field) => (
+                      <div className="space-y-[8px]">
+                        <label htmlFor="code" className={authLabelClassName}>
+                          Code
+                        </label>
+                        <AuthInputField
+                          id="code"
+                          type="text"
+                          inputMode="numeric"
+                          autoComplete="one-time-code"
+                          maxLength={6}
+                          placeholder="000000"
+                          icon={<Lock className="text-[var(--text-muted)]" size={20} />}
+                          name={field.name}
+                          value={field.state.value}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          onBlur={field.handleBlur}
+                          aria-invalid={field.state.meta.errors.length > 0}
+                        />
+                        <FieldError message={field.state.meta.errors[0]?.message} />
+                      </div>
+                    )}
+                  </form.Field>
 
                   <button
                     type="submit"

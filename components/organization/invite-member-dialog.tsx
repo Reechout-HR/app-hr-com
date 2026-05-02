@@ -1,9 +1,8 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { Check, ShieldCheck, UserRound } from "lucide-react";
-import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { orgsApi, parseApiError } from "@/lib/api";
@@ -65,11 +64,6 @@ export function InviteMemberDialog({
   onClose: () => void;
   onCreated: () => void;
 }) {
-  const form = useForm<InviteMemberFormValues>({
-    resolver: zodResolver(inviteMemberSchema),
-    defaultValues: { email: "", role: "member" },
-  });
-
   const createMutation = useMutation({
     mutationFn: (values: InviteMemberFormValues) =>
       orgsApi.createInvitation({
@@ -80,7 +74,7 @@ export function InviteMemberDialog({
       toast.success("Invitation sent", {
         description: "Your teammate will get an email with an accept link.",
       });
-      form.reset({ email: "", role: "member" });
+      form.reset();
       onCreated();
       onClose();
     },
@@ -90,14 +84,18 @@ export function InviteMemberDialog({
       }),
   });
 
-  const onSubmit = form.handleSubmit((values) => createMutation.mutate(values));
+  const form = useForm({
+    defaultValues: { email: "", role: "member" } as InviteMemberFormValues,
+    validators: { onSubmit: inviteMemberSchema },
+    onSubmit: ({ value }) => createMutation.mutate(value),
+  });
 
   return (
     <Dialog
       open={open}
       onOpenChange={(next) => {
         if (!next) {
-          form.reset({ email: "", role: "member" });
+          form.reset();
           onClose();
         }
       }}
@@ -109,37 +107,49 @@ export function InviteMemberDialog({
             We&apos;ll send an email with a secure accept link. Invites expire after 14 days.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={onSubmit} className="space-y-5">
-          <div className="flex flex-col gap-2">
-            <Label
-              htmlFor="invite_email"
-              className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--text-secondary)]"
-            >
-              Email
-            </Label>
-            <Input
-              id="invite_email"
-              type="email"
-              {...form.register("email")}
-              placeholder="teammate@company.com"
-              className="h-11 rounded-xl"
-              autoComplete="off"
-            />
-            {form.formState.errors.email && (
-              <p className="text-[12px] text-[var(--error-color)]">
-                {form.formState.errors.email.message}
-              </p>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            void form.handleSubmit();
+          }}
+          className="space-y-5"
+        >
+          <form.Field name="email">
+            {(field) => (
+              <div className="flex flex-col gap-2">
+                <Label
+                  htmlFor="invite_email"
+                  className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--text-secondary)]"
+                >
+                  Email
+                </Label>
+                <Input
+                  id="invite_email"
+                  type="email"
+                  name={field.name}
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={field.handleBlur}
+                  placeholder="teammate@company.com"
+                  className="h-11 rounded-xl"
+                  autoComplete="off"
+                />
+                {field.state.meta.errors[0]?.message && (
+                  <p className="text-[12px] text-[var(--error-color)]">
+                    {field.state.meta.errors[0].message}
+                  </p>
+                )}
+              </div>
             )}
-          </div>
+          </form.Field>
 
-          <div className="flex flex-col gap-2">
-            <Label className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--text-secondary)]">
-              Role
-            </Label>
-            <Controller
-              control={form.control}
-              name="role"
-              render={({ field }) => (
+          <form.Field name="role">
+            {(field) => (
+              <div className="flex flex-col gap-2">
+                <Label className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--text-secondary)]">
+                  Role
+                </Label>
                 <div
                   role="radiogroup"
                   aria-label="Role"
@@ -149,19 +159,19 @@ export function InviteMemberDialog({
                     <RoleCard
                       key={option.value}
                       option={option}
-                      selected={field.value === option.value}
-                      onSelect={() => field.onChange(option.value)}
+                      selected={field.state.value === option.value}
+                      onSelect={() => field.handleChange(option.value)}
                     />
                   ))}
                 </div>
-              )}
-            />
-            {form.formState.errors.role && (
-              <p className="text-[12px] text-[var(--error-color)]">
-                {form.formState.errors.role.message}
-              </p>
+                {field.state.meta.errors[0]?.message && (
+                  <p className="text-[12px] text-[var(--error-color)]">
+                    {field.state.meta.errors[0].message}
+                  </p>
+                )}
+              </div>
             )}
-          </div>
+          </form.Field>
 
           <DialogFooter>
             <Button

@@ -1,11 +1,10 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { Building, Globe, Mail } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import {
@@ -83,20 +82,6 @@ export default function CompanySetupPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const setUser = useAuthStore((s) => s.setUser);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<CompanySetupFormValues>({
-    resolver: zodResolver(companySetupSchema),
-    defaultValues: {
-      company_name: "",
-      company_email: "",
-      company_website: "",
-      intended_use: "",
-    },
-  });
-
   const { mutate, isPending } = useMutation({
     mutationFn: (payload: CompanySetupFormValues) =>
       authApi.completeCompanyProfile({
@@ -116,10 +101,19 @@ export default function CompanySetupPage() {
     },
   });
 
-  const onSubmit = (values: CompanySetupFormValues) => {
-    setFormError(null);
-    mutate(values);
-  };
+  const form = useForm({
+    defaultValues: {
+      company_name: "",
+      company_email: "",
+      company_website: "",
+      intended_use: "",
+    } as CompanySetupFormValues,
+    validators: { onSubmit: companySetupSchema },
+    onSubmit: ({ value }) => {
+      setFormError(null);
+      mutate(value);
+    },
+  });
 
   if (!stepOk) {
     return null;
@@ -148,83 +142,118 @@ export default function CompanySetupPage() {
                   </p>
                 </header>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    void form.handleSubmit();
+                  }}
+                  className="flex flex-col gap-4"
+                >
                   {formError && (
                     <div className={authFormErrorBoxClassName} role="alert">
                       {formError}
                     </div>
                   )}
 
-                  <div className="space-y-[8px]">
-                    <label htmlFor="company_name" className={authLabelClassName}>
-                      Company name
-                    </label>
-                    <AuthInputField
-                      id="company_name"
-                      type="text"
-                      placeholder="Acme Inc."
-                      icon={<Building className="text-[var(--text-muted)]" size={20} />}
-                      {...register("company_name")}
-                      aria-invalid={!!errors.company_name}
-                    />
-                    <FieldError message={errors.company_name?.message} />
-                  </div>
+                  <form.Field name="company_name">
+                    {(field) => (
+                      <div className="space-y-[8px]">
+                        <label htmlFor="company_name" className={authLabelClassName}>
+                          Company name
+                        </label>
+                        <AuthInputField
+                          id="company_name"
+                          type="text"
+                          placeholder="Acme Inc."
+                          icon={<Building className="text-[var(--text-muted)]" size={20} />}
+                          name={field.name}
+                          value={field.state.value}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          onBlur={field.handleBlur}
+                          aria-invalid={field.state.meta.errors.length > 0}
+                        />
+                        <FieldError message={field.state.meta.errors[0]?.message} />
+                      </div>
+                    )}
+                  </form.Field>
 
-                  <div className="space-y-[8px]">
-                    <label htmlFor="company_email" className={authLabelClassName}>
-                      Company / work email
-                    </label>
-                    <AuthInputField
-                      id="company_email"
-                      type="email"
-                      autoComplete="email"
-                      placeholder="work@company.com"
-                      icon={<Mail className="text-[var(--text-muted)]" size={20} />}
-                      {...register("company_email")}
-                      aria-invalid={!!errors.company_email}
-                    />
-                    <FieldError message={errors.company_email?.message} />
-                  </div>
+                  <form.Field name="company_email">
+                    {(field) => (
+                      <div className="space-y-[8px]">
+                        <label htmlFor="company_email" className={authLabelClassName}>
+                          Company / work email
+                        </label>
+                        <AuthInputField
+                          id="company_email"
+                          type="email"
+                          autoComplete="email"
+                          placeholder="work@company.com"
+                          icon={<Mail className="text-[var(--text-muted)]" size={20} />}
+                          name={field.name}
+                          value={field.state.value}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          onBlur={field.handleBlur}
+                          aria-invalid={field.state.meta.errors.length > 0}
+                        />
+                        <FieldError message={field.state.meta.errors[0]?.message} />
+                      </div>
+                    )}
+                  </form.Field>
 
-                  <div className="space-y-[8px]">
-                    <label htmlFor="company_website" className={authLabelClassName}>
-                      Company website
-                    </label>
-                    <AuthInputField
-                      id="company_website"
-                      type="url"
-                      placeholder="https://example.com"
-                      icon={<Globe className="text-[var(--text-muted)]" size={20} />}
-                      {...register("company_website")}
-                      aria-invalid={!!errors.company_website}
-                    />
-                    <FieldError message={errors.company_website?.message} />
-                  </div>
+                  <form.Field name="company_website">
+                    {(field) => (
+                      <div className="space-y-[8px]">
+                        <label htmlFor="company_website" className={authLabelClassName}>
+                          Company website
+                        </label>
+                        <AuthInputField
+                          id="company_website"
+                          type="url"
+                          placeholder="https://example.com"
+                          icon={<Globe className="text-[var(--text-muted)]" size={20} />}
+                          name={field.name}
+                          value={field.state.value}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          onBlur={field.handleBlur}
+                          aria-invalid={field.state.meta.errors.length > 0}
+                        />
+                        <FieldError message={field.state.meta.errors[0]?.message} />
+                      </div>
+                    )}
+                  </form.Field>
 
-                  <div className="space-y-[8px]">
-                    <label htmlFor="intended_use" className={authLabelClassName}>
-                      What roles are you hiring for right now?
-                    </label>
-                    <div className="relative">
-                      <textarea
-                        id="intended_use"
-                        rows={4}
-                        placeholder="A few sentences is enough..."
-                        className={cn(
-                          "flex w-full rounded-[var(--radius)] border bg-[var(--input-bg)] text-[14px]",
-                          "px-3 py-3 ring-offset-background transition-colors",
-                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]",
-                          "disabled:cursor-not-allowed disabled:opacity-50",
-                          errors.intended_use
-                            ? "border-[var(--error-color)]"
-                            : "border-[var(--input-border)] placeholder:text-[var(--text-muted)]"
-                        )}
-                        {...register("intended_use")}
-                        aria-invalid={!!errors.intended_use}
-                      />
-                    </div>
-                    <FieldError message={errors.intended_use?.message} />
-                  </div>
+                  <form.Field name="intended_use">
+                    {(field) => (
+                      <div className="space-y-[8px]">
+                        <label htmlFor="intended_use" className={authLabelClassName}>
+                          What roles are you hiring for right now?
+                        </label>
+                        <div className="relative">
+                          <textarea
+                            id="intended_use"
+                            rows={4}
+                            placeholder="A few sentences is enough..."
+                            className={cn(
+                              "flex w-full rounded-[var(--radius)] border bg-[var(--input-bg)] text-[14px]",
+                              "px-3 py-3 ring-offset-background transition-colors",
+                              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]",
+                              "disabled:cursor-not-allowed disabled:opacity-50",
+                              field.state.meta.errors.length > 0
+                                ? "border-[var(--error-color)]"
+                                : "border-[var(--input-border)] placeholder:text-[var(--text-muted)]"
+                            )}
+                            name={field.name}
+                            value={field.state.value}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                            onBlur={field.handleBlur}
+                            aria-invalid={field.state.meta.errors.length > 0}
+                          />
+                        </div>
+                        <FieldError message={field.state.meta.errors[0]?.message} />
+                      </div>
+                    )}
+                  </form.Field>
 
                   <button
                     type="submit"

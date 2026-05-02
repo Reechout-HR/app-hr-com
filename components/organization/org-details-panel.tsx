@@ -1,9 +1,8 @@
 "use client";
 
+import { useForm, useStore } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
 import { Building2, Camera, Loader2, Save, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -50,42 +49,6 @@ export function OrgDetailsPanel() {
   });
   const org = envelope?.data ?? null;
 
-  const form = useForm<OrgUpdateFormValues>({
-    resolver: zodResolver(orgUpdateSchema),
-    defaultValues: {
-      name: "",
-      contact_email: "",
-      website: "",
-      description: "",
-      industry: "",
-      size: "",
-      location: "",
-      timezone: "",
-      billing_email: "",
-      phone: "",
-      linkedin_url: "",
-    },
-  });
-
-  useEffect(() => {
-    if (org) {
-      form.reset({
-        name: org.name ?? "",
-        contact_email: org.contact_email ?? "",
-        website: org.website ?? "",
-        description: org.description ?? "",
-        industry: org.industry ?? "",
-        size: org.size ?? "",
-        location: org.location ?? "",
-        timezone: org.timezone ?? "",
-        billing_email: org.billing_email ?? "",
-        phone: org.phone ?? "",
-        linkedin_url: org.linkedin_url ?? "",
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [org?.id]);
-
   const updateMutation = useMutation({
     mutationFn: (values: OrgUpdateFormValues) => {
       const payload: OrgUpdateFormValues = {};
@@ -109,6 +72,45 @@ export function OrgDetailsPanel() {
       });
     },
   });
+
+  const form = useForm({
+    defaultValues: {
+      name: "",
+      contact_email: "",
+      website: "",
+      description: "",
+      industry: "",
+      size: "",
+      location: "",
+      timezone: "",
+      billing_email: "",
+      phone: "",
+      linkedin_url: "",
+    } as OrgUpdateFormValues,
+    validators: { onSubmit: orgUpdateSchema },
+    onSubmit: ({ value }) => updateMutation.mutate(value),
+  });
+
+  const isDirty = useStore(form.store, (s) => s.isDirty);
+
+  useEffect(() => {
+    if (org) {
+      form.reset({
+        name: org.name ?? "",
+        contact_email: org.contact_email ?? "",
+        website: org.website ?? "",
+        description: org.description ?? "",
+        industry: org.industry ?? "",
+        size: org.size ?? "",
+        location: org.location ?? "",
+        timezone: org.timezone ?? "",
+        billing_email: org.billing_email ?? "",
+        phone: org.phone ?? "",
+        linkedin_url: org.linkedin_url ?? "",
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [org?.id]);
 
   const uploadLogoMutation = useMutation({
     mutationFn: (file: File) => orgsApi.uploadLogo(file),
@@ -150,9 +152,11 @@ export function OrgDetailsPanel() {
     processFile(file);
   };
 
-  const onSubmit = form.handleSubmit((values) => {
-    updateMutation.mutate(values);
-  });
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    void form.handleSubmit();
+  };
 
   const initials = orgInitials(org?.name);
   const isUploading = uploadLogoMutation.isPending;
@@ -277,20 +281,40 @@ export function OrgDetailsPanel() {
         <fieldset disabled={!canEdit || updateMutation.isPending} className="space-y-8">
           <Section title="Identity">
             <Grid>
-              <Field label="Company name" error={form.formState.errors.name?.message}>
-                <Input {...form.register("name")} placeholder="Acme, Inc." className="h-11 rounded-xl" />
-              </Field>
-              <Field label="Industry" error={form.formState.errors.industry?.message}>
-                <Input {...form.register("industry")} placeholder="e.g. Software" className="h-11 rounded-xl" />
-              </Field>
-              <Field label="Company size" error={form.formState.errors.size?.message}>
-                <Controller
-                  control={form.control}
-                  name="size"
-                  render={({ field }) => (
+              <form.Field name="name">
+                {(f) => (
+                  <Field label="Company name" error={f.state.meta.errors[0]?.message}>
+                    <Input
+                      name={f.name}
+                      value={f.state.value ?? ""}
+                      onChange={(e) => f.handleChange(e.target.value)}
+                      onBlur={f.handleBlur}
+                      placeholder="Acme, Inc."
+                      className="h-11 rounded-xl"
+                    />
+                  </Field>
+                )}
+              </form.Field>
+              <form.Field name="industry">
+                {(f) => (
+                  <Field label="Industry" error={f.state.meta.errors[0]?.message}>
+                    <Input
+                      name={f.name}
+                      value={f.state.value ?? ""}
+                      onChange={(e) => f.handleChange(e.target.value)}
+                      onBlur={f.handleBlur}
+                      placeholder="e.g. Software"
+                      className="h-11 rounded-xl"
+                    />
+                  </Field>
+                )}
+              </form.Field>
+              <form.Field name="size">
+                {(f) => (
+                  <Field label="Company size" error={f.state.meta.errors[0]?.message}>
                     <Select
-                      value={field.value || ""}
-                      onValueChange={(v) => field.onChange(v || undefined)}
+                      value={f.state.value || ""}
+                      onValueChange={(v) => f.handleChange(v || undefined)}
                     >
                       <SelectTrigger className="h-11 rounded-xl">
                         <SelectValue placeholder="Select size" />
@@ -303,66 +327,148 @@ export function OrgDetailsPanel() {
                         ))}
                       </SelectContent>
                     </Select>
-                  )}
-                />
-              </Field>
-              <Field label="Location" error={form.formState.errors.location?.message}>
-                <Input {...form.register("location")} placeholder="San Francisco, USA" className="h-11 rounded-xl" />
-              </Field>
-              <Field
-                label="Description"
-                error={form.formState.errors.description?.message}
-                className="sm:col-span-2"
-              >
-                <Textarea
-                  {...form.register("description")}
-                  placeholder="What does your organization do?"
-                  className="min-h-[96px] rounded-xl"
-                  rows={3}
-                />
-              </Field>
+                  </Field>
+                )}
+              </form.Field>
+              <form.Field name="location">
+                {(f) => (
+                  <Field label="Location" error={f.state.meta.errors[0]?.message}>
+                    <Input
+                      name={f.name}
+                      value={f.state.value ?? ""}
+                      onChange={(e) => f.handleChange(e.target.value)}
+                      onBlur={f.handleBlur}
+                      placeholder="San Francisco, USA"
+                      className="h-11 rounded-xl"
+                    />
+                  </Field>
+                )}
+              </form.Field>
+              <form.Field name="description">
+                {(f) => (
+                  <Field
+                    label="Description"
+                    error={f.state.meta.errors[0]?.message}
+                    className="sm:col-span-2"
+                  >
+                    <Textarea
+                      name={f.name}
+                      value={f.state.value ?? ""}
+                      onChange={(e) => f.handleChange(e.target.value)}
+                      onBlur={f.handleBlur}
+                      placeholder="What does your organization do?"
+                      className="min-h-[96px] rounded-xl"
+                      rows={3}
+                    />
+                  </Field>
+                )}
+              </form.Field>
             </Grid>
           </Section>
 
           <Section title="Contact">
             <Grid>
-              <Field label="Contact email" error={form.formState.errors.contact_email?.message}>
-                <Input {...form.register("contact_email")} type="email" placeholder="hello@acme.com" className="h-11 rounded-xl" />
-              </Field>
-              <Field label="Billing email" error={form.formState.errors.billing_email?.message}>
-                <Input {...form.register("billing_email")} type="email" placeholder="billing@acme.com" className="h-11 rounded-xl" />
-              </Field>
-              <Field label="Phone" error={form.formState.errors.phone?.message}>
-                <Input {...form.register("phone")} placeholder="+1 555 123 4567" className="h-11 rounded-xl" />
-              </Field>
-              <Field label="Timezone" error={form.formState.errors.timezone?.message}>
-                <Input {...form.register("timezone")} placeholder="America/New_York" className="h-11 rounded-xl" />
-              </Field>
+              <form.Field name="contact_email">
+                {(f) => (
+                  <Field label="Contact email" error={f.state.meta.errors[0]?.message}>
+                    <Input
+                      name={f.name}
+                      value={f.state.value ?? ""}
+                      onChange={(e) => f.handleChange(e.target.value)}
+                      onBlur={f.handleBlur}
+                      type="email"
+                      placeholder="hello@acme.com"
+                      className="h-11 rounded-xl"
+                    />
+                  </Field>
+                )}
+              </form.Field>
+              <form.Field name="billing_email">
+                {(f) => (
+                  <Field label="Billing email" error={f.state.meta.errors[0]?.message}>
+                    <Input
+                      name={f.name}
+                      value={f.state.value ?? ""}
+                      onChange={(e) => f.handleChange(e.target.value)}
+                      onBlur={f.handleBlur}
+                      type="email"
+                      placeholder="billing@acme.com"
+                      className="h-11 rounded-xl"
+                    />
+                  </Field>
+                )}
+              </form.Field>
+              <form.Field name="phone">
+                {(f) => (
+                  <Field label="Phone" error={f.state.meta.errors[0]?.message}>
+                    <Input
+                      name={f.name}
+                      value={f.state.value ?? ""}
+                      onChange={(e) => f.handleChange(e.target.value)}
+                      onBlur={f.handleBlur}
+                      placeholder="+1 555 123 4567"
+                      className="h-11 rounded-xl"
+                    />
+                  </Field>
+                )}
+              </form.Field>
+              <form.Field name="timezone">
+                {(f) => (
+                  <Field label="Timezone" error={f.state.meta.errors[0]?.message}>
+                    <Input
+                      name={f.name}
+                      value={f.state.value ?? ""}
+                      onChange={(e) => f.handleChange(e.target.value)}
+                      onBlur={f.handleBlur}
+                      placeholder="America/New_York"
+                      className="h-11 rounded-xl"
+                    />
+                  </Field>
+                )}
+              </form.Field>
             </Grid>
           </Section>
 
           <Section title="Presence">
             <Grid>
-              <Field label="Website" error={form.formState.errors.website?.message}>
-                <Input {...form.register("website")} placeholder="https://acme.com" className="h-11 rounded-xl" />
-              </Field>
-              <Field label="LinkedIn" error={form.formState.errors.linkedin_url?.message}>
-                <Input
-                  {...form.register("linkedin_url")}
-                  placeholder="https://linkedin.com/company/acme"
-                  className="h-11 rounded-xl"
-                />
-              </Field>
+              <form.Field name="website">
+                {(f) => (
+                  <Field label="Website" error={f.state.meta.errors[0]?.message}>
+                    <Input
+                      name={f.name}
+                      value={f.state.value ?? ""}
+                      onChange={(e) => f.handleChange(e.target.value)}
+                      onBlur={f.handleBlur}
+                      placeholder="https://acme.com"
+                      className="h-11 rounded-xl"
+                    />
+                  </Field>
+                )}
+              </form.Field>
+              <form.Field name="linkedin_url">
+                {(f) => (
+                  <Field label="LinkedIn" error={f.state.meta.errors[0]?.message}>
+                    <Input
+                      name={f.name}
+                      value={f.state.value ?? ""}
+                      onChange={(e) => f.handleChange(e.target.value)}
+                      onBlur={f.handleBlur}
+                      placeholder="https://linkedin.com/company/acme"
+                      className="h-11 rounded-xl"
+                    />
+                  </Field>
+                )}
+              </form.Field>
             </Grid>
           </Section>
 
           {canEdit && (
             <div className="flex items-center justify-between border-t border-[var(--border-color-light)] pt-5 dark:border-white/[0.09]">
               <p className="text-[12px] text-[var(--text-muted)]">
-                {form.formState.isDirty ? "You have unsaved changes" : "Everything is up to date"}
+                {isDirty ? "You have unsaved changes" : "Everything is up to date"}
               </p>
               <div className="flex items-center gap-2">
-                {form.formState.isDirty && (
+                {isDirty && (
                   <Button
                     type="button"
                     variant="outline"
@@ -376,7 +482,7 @@ export function OrgDetailsPanel() {
                 <Button
                   type="submit"
                   className="h-10 rounded-xl bg-[var(--primary-color)] px-5 font-semibold hover:bg-[var(--primary-color-hover)]"
-                  disabled={updateMutation.isPending || !form.formState.isDirty}
+                  disabled={updateMutation.isPending || !isDirty}
                 >
                   {updateMutation.isPending ? "Saving…" : (
                     <>

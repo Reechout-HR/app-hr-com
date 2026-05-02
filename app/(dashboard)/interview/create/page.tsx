@@ -2,9 +2,8 @@
 
 import React, { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -292,21 +291,28 @@ export default function CreateInterviewPage() {
   };
 
   // Forms
-  const candidateForm = useForm<CandidateFormValues>({
-    resolver: zodResolver(candidateSchema),
+  const candidateForm = useForm({
     defaultValues: {
       first_name: "",
       last_name: "",
       email: "",
       phone: "",
       notes: "",
-    }
+    } as CandidateFormValues,
+    validators: { onSubmit: candidateSchema },
+    onSubmit: ({ value }) => handleSaveCandidate(value),
   });
 
   const openCandidateModal = (candidate?: UICandidate) => {
     if (candidate) {
       setEditingCandidate(candidate);
-      candidateForm.reset(candidate);
+      candidateForm.reset({
+        first_name: candidate.first_name,
+        last_name: candidate.last_name,
+        email: candidate.email,
+        phone: candidate.phone,
+        notes: candidate.notes ?? "",
+      });
     } else {
       setEditingCandidate(null);
       candidateForm.reset({ first_name: "", last_name: "", email: "", phone: "", notes: "" });
@@ -591,34 +597,109 @@ export default function CreateInterviewPage() {
             <DialogTitle className="text-xl font-bold">{editingCandidate ? "Edit Candidate" : "Add Candidate"}</DialogTitle>
             <DialogDescription className="text-sm text-[var(--text-secondary)] mt-1">Enter the candidate's contact details below.</DialogDescription>
           </DialogHeader>
-          <form onSubmit={candidateForm.handleSubmit(handleSaveCandidate)} className="flex flex-col">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              void candidateForm.handleSubmit();
+            }}
+            className="flex flex-col"
+          >
             <div className="px-6 py-6 space-y-5 bg-transparent">
               <div className="grid grid-cols-2 gap-5">
-                <div className="space-y-2">
-                  <Label htmlFor="first_name" className="text-sm font-medium">First Name <span className="text-[var(--error-color)]">*</span></Label>
-                  <Input id="first_name" {...candidateForm.register("first_name")} className="h-10 rounded-xl bg-background border-[var(--header-floating-border)] focus-visible:ring-[var(--primary-color)]" />
-                  {candidateForm.formState.errors.first_name && <p className="text-xs text-[var(--error-color)]">{candidateForm.formState.errors.first_name.message}</p>}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="last_name" className="text-sm font-medium">Last Name <span className="text-[var(--error-color)]">*</span></Label>
-                  <Input id="last_name" {...candidateForm.register("last_name")} className="h-10 rounded-xl bg-background border-[var(--header-floating-border)] focus-visible:ring-[var(--primary-color)]" />
-                  {candidateForm.formState.errors.last_name && <p className="text-xs text-[var(--error-color)]">{candidateForm.formState.errors.last_name.message}</p>}
-                </div>
+                <candidateForm.Field name="first_name">
+                  {(field) => (
+                    <div className="space-y-2">
+                      <Label htmlFor="first_name" className="text-sm font-medium">First Name <span className="text-[var(--error-color)]">*</span></Label>
+                      <Input
+                        id="first_name"
+                        name={field.name}
+                        value={field.state.value}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        onBlur={field.handleBlur}
+                        className="h-10 rounded-xl bg-background border-[var(--header-floating-border)] focus-visible:ring-[var(--primary-color)]"
+                      />
+                      {field.state.meta.errors[0]?.message && (
+                        <p className="text-xs text-[var(--error-color)]">{field.state.meta.errors[0].message}</p>
+                      )}
+                    </div>
+                  )}
+                </candidateForm.Field>
+                <candidateForm.Field name="last_name">
+                  {(field) => (
+                    <div className="space-y-2">
+                      <Label htmlFor="last_name" className="text-sm font-medium">Last Name <span className="text-[var(--error-color)]">*</span></Label>
+                      <Input
+                        id="last_name"
+                        name={field.name}
+                        value={field.state.value}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        onBlur={field.handleBlur}
+                        className="h-10 rounded-xl bg-background border-[var(--header-floating-border)] focus-visible:ring-[var(--primary-color)]"
+                      />
+                      {field.state.meta.errors[0]?.message && (
+                        <p className="text-xs text-[var(--error-color)]">{field.state.meta.errors[0].message}</p>
+                      )}
+                    </div>
+                  )}
+                </candidateForm.Field>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium">Email Address <span className="text-[var(--error-color)]">*</span></Label>
-                <Input id="email" type="email" {...candidateForm.register("email")} className="h-10 rounded-xl bg-background border-[var(--header-floating-border)] focus-visible:ring-[var(--primary-color)]" placeholder="candidate@example.com" />
-                {candidateForm.formState.errors.email && <p className="text-xs text-[var(--error-color)]">{candidateForm.formState.errors.email.message}</p>}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="phone" className="text-sm font-medium">Phone Number <span className="text-[var(--error-color)]">*</span></Label>
-                <Input id="phone" type="tel" {...candidateForm.register("phone")} className="h-10 rounded-xl bg-background border-[var(--header-floating-border)] focus-visible:ring-[var(--primary-color)]" placeholder="+1 (555) 000-0000" />
-                {candidateForm.formState.errors.phone && <p className="text-xs text-[var(--error-color)]">{candidateForm.formState.errors.phone.message}</p>}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="notes" className="text-sm font-medium text-[var(--text-secondary)]">Internal Notes (Optional)</Label>
-                <Input id="notes" {...candidateForm.register("notes")} className="h-10 rounded-xl bg-background border-[var(--header-floating-border)] focus-visible:ring-[var(--primary-color)]" placeholder="E.g., Referred by John Doe" />
-              </div>
+              <candidateForm.Field name="email">
+                {(field) => (
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-sm font-medium">Email Address <span className="text-[var(--error-color)]">*</span></Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      name={field.name}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      onBlur={field.handleBlur}
+                      className="h-10 rounded-xl bg-background border-[var(--header-floating-border)] focus-visible:ring-[var(--primary-color)]"
+                      placeholder="candidate@example.com"
+                    />
+                    {field.state.meta.errors[0]?.message && (
+                      <p className="text-xs text-[var(--error-color)]">{field.state.meta.errors[0].message}</p>
+                    )}
+                  </div>
+                )}
+              </candidateForm.Field>
+              <candidateForm.Field name="phone">
+                {(field) => (
+                  <div className="space-y-2">
+                    <Label htmlFor="phone" className="text-sm font-medium">Phone Number <span className="text-[var(--error-color)]">*</span></Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      name={field.name}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      onBlur={field.handleBlur}
+                      className="h-10 rounded-xl bg-background border-[var(--header-floating-border)] focus-visible:ring-[var(--primary-color)]"
+                      placeholder="+1 (555) 000-0000"
+                    />
+                    {field.state.meta.errors[0]?.message && (
+                      <p className="text-xs text-[var(--error-color)]">{field.state.meta.errors[0].message}</p>
+                    )}
+                  </div>
+                )}
+              </candidateForm.Field>
+              <candidateForm.Field name="notes">
+                {(field) => (
+                  <div className="space-y-2">
+                    <Label htmlFor="notes" className="text-sm font-medium text-[var(--text-secondary)]">Internal Notes (Optional)</Label>
+                    <Input
+                      id="notes"
+                      name={field.name}
+                      value={field.state.value ?? ""}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      onBlur={field.handleBlur}
+                      className="h-10 rounded-xl bg-background border-[var(--header-floating-border)] focus-visible:ring-[var(--primary-color)]"
+                      placeholder="E.g., Referred by John Doe"
+                    />
+                  </div>
+                )}
+              </candidateForm.Field>
             </div>
             <DialogFooter className="border-t border-[var(--header-floating-border)] bg-transparent sm:justify-end">
               <Button type="button" variant="ghost" onClick={() => setIsAddCandidateOpen(false)} className="h-10 rounded-xl px-4 text-[var(--text-secondary)] hover:text-foreground">Cancel</Button>

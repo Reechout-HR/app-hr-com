@@ -4,3 +4,5 @@ export { ORG_API_PATHS } from "./org-endpoints";
 export { orgsApi } from "./orgs";
 
 export { apiClient, parseApiError, parseFieldErrors, SKIP_LOADING_HEADER } from "./client";
+export { interviewsGeminiApi } from "./interviewsGemini";
+export type { GeminiBootstrapData, GeminiBootstrapResponse } from "./interviewsGemini";

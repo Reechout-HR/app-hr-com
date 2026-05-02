@@ -1,12 +1,11 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { Lock, Mail } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
-import { useForm } from "react-hook-form";
 
 import {
   authCardClassName,
@@ -65,15 +64,9 @@ function LoginPageInner() {
 
   useRedirectIfAuthenticatedWithOnboarding();
 
-  const {
-    register,
-    handleSubmit,
-    setError,
-    formState: { errors },
-  } = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", password: "" },
-  });
+  const [serverFieldErrors, setServerFieldErrors] = useState<
+    Partial<Record<keyof LoginFormValues, string>>
+  >({});
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (payload: LoginPayload) => {
@@ -103,22 +96,26 @@ function LoginPageInner() {
     },
     onError: (error) => {
       const fieldErrors = parseFieldErrors(error);
-      if (fieldErrors.email) {
-        setError("email", { message: fieldErrors.email });
-      }
-      if (fieldErrors.password) {
-        setError("password", { message: fieldErrors.password });
-      }
-      if (!Object.keys(fieldErrors).length) {
+      if (Object.keys(fieldErrors).length) {
+        setServerFieldErrors({
+          email: fieldErrors.email,
+          password: fieldErrors.password,
+        });
+      } else {
         setFormError(parseApiError(error));
       }
     },
   });
 
-  const onSubmit = (values: LoginFormValues) => {
-    setFormError(null);
-    mutate(values);
-  };
+  const form = useForm({
+    defaultValues: { email: "", password: "" } as LoginFormValues,
+    validators: { onSubmit: loginSchema },
+    onSubmit: ({ value }) => {
+      setFormError(null);
+      setServerFieldErrors({});
+      mutate(value);
+    },
+  });
 
   return (
     <AuthPageRoot>
@@ -139,46 +136,77 @@ function LoginPageInner() {
                   <p className={authCardSubtitleClassName}>Sign in to your workspace.</p>
                 </header>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    void form.handleSubmit();
+                  }}
+                  className="flex flex-col gap-4"
+                >
                   {formError ? (
                     <div className={authFormErrorBoxClassName} role="alert">
                       {formError}
                     </div>
                   ) : null}
 
-                  <div>
-                    <label htmlFor="login-email" className={authLabelClassName}>
-                      Email
-                    </label>
-                    <AuthInputField
-                      id="login-email"
-                      type="email"
-                      autoComplete="email"
-                      placeholder="jane@company.com"
-                      icon={<Mail className="h-4 w-4" strokeWidth={2} aria-hidden />}
-                      {...register("email")}
-                    />
-                    <FieldError message={errors.email?.message} />
-                  </div>
+                  <form.Field name="email">
+                    {(field) => (
+                      <div>
+                        <label htmlFor="login-email" className={authLabelClassName}>
+                          Email
+                        </label>
+                        <AuthInputField
+                          id="login-email"
+                          type="email"
+                          autoComplete="email"
+                          placeholder="jane@company.com"
+                          icon={<Mail className="h-4 w-4" strokeWidth={2} aria-hidden />}
+                          name={field.name}
+                          value={field.state.value}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          onBlur={field.handleBlur}
+                        />
+                        <FieldError
+                          message={
+                            serverFieldErrors.email ??
+                            field.state.meta.errors[0]?.message
+                          }
+                        />
+                      </div>
+                    )}
+                  </form.Field>
 
-                  <div>
-                    <label htmlFor="login-password" className={authLabelClassName}>
-                      Password
-                    </label>
-                    <AuthPasswordField
-                      id="login-password"
-                      autoComplete="current-password"
-                      placeholder="••••••••"
-                      icon={<Lock className="h-4 w-4" strokeWidth={2} aria-hidden />}
-                      {...register("password")}
-                    />
-                    <FieldError message={errors.password?.message} />
-                    <div className={authForgotRowClassName}>
-                      <Link href="/forgot-password" className={authForgotLinkClassName}>
-                        Forgot password?
-                      </Link>
-                    </div>
-                  </div>
+                  <form.Field name="password">
+                    {(field) => (
+                      <div>
+                        <label htmlFor="login-password" className={authLabelClassName}>
+                          Password
+                        </label>
+                        <AuthPasswordField
+                          id="login-password"
+                          autoComplete="current-password"
+                          placeholder="••••••••"
+                          icon={<Lock className="h-4 w-4" strokeWidth={2} aria-hidden />}
+                          name={field.name}
+                          value={field.state.value}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          onBlur={field.handleBlur}
+                        />
+                        <FieldError
+                          message={
+                            serverFieldErrors.password ??
+                            field.state.meta.errors[0]?.message
+                          }
+                        />
+                        <div className={authForgotRowClassName}>
+                          <Link href="/forgot-password" className={authForgotLinkClassName}>
+                            Forgot password?
+                          </Link>
+                        </div>
+                      </div>
+                    )}
+                  </form.Field>
 
                   <button type="submit" disabled={isPending} className={authSubmitButtonClassName}>
                     {isPending ? "Signing in…" : "Sign In"}
